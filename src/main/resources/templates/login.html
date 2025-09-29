@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/api.js"></script>
+    <title>Login</title>
+</head>
+<body>
+<h1>Please log in</h1>
+<form id="loginForm">
+    <label>Username: <input type="text" name="username"/></label><br/>
+    <label>Password: <input type="password" name="password"/></label><br/>
+    <button type="submit">Login</button>
+</form>
+<span id="info"></span>
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async (event) => {
+        event.preventDefault()
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+        const result = await apiRequest('/api/auth/login', 'POST', data);
+        if (result.code === 200) {
+            localStorage.setItem('token', result.data);
+            document.location.replace('/ui/users');
+        } else {
+            document.getElementById('info').innerHTML = result.message;
+        }
+    })
+</script>
+</body>
+</html>

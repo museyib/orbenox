@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/api.js"></script>
+    <title>Edit Resource</title>
+</head>
+<body>
+<div th:replace="~{/top-menu::menu}"></div>
+<h1>Edit Resource</h1>
+<form id="editResourceForm">
+    <label>
+        <input type="text" name="id" th:value="${resource.id}" hidden="hidden"/>
+    </label>
+    <label>Code: <input type="text" name="code" th:value="${resource.code}"/></label><br/>
+    <label>Description: <input type="text" name="description" th:value="${resource.description}"/></label><br/>
+    <label>Assigned Actions:
+        <select id="assignedActions" multiple>
+            <option th:each="action : ${resource.actions}"
+                    th:value="${action.id}"
+                    th:text="${action.code}"
+                    ondblclick="removeFromAssignedActions(this)"></option>
+        </select>
+    </label>
+    <label>Actions:
+        <select id='availableActions' multiple>
+            <option th:each="action : ${actions}"
+                    th:value="${action.id}"
+                    th:text="${action.code}"
+                    ondblclick="addToAssignedActions(this)"></option>
+        </select>
+    </label>
+    <button type="submit">Save</button>
+</form>
+<span id="info"></span>
+<script>
+    document.getElementById('editResourceForm').addEventListener('submit', async (event) => {
+        event.preventDefault()
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+        data.actions = Array.from(document.getElementById('assignedActions')).map(opt => {
+            return {
+                id: opt.value
+            }
+        });
+        const result = await apiRequest('/api/resources/' + data.id, 'PATCH', data);
+        if (result.code === 200) {
+            document.location.replace('/ui/resources');
+        } else {
+            document.getElementById('info').innerHTML = result.message;
+        }
+    })
+
+    function addToAssignedActions(e) {
+        const assignedActions = document.getElementById('assignedActions');
+        const availableActions = document.getElementById('availableActions');
+        moveOption(e, availableActions, assignedActions, removeFromAssignedActions);
+    }
+
+    function removeFromAssignedActions(e) {
+        const assignedActions = document.getElementById('assignedActions');
+        const availableActions = document.getElementById('availableActions');
+        moveOption(e, assignedActions, availableActions, addToAssignedActions);
+    }
+</script>
+</body>
+</html>

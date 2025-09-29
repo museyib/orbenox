@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/api.js"></script>
+    <title>Create Resource</title>
+</head>
+<body>
+<div th:replace="~{/top-menu::menu}"></div>
+<h1>New Resource</h1>
+<form id="createResourceForm">
+    <label>Code: <input type="text" name="code"/></label><br/>
+    <label>Description: <input type="text" name="description"/></label><br/>
+    <button type="submit">Create</button>
+</form>
+<span id="info"></span>
+<script>
+    document.getElementById('createResourceForm').addEventListener('submit', async (event) => {
+        event.preventDefault()
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+        const result = await apiRequest('/api/resources', 'POST', data);
+        if (result.code === 200) {
+            document.location.replace('/ui/resources');
+        } else {
+            document.getElementById('info').innerHTML = result.message;
+        }
+    })
+</script>
+</body>
+</html>

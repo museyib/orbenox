@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/api.js"></script>
+    <title>User Permissions</title>
+</head>
+<body>
+<div th:replace="~{/top-menu::menu}"></div>
+<h1>Permissions</h1>
+<form id="editUserPermissions">
+    <label>
+        <input id="userId" type="text" name="userId" th:value="${permissionDto.userId}" hidden="hidden"/>
+    </label>
+    <label>Granted:
+        <select id="assignedPermissions" multiple>
+            <option th:each="permission : ${permissionDto.getPermissions()}"
+                    th:value="${permission.getPermissionCode()}"
+                    th:text="${permission.getPermissionCode()}"
+                    ondblclick="removeFromAssignedActions(this)"
+            >
+
+            </option>
+        </select>
+    </label>
+    <label>Object:
+        <select id="resource" onchange="fetchActions(this)">
+            <option th:each="resource : ${resources}"
+                    th:value="${resource.id}"
+                    th:text="${resource.code}"
+            >
+
+            </option>
+        </select>
+    </label>
+    <label>Actions:
+        <select id='availableActions' multiple>
+            <option th:each="action : ${actions}"
+                    th:value="${action.id}"
+                    th:text="${action.code}"
+                    ondblclick="addToAssignedActions(this)"
+            >
+
+            </option>
+        </select>
+    </label>
+    <button type="submit">Save</button>
+</form>
+<span id="info"></span>
+<script>
+    const assignedPermissions = [];
+    const resourceSelect = document.getElementById('resource');
+    let currentResource = {
+        id: resourceSelect.value,
+        code: resourceSelect.options[resourceSelect.selectedIndex].text
+    };
+    document.getElementById('editUserPermissions').addEventListener('submit', async (event) => {
+        event.preventDefault()
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+        data.permissions = assignedPermissions;
+        const result = await apiRequest('/api/permissions/user', 'PATCH', data);
+        if (result.code !== 200) {
+            document.getElementById('info').innerHTML = result.message;
+        }
+    })
+
+    function addToAssignedActions(e) {
+        const assignedActions = document.getElementById('assignedPermissions');
+        const availableActions = document.getElementById('availableActions');
+        assignedPermissions.push({
+            resource: {
+                id: currentResource.id,
+                code: currentResource.code,
+            },
+            action: {
+                id: e.value,
+                code: e.innerText
+            },
+        });
+        moveOption(e, availableActions, assignedActions, removeFromAssignedActions);
+    }
+
+    function removeFromAssignedActions(e) {
+        const assignedActions = document.getElementById('assignedPermissions');
+        const availableActions = document.getElementById('availableActions');
+        let indexOf = assignedPermissions.indexOf({
+            resource: {
+                id: currentResource.id,
+                code: currentResource.code,
+            },
+            action: {
+                id: e.value,
+                code: e.innerText
+            },
+        });
+        assignedPermissions.splice(indexOf, 1);
+        console.log(indexOf);
+        console.log(assignedPermissions);
+        moveOption(e, assignedActions, availableActions, addToAssignedActions);
+    }
+
+
+    async function fetchActions(e) {
+        const resourceId = e.value;
+        const code = e.options[e.selectedIndex].text;
+        currentResource = {
+            id: resourceId,
+            code: code,
+        }
+        const userId = document.getElementById('userId').value;
+        const result = await apiRequest('/api/permissions/availableForUser?userId=' + userId + '&resourceId=' + resourceId, 'GET');
+        if (result.code === 200) {
+            const select = document.getElementById('availableActions');
+            select.innerHTML = '';
+            result.data.forEach(action => {
+                const option = document.createElement('option');
+                option.value = action.id;
+                option.text = action.code;
+                option.ondblclick = () => addToAssignedActions(option);
+                select.appendChild(option);
+            })
+        } else {
+            document.getElementById('info').innerHTML = result.message;
+        }
+    }
+</script>
+</body>
+</html>
