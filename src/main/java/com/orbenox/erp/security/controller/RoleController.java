@@ -22,6 +22,12 @@ public class RoleController {
         return ResponseEntity.ok(Response.successData(roleService.findAll()));
     }
 
+    @PreAuthorize("hasPermission('APP_ROLE', 'READ')")
+    @GetMapping("/{id}")
+    public ResponseEntity<Response<RoleDto>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(Response.successData(roleService.findById(id)));
+    }
+
     @PreAuthorize("hasPermission('APP_ROLE', 'CREATE')")
     @PostMapping
     public ResponseEntity<Response<RoleDto>> create(@RequestBody RoleDto appRole) {
