@@ -28,12 +28,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.authorizeHttpRequests(
+        return http
+                .cors(configurer ->  configurer.configure(http))
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(
                 matcherRegistry -> matcherRegistry
                         .requestMatchers("/ui/**", "/api/auth/login").permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .anyRequest().authenticated())
-                .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(form -> form.loginPage("/ui/login").permitAll())
                 .logout(LogoutConfigurer::permitAll)
                 .exceptionHandling(handlingConfigurer -> handlingConfigurer
