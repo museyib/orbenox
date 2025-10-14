@@ -28,14 +28,24 @@ public class PermissionController {
         return ResponseEntity.ok(Response.successData(permissionService.getGrantablePermissionsForUser(userId, resourceId)));
     }
 
+    @PatchMapping("/user")
+    public ResponseEntity<Response<UserPermissionDto>>  updateUserPermissions(@RequestBody UserPermissionDto permissions) {
+        return ResponseEntity.ok(Response.successData(permissionService.updateUserPermissions(permissions)));
+    }
+
     @GetMapping("/role/{id}")
     public ResponseEntity<Response<RolePermissionDto>> findByRoleId(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(permissionService.getRolePermission(id)));
     }
 
-    @PatchMapping("/user")
-    public ResponseEntity<Response<UserPermissionDto>>  updateUserPermissions(@RequestBody UserPermissionDto permissions) {
-        return ResponseEntity.ok(Response.successData(permissionService.updateUserPermissions(permissions)));
+    @GetMapping("/availableForRole")
+    public ResponseEntity<Response<List<ActionDto>>> getAvailableForRole(@RequestParam Long roleId,
+                                                                         @RequestParam Long resourceId) {
+        return ResponseEntity.ok(Response.successData(permissionService.getGrantablePermissionsForRole(roleId, resourceId)));
+    }
 
+    @PatchMapping("/role")
+    public ResponseEntity<Response<UserPermissionDto>>  updateRolePermissions(@RequestBody RolePermissionDto permissions) {
+        return ResponseEntity.ok(Response.successData(permissionService.updateRolePermissions(permissions)));
     }
 }

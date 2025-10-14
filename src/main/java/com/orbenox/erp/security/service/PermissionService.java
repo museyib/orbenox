@@ -19,6 +19,7 @@ import com.orbenox.erp.security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,7 +58,16 @@ public class PermissionService {
         AppUser appUser = userRepository.findById(userId).orElseThrow();
         Resource resource = resourceRepository.findById(resourceId).orElseThrow();
         List<Action> givenPermissions = permissionRepository.findByAppUserAndResource(appUser, resource).stream().map(AppPermission::getAction).toList();
-        List<Action> allPermissions = new java.util.ArrayList<>(resource.getActions().stream().toList());
+        List<Action> allPermissions = new ArrayList<>(resource.getActions().stream().toList());
+        allPermissions.removeAll(givenPermissions);
+        return actionMapper.toDTOList(allPermissions);
+    }
+
+    public List<ActionDto> getGrantablePermissionsForRole(Long roleId, Long resourceId) {
+        AppRole appRole = roleRepository.findById(roleId).orElseThrow();
+        Resource resource = resourceRepository.findById(resourceId).orElseThrow();
+        List<Action> givenPermissions = permissionRepository.findByAppRoleAndResource(appRole, resource).stream().map(AppPermission::getAction).toList();
+        List<Action> allPermissions = new ArrayList<>(resource.getActions().stream().toList());
         allPermissions.removeAll(givenPermissions);
         return actionMapper.toDTOList(allPermissions);
     }
@@ -96,5 +106,41 @@ public class PermissionService {
         }
         List<AppPermission> updated = permissionRepository.findByAppUserId(userId);
         return permissionAggregator.toUserPermissionDto(dto.getUserId(), updated);
+    }
+
+    public UserPermissionDto updateRolePermissions(RolePermissionDto dto) {
+        Long roleId = dto.getRoleId();
+        List<AppPermission> existing = permissionRepository.findByAppRoleId(roleId);
+
+        Set<String> incomingCodes = dto.getPermissions().stream()
+                .map(PermissionDto::getPermissionCode)
+                .collect(Collectors.toSet());
+
+        Set<String> existingCodes = existing.stream().map(AppPermission::getPermissionCode).collect(Collectors.toSet());
+
+        Set<String> toAdd = new HashSet<>(incomingCodes);
+        toAdd.removeAll(existingCodes);
+
+        Set<String> toRemove = new HashSet<>(existingCodes);
+        toRemove.removeAll(incomingCodes);
+
+        if (!toRemove.isEmpty()) {
+            permissionRepository.deleteByAppRoleIdAndCodes(roleId, toRemove);
+        }
+
+        List<AppPermission> appPermissions = dto.getPermissions().stream()
+                .filter(p -> toAdd.contains(p.getPermissionCode()))
+                .map(p -> {
+                    AppPermission appPermission = new AppPermission();
+                    appPermission.setAppRole(roleRepository.findById(roleId).orElseThrow());
+                    appPermission.setResource(resourceRepository.findById(p.getResource().getId()).orElseThrow());
+                    appPermission.setAction(actionRepository.findById(p.getAction().getId()).orElseThrow());
+                    return appPermission;
+                }).collect(Collectors.toList());
+        if (!appPermissions.isEmpty()) {
+            permissionRepository.saveAll(appPermissions);
+        }
+        List<AppPermission> updated = permissionRepository.findByAppRoleId(roleId);
+        return permissionAggregator.toUserPermissionDto(roleId, updated);
     }
 }
