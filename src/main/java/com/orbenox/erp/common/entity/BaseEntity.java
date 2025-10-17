@@ -3,6 +3,7 @@ package com.orbenox.erp.common.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 
@@ -22,10 +23,12 @@ public abstract class BaseEntity {
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
+        this.createdBy = SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+        this.updatedBy = SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }
