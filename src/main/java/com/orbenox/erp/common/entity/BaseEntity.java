@@ -23,7 +23,11 @@ public abstract class BaseEntity {
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
-        this.createdBy = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = "system";
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            username = SecurityContextHolder.getContext().getAuthentication().getName();
+        }
+        this.createdBy = username;
     }
 
     @PreUpdate

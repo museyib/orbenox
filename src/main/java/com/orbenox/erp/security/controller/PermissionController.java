@@ -7,6 +7,7 @@ import com.orbenox.erp.security.dto.UserPermissionDto;
 import com.orbenox.erp.security.service.PermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 public class PermissionController {
     private final PermissionService permissionService;
 
+    @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
     @GetMapping("/user/{id}")
     public ResponseEntity<Response<UserPermissionDto>> findByUserId(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(permissionService.getUserPermission(id)));
