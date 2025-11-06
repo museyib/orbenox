@@ -16,6 +16,7 @@ public class AppUser extends BaseEntity {
     private String username;
     private String password;
     private String displayName;
+    private String language;
 
     @Enumerated(EnumType.STRING)
     private UserType userType;

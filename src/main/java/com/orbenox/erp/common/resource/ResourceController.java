@@ -1,6 +1,7 @@
 package com.orbenox.erp.common.resource;
 
 import com.orbenox.erp.common.Response;
+import com.orbenox.erp.localization.LocalizationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResourceController {
     private final ResourceService resourceService;
+    private final LocalizationService i18n;
 
     @PreAuthorize("hasPermission('RESOURCE', 'READ')")
     @GetMapping
@@ -42,6 +44,7 @@ public class ResourceController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Response<String>> deleted(@PathVariable Long id) {
         resourceService.delete(id);
-        return ResponseEntity.ok(Response.successMessage("Action deleted"));
+        var text = i18n.msg("resource.deleted", id);
+        return ResponseEntity.ok(Response.successMessage(text, "resource.deleted"));
     }
 }

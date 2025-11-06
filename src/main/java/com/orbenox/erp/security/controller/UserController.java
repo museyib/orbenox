@@ -1,6 +1,7 @@
 package com.orbenox.erp.security.controller;
 
 import com.orbenox.erp.common.Response;
+import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.security.dto.CreateUserRequest;
 import com.orbenox.erp.security.dto.UpdateUserRequest;
 import com.orbenox.erp.security.dto.UserDto;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final LocalizationService i18n;
 
     @PreAuthorize("hasPermission('APP_USER', 'READ')")
     @GetMapping
@@ -46,6 +48,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public Response<String> delete(@PathVariable Long id) {
         userService.delete(id);
-        return Response.successMessage("User deleted");
+        var text = i18n.msg("user.deleted", id);
+        return Response.successMessage(text, "user.deleted");
     }
 }

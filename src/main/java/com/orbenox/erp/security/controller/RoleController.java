@@ -1,6 +1,7 @@
 package com.orbenox.erp.security.controller;
 
 import com.orbenox.erp.common.Response;
+import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.security.dto.RoleDto;
 import com.orbenox.erp.security.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleController {
     private final RoleService roleService;
+    private final LocalizationService i18n;
 
     @PreAuthorize("hasPermission('APP_ROLE', 'READ')")
     @GetMapping
@@ -44,6 +46,7 @@ public class RoleController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Response<String>> delete(@PathVariable Long id) {
         roleService.delete(id);
-        return ResponseEntity.ok().body(Response.successMessage("Role deleted"));
+        var text = i18n.msg("role.deleted", id);
+        return ResponseEntity.ok().body(Response.successMessage(text, "role.deleted"));
     }
 }

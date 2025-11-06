@@ -12,9 +12,16 @@ public class Utilities {
         while (throwable.getCause() != null) {
             throwable = throwable.getCause();
         }
-        message = throwable.toString();
+        message = throwable.getMessage();
+        if (isEmpty(message)) {
+            message = throwable.toString();
+        }
 
         return message;
+    }
+
+    private static boolean isEmpty(String text) {
+        return  text == null || text.isEmpty();
     }
 
     public static void writeErrorResponse(HttpServletResponse response, int code, String message) throws IOException {

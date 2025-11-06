@@ -1,6 +1,8 @@
 package com.orbenox.erp.exception;
 
 import com.orbenox.erp.common.Response;
+import com.orbenox.erp.localization.LocalizationService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,39 +22,41 @@ import java.util.stream.Collectors;
 import static com.orbenox.erp.common.Utilities.getMessage;
 
 @ControllerAdvice
+@RequiredArgsConstructor
 @Slf4j
 public class GlobalExceptionHandler {
+    private final LocalizationService i18n;
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Response<String>> handleException(Exception e) {
         int code = HttpStatus.INTERNAL_SERVER_ERROR.value();
-        String message = getMessage(e);
+        String message = MessageFormat.format("{0}: {1}", i18n.msg("error.internal"), getMessage(e));
         log.error(message);
-        return ResponseEntity.status(code).body(Response.errorMessage(code, message));
+        return ResponseEntity.status(code).body(Response.errorMessage(code, message, "error.internal"));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Response<String>> handleException(AccessDeniedException e) {
         int code = HttpStatus.FORBIDDEN.value();
-        String message = getMessage(e);
+        String message = MessageFormat.format("{0}: {1}", i18n.msg("error.forbidden"), getMessage(e));
         log.error(message);
-        return ResponseEntity.status(code).body(Response.errorMessage(code, message));
+        return ResponseEntity.status(code).body(Response.errorMessage(code, message, "error.forbidden"));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Response<String>> handleException(BadCredentialsException e) {
         int code = HttpStatus.UNAUTHORIZED.value();
-        String message = getMessage(e);
+        String message = MessageFormat.format("{0}: {1}", i18n.msg("error.unauthorized"), getMessage(e));
         log.error(message);
-        return ResponseEntity.status(code).body(Response.errorMessage(code, message));
+        return ResponseEntity.status(code).body(Response.errorMessage(code, message, "error.unauthorized"));
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Response<String>> handleException(IllegalStateException e) {
         int code = HttpStatus.BAD_REQUEST.value();
-        String message = getMessage(e);
+        String message = MessageFormat.format("{0}: {1}", i18n.msg("error.validation"), getMessage(e));
         log.error(message);
-        return ResponseEntity.status(code).body(Response.errorMessage(code, message));
+        return ResponseEntity.status(code).body(Response.errorMessage(code, message, "error.validation"));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -63,16 +68,16 @@ public class GlobalExceptionHandler {
                         fe -> Optional.ofNullable(fe.getDefaultMessage()).orElse("Invalid value: " + fe.getRejectedValue()),
                         (a, b) -> a));
         int code = HttpStatus.BAD_REQUEST.value();
-        String message = getMessage(e);
+        String message = MessageFormat.format("{0}: {1}", i18n.msg("error.validation"), getMessage(e));
         log.error(message);
-        return ResponseEntity.status(code).body(Response.errorData(code, message, errors));
+        return ResponseEntity.status(code).body(Response.errorData(code, message, "error.validation", errors));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Response<String>> handleException(DataIntegrityViolationException e) {
         int code = HttpStatus.BAD_REQUEST.value();
-        String message = getMessage(e);
+        String message = MessageFormat.format("{0}: {1}", i18n.msg("error.validation"), getMessage(e));
         log.error(message);
-        return ResponseEntity.status(code).body(Response.errorMessage(code, message));
+        return ResponseEntity.status(code).body(Response.errorMessage(code, message, "error.validation"));
     }
 }
