@@ -24,28 +24,33 @@ public class PermissionController {
         return ResponseEntity.ok(Response.successData(permissionService.getUserPermission(id)));
     }
 
+    @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
     @GetMapping("/availableForUser")
     public ResponseEntity<Response<List<ActionDto>>> getAvailableForUser(@RequestParam Long userId,
                                                                          @RequestParam Long resourceId) {
         return ResponseEntity.ok(Response.successData(permissionService.getGrantablePermissionsForUser(userId, resourceId)));
     }
 
+    @PreAuthorize("hasPermission('APP_PERMISSION', 'UPDATE')")
     @PatchMapping("/user")
     public ResponseEntity<Response<UserPermissionDto>>  updateUserPermissions(@RequestBody UserPermissionDto permissions) {
         return ResponseEntity.ok(Response.successData(permissionService.updateUserPermissions(permissions)));
     }
 
+    @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
     @GetMapping("/role/{id}")
     public ResponseEntity<Response<RolePermissionDto>> findByRoleId(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(permissionService.getRolePermission(id)));
     }
 
+    @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
     @GetMapping("/availableForRole")
     public ResponseEntity<Response<List<ActionDto>>> getAvailableForRole(@RequestParam Long roleId,
                                                                          @RequestParam Long resourceId) {
         return ResponseEntity.ok(Response.successData(permissionService.getGrantablePermissionsForRole(roleId, resourceId)));
     }
 
+    @PreAuthorize("hasPermission('APP_PERMISSION', 'UPDATE')")
     @PatchMapping("/role")
     public ResponseEntity<Response<UserPermissionDto>>  updateRolePermissions(@RequestBody RolePermissionDto permissions) {
         return ResponseEntity.ok(Response.successData(permissionService.updateRolePermissions(permissions)));
