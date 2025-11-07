@@ -8,7 +8,7 @@ import java.io.Serializable;
  * DTO for {@link UnitOfMeasure}
  */
 @Value
-public class UnitOfMeasureDto implements Serializable {
+public class UnitDto implements Serializable {
     Long id;
     String code;
     String description;
