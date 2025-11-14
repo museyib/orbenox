@@ -1,4 +1,4 @@
-package com.orbenox.erp.unitofmeasure;
+package com.orbenox.erp.unit;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;

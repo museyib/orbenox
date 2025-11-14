@@ -24,7 +24,7 @@ public class RoleService {
     }
 
     public RoleDto save(RoleDto roleDTO) {
-        if (roleNameExists(roleDTO.getRoleName())) {
+        if (roleNameExists(roleDTO.roleName())) {
             throw new IllegalStateException("Role name already exists!");
         }
         AppRole appRole = roleMapper.toEntity(roleDTO);

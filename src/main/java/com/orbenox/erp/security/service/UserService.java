@@ -61,18 +61,18 @@ public class UserService {
         }
         userMapper.updateEntityFromDTO(request,appUser);
         Set<RoleDto> incomingRoles = request.getRoles();
-        Set<RoleDto> existingRoles = userMapper.toDTO(appUser).getRoles();
+        Set<RoleDto> existingRoles = userMapper.toDTO(appUser).roles();
         Set<RoleDto> toRemove = new HashSet<>(existingRoles);
         Set<RoleDto> toAdd = new HashSet<>(incomingRoles);
         toRemove.removeAll(incomingRoles);
         toAdd.removeAll(existingRoles);
-        appUserRoleRepository.deleteByAppUserIdAndAppRole(id, toRemove.stream().map(RoleDto::getId).collect(Collectors.toSet()));
+        appUserRoleRepository.deleteByAppUserIdAndAppRole(id, toRemove.stream().map(RoleDto::id).collect(Collectors.toSet()));
 
         List<AppUserRole> userRoles = request.getRoles().stream()
                 .filter(toAdd::contains)
                 .map(roleDto -> {
                     AppUserRole appUserRole = new AppUserRole();
-                    AppRole appRole = roleRepository.findById(roleDto.getId()).orElseThrow();
+                    AppRole appRole = roleRepository.findById(roleDto.id()).orElseThrow();
                     appUserRole.setAppUser(appUser);
                     appUserRole.setAppRole(appRole);
                     return appUserRole;
@@ -82,7 +82,7 @@ public class UserService {
 
         if (request.getRoles() != null) {
             Set<AppRole> roles = request.getRoles().stream()
-                    .map(roleDTO -> roleRepository.findById(roleDTO.getId())
+                    .map(roleDTO -> roleRepository.findById(roleDTO.id())
                             .orElseThrow())
                     .collect(Collectors.toSet());
             appUser.setRoles(roles);

@@ -1,1 +1,0 @@
-ALTER TABLE app_user ADD language VARCHAR(10)

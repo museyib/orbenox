@@ -1,8 +1,8 @@
-package com.orbenox.erp.unitofmeasure;
+package com.orbenox.erp.unit;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UnitRepository extends JpaRepository<UnitOfMeasure, Long> {
+public interface UnitRepository extends JpaRepository<Unit, Long> {
 }

@@ -1,14 +1,9 @@
 package com.orbenox.erp.common.action;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.io.Serializable;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ActionDto {
-    private Long id;
-    private String code;
-    private String description;
+/**
+ * DTO for {@link for Action}
+ */
+public record ActionDto(Long id, String code, String name) implements Serializable {
 }

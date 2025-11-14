@@ -12,8 +12,9 @@ import java.util.Set;
 @Setter
 @Entity
 public class Resource extends BaseEntity {
+    @Column(unique = true, nullable = false)
     private String code;
-    private String description;
+    private String name;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

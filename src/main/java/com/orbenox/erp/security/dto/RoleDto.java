@@ -1,18 +1,14 @@
 package com.orbenox.erp.security.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.orbenox.erp.security.entity.AppRole;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class RoleDto {
-    private Long id;
-    private String roleName;
-
+/**
+ * DTO for {@link AppRole}
+ */
+public record RoleDto(Long id, String roleName) implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

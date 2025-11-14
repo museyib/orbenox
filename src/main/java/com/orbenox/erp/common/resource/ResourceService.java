@@ -31,9 +31,9 @@ public class ResourceService {
     public ResourceDto update(Long id, ResourceDto dto) {
         Resource resource = resourceRepository.findById(id).orElseThrow();
         resourceMapper.updateEntityFromDto(dto, resource);
-        if (dto.getActions() != null) {
-            Set<Action> actions = dto.getActions().stream()
-                    .map(actionDto -> actionRepository.findById(actionDto.getId()).orElseThrow())
+        if (dto.actions() != null) {
+            Set<Action> actions = dto.actions().stream()
+                    .map(actionDto -> actionRepository.findById(actionDto.id()).orElseThrow())
                     .collect(Collectors.toSet());
             resource.setActions(actions);
         }

@@ -1,4 +1,4 @@
-package com.orbenox.erp.common.action;
+package com.orbenox.erp.unit;
 
 import com.orbenox.erp.common.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Action extends BaseEntity {
+public class UnitDimension extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String code;
     private String name;

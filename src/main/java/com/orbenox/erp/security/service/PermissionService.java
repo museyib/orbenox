@@ -97,8 +97,8 @@ public class PermissionService {
                 .map(p -> {
                     AppPermission appPermission = new AppPermission();
                     appPermission.setAppUser(userRepository.findById(userId).orElseThrow());
-                    appPermission.setResource(resourceRepository.findById(p.getResource().getId()).orElseThrow());
-                    appPermission.setAction(actionRepository.findById(p.getAction().getId()).orElseThrow());
+                    appPermission.setResource(resourceRepository.findById(p.resource().id()).orElseThrow());
+                    appPermission.setAction(actionRepository.findById(p.action().id()).orElseThrow());
                     return appPermission;
                 }).collect(Collectors.toList());
         if (!appPermissions.isEmpty()) {
@@ -133,8 +133,8 @@ public class PermissionService {
                 .map(p -> {
                     AppPermission appPermission = new AppPermission();
                     appPermission.setAppRole(roleRepository.findById(roleId).orElseThrow());
-                    appPermission.setResource(resourceRepository.findById(p.getResource().getId()).orElseThrow());
-                    appPermission.setAction(actionRepository.findById(p.getAction().getId()).orElseThrow());
+                    appPermission.setResource(resourceRepository.findById(p.resource().id()).orElseThrow());
+                    appPermission.setAction(actionRepository.findById(p.action().id()).orElseThrow());
                     return appPermission;
                 }).collect(Collectors.toList());
         if (!appPermissions.isEmpty()) {

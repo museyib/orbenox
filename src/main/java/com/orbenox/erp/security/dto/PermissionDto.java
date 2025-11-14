@@ -2,15 +2,15 @@ package com.orbenox.erp.security.dto;
 
 import com.orbenox.erp.common.action.ActionDto;
 import com.orbenox.erp.common.resource.ResourceDto;
-import lombok.Data;
+import com.orbenox.erp.security.entity.AppPermission;
 
-@Data
-public class PermissionDto {
-    private Long id;
-    private ResourceDto resource;
-    private ActionDto action;
+import java.io.Serializable;
 
+/**
+ * DTO for {@link AppPermission}
+ */
+public record PermissionDto(Long id, ResourceDto resource, ActionDto action) implements Serializable {
     public String getPermissionCode() {
-        return resource.getCode() + ":" + action.getCode();
+        return resource.code() + ":" + action.code();
     }
 }

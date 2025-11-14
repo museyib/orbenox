@@ -4,6 +4,7 @@ CREATE TABLE app_user (
     password VARCHAR(200) NOT NULL,
     display_name VARCHAR(200),
     user_type VARCHAR(100),
+    language VARCHAR(10),
     root boolean,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
@@ -29,7 +30,7 @@ CREATE TABLE app_user_role (
 CREATE TABLE resource (
     id BIGSERIAL PRIMARY KEY,
     code VARCHAR(100) UNIQUE NOT NULL,
-    description VARCHAR(255),
+    name VARCHAR(255),
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -39,7 +40,7 @@ CREATE TABLE resource (
 CREATE TABLE action (
     id BIGSERIAL PRIMARY KEY,
     code VARCHAR(100) UNIQUE NOT NULL,
-    description VARCHAR(255),
+    name VARCHAR(255),
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -68,3 +69,31 @@ create table resource_action (
     created_by VARCHAR(100),
     updated_by VARCHAR(100)
 );
+
+CREATE TABLE unit_dimension (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(255),
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100)
+);
+
+CREATE TABLE unit (
+    id BIGSERIAL PRIMARY KEY,
+    unit_dimension_id BIGINT NOT NULL REFERENCES unit_dimension(id),
+    code VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(255),
+    is_base BOOLEAN NOT NULL DEFAULT FALSE,
+    factor_to_base NUMERIC(20,10) NOT NULL,
+    offset_to_base NUMERIC(20,10) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100)
+);
+
+CREATE UNIQUE INDEX ux_unit_dimension_base
+    ON unit (unit_dimension_id)
+    WHERE is_base = true;

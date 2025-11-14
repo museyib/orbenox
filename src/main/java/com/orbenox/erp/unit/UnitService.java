@@ -1,4 +1,4 @@
-package com.orbenox.erp.unitofmeasure;
+package com.orbenox.erp.unit;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
