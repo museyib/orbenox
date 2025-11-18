@@ -15,6 +15,10 @@ public class UnitService {
         return unitMapper.toDtoList(unitRepository.findAll());
     }
 
+    public List<UnitDto> findAllByDimensionId(Long dimensionId) {
+        return unitMapper.toDtoList(unitRepository.findAllByUnitDimension_Id(dimensionId));
+    }
+
     public UnitDto findById(Long id) {
         return unitMapper.toDto(unitRepository.findById(id).orElseThrow());
     }

@@ -1,6 +1,7 @@
 package com.orbenox.erp.security.service;
 
-import com.orbenox.erp.exception.AlterAdminException;
+import com.orbenox.erp.exception.AlterRootException;
+import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.security.dto.CreateUserRequest;
 import com.orbenox.erp.security.dto.RoleDto;
 import com.orbenox.erp.security.dto.UpdateUserRequest;
@@ -31,6 +32,7 @@ public class UserService {
     private final AppUserRoleRepository  appUserRoleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final LocalizationService i18n;
 
     public List<UserDto> findAll() {
         return userMapper.toDTOList(userRepository.findByRoot((false)));
@@ -57,7 +59,7 @@ public class UserService {
         AppUser appUser = userRepository.findById(id).orElseThrow();
         if (appUser.isRoot()) {
             if (request.getUserType().equals(ADMIN.name()))
-                throw new AlterAdminException("Changing user type of root user  is not allowed!");
+                throw new AlterRootException(i18n.msg("error.alterRoot"));
         }
         userMapper.updateEntityFromDTO(request,appUser);
         Set<RoleDto> incomingRoles = request.getRoles();
@@ -93,7 +95,7 @@ public class UserService {
     public void delete(Long id) {
         AppUser appUser = userRepository.findById(id).orElseThrow();
         if (appUser.getUsername().equals("admin")) {
-            throw new AlterAdminException("Deleting root user is not allowed!");
+            throw new AlterRootException(i18n.msg("error.deleteRoot"));
         }
         userRepository.deleteById(id);
     }

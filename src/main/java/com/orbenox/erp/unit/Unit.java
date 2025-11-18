@@ -22,7 +22,7 @@ public class Unit extends BaseEntity {
     private UnitDimension unitDimension;
 
     @Column(nullable = false)
-    private boolean isBase;
+    private Boolean isBase;
 
     @Column(nullable = false, precision = 20, scale = 10)
     private BigDecimal factorToBase;

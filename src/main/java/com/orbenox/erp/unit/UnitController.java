@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -13,6 +14,7 @@ import java.util.List;
 @RequestMapping("/api/units")
 public class UnitController {
     private final UnitService unitService;
+    private final UnitConverterService unitConverterService;
     private final LocalizationService i18n;
 
     @GetMapping
@@ -23,6 +25,11 @@ public class UnitController {
     @GetMapping("/{id}")
     public ResponseEntity<Response<UnitDto>> findById(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(unitService.findById(id)));
+    }
+
+    @GetMapping("/byDimension/{dimensionId}")
+    public ResponseEntity<Response<List<UnitDto>>> getAllByDimensionId(@PathVariable Long dimensionId) {
+        return ResponseEntity.ok(Response.successData(unitService.findAllByDimensionId(dimensionId)));
     }
 
     @PostMapping
@@ -41,5 +48,14 @@ public class UnitController {
         unitService.deleteById(id);
         var text = i18n.msg("uom.deleted", id);
         return ResponseEntity.ok(Response.successMessage(text, "uom deleted"));
+    }
+
+    @PostMapping("/convert")
+    public ResponseEntity<Response<BigDecimal>> convert(@RequestBody UnitConversionRequest request) {
+        return ResponseEntity.ok(Response.successData(unitConverterService.convert(
+                request.getValue(),
+                request.getFrom(),
+                request.getTo()
+        )));
     }
 }
