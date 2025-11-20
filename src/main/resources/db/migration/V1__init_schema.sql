@@ -93,7 +93,114 @@ CREATE TABLE unit (
     created_by VARCHAR(100),
     updated_by VARCHAR(100)
 );
-
 CREATE UNIQUE INDEX ux_unit_dimension_base
     ON unit (unit_dimension_id)
     WHERE is_base = true;
+
+
+
+CREATE TABLE currency (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(255),
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
+    enabled BOOLEAN,
+    deleted BOOLEAN
+);
+
+CREATE TABLE brand (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(255),
+    description VARCHAR(1000),
+    logo_url VARCHAR(200),
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
+    enabled BOOLEAN,
+    deleted BOOLEAN
+);
+
+CREATE TABLE category (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(255),
+    description VARCHAR(1000),
+    parent_id BIGINT REFERENCES category(id),
+    slug VARCHAR(100),
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
+    enabled BOOLEAN,
+    deleted BOOLEAN
+);
+
+CREATE TABLE producer (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(255),
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
+    enabled BOOLEAN,
+    deleted BOOLEAN
+);
+
+CREATE TABLE price (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(255),
+    currency_id BIGINT NOT NULL REFERENCES currency(id),
+    parent_id BIGINT REFERENCES price(id),
+    factor_to_parent NUMERIC(20,10) NOT NULL,
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
+    enabled BOOLEAN,
+    deleted BOOLEAN
+);
+
+CREATE TABLE product (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(255),
+    description VARCHAR(2000),
+    brand_id BIGINT REFERENCES brand(id),
+    category_id BIGINT REFERENCES category(id),
+    producer_id BIGINT REFERENCES producer(id),
+    default_unit_id BIGINT REFERENCES unit(id),
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
+    enabled BOOLEAN,
+    deleted BOOLEAN
+);
+
+CREATE TABLE warehouse (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(255),
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
+    enabled BOOLEAN,
+    deleted BOOLEAN
+);
+
+
+
+CREATE TABLE product_price (
+    product_id BIGINT NOT NULL REFERENCES product(id),
+    price_id BIGINT NOT NULL REFERENCES price(id),
+    unit_id BIGINT NOT NULL REFERENCES unit(id),
+    PRIMARY KEY (product_id, price_id, unit_id)
+);
