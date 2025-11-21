@@ -11,7 +11,9 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<AppUser, Long> {
     Optional<AppUser> findByUsername(String username);
 
-    List<AppUser> findByRoot(boolean root);
+    List<AppUser> findByRootAndDeleted(boolean root, Boolean deleted);
 
-    Optional<AppUser> findByIdAndRoot(Long id, boolean root);
+    Optional<AppUser> findByIdAndRootAndDeleted(Long id, boolean root, Boolean deleted);
+
+    AppUser findByIdAndDeleted(Long id, Boolean deleted);
 }

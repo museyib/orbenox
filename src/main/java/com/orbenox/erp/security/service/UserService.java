@@ -35,11 +35,11 @@ public class UserService {
     private final LocalizationService i18n;
 
     public List<UserDto> findAll() {
-        return userMapper.toDTOList(userRepository.findByRoot((false)));
+        return userMapper.toDTOList(userRepository.findByRootAndDeleted(false, false));
     }
 
     public UserDto findById(Long id) {
-        return userMapper.toDTO(userRepository.findByIdAndRoot(id, false).orElseThrow());
+        return userMapper.toDTO(userRepository.findByIdAndRootAndDeleted(id, false, false).orElseThrow());
     }
 
     public AppUser findByUsername(String username) {
@@ -47,16 +47,13 @@ public class UserService {
     }
 
     public UserDto create(CreateUserRequest request) {
-        if (usernameExists(request.getUsername())) {
-            throw new IllegalStateException("Username already exists!");
-        }
         AppUser appUser = userMapper.toEntity(request);
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         return userMapper.toDTO(userRepository.save(appUser));
     }
 
     public UserDto update(Long id, UpdateUserRequest request) {
-        AppUser appUser = userRepository.findById(id).orElseThrow();
+        AppUser appUser = userRepository.findByIdAndDeleted(id, false);
         if (appUser.isRoot()) {
             if (request.getUserType().equals(ADMIN.name()))
                 throw new AlterRootException(i18n.msg("error.alterRoot"));
@@ -74,7 +71,7 @@ public class UserService {
                 .filter(toAdd::contains)
                 .map(roleDto -> {
                     AppUserRole appUserRole = new AppUserRole();
-                    AppRole appRole = roleRepository.findById(roleDto.id()).orElseThrow();
+                    AppRole appRole = roleRepository.findByIdAndDeleted(roleDto.id(), false);
                     appUserRole.setAppUser(appUser);
                     appUserRole.setAppRole(appRole);
                     return appUserRole;
@@ -84,8 +81,7 @@ public class UserService {
 
         if (request.getRoles() != null) {
             Set<AppRole> roles = request.getRoles().stream()
-                    .map(roleDTO -> roleRepository.findById(roleDTO.id())
-                            .orElseThrow())
+                    .map(roleDTO -> roleRepository.findByIdAndDeleted(roleDTO.id(), false))
                     .collect(Collectors.toSet());
             appUser.setRoles(roles);
         }
@@ -93,14 +89,13 @@ public class UserService {
     }
 
     public void delete(Long id) {
-        AppUser appUser = userRepository.findById(id).orElseThrow();
+        AppUser appUser = userRepository.findByIdAndDeleted(id, false);
         if (appUser.getUsername().equals("admin")) {
             throw new AlterRootException(i18n.msg("error.deleteRoot"));
         }
-        userRepository.deleteById(id);
-    }
-
-    public boolean usernameExists(String username) {
-        return userRepository.findByUsername(username).isPresent();
+        appUser.setDeleted(true);
+        AppUser deleted = userRepository.save(appUser);
+        if (!deleted.getDeleted())
+            throw new IllegalStateException(i18n.msg("error.internal"));
     }
 }

@@ -1,6 +1,6 @@
 package com.orbenox.erp.warehouse;
 
-import com.orbenox.erp.common.entity.BaseEntity;
+import com.orbenox.erp.common.entity.BaseCardEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Warehouse extends BaseEntity {
+public class Warehouse extends BaseCardEntity {
 
     @Column(unique = true, nullable = false)
     private String code;

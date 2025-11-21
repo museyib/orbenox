@@ -16,10 +16,6 @@ import java.util.Set;
 
 @Repository
 public interface PermissionRepository extends JpaRepository<AppPermission,Long> {
-    List<AppPermission> findByAppUser(AppUser appUser);
-    List<AppPermission> findByAppRole(AppRole appRole);
-    List<AppPermission> findByAppUserAndResource(AppUser appUser, Resource resource);
-
     @Modifying
     @Transactional
     @Query("DELETE FROM AppPermission p WHERE p.appUser.id = :userId AND CONCAT(p.resource.code, ':', p.action.code) IN :codes")
@@ -30,9 +26,15 @@ public interface PermissionRepository extends JpaRepository<AppPermission,Long> 
     @Query("DELETE FROM AppPermission p WHERE p.appRole.id = :roleId AND CONCAT(p.resource.code, ':', p.action.code) IN :codes")
     void deleteByAppRoleIdAndCodes(@Param("roleId") Long  roleId, @Param("codes") Set<String> codes);
 
-    List<AppPermission> findByAppUserId(Long appUserId);
+    List<AppPermission> findByAppUserAndDeleted(AppUser appUser, Boolean deleted);
 
-    List<AppPermission> findByAppRoleAndResource(AppRole appRole, Resource resource);
+    List<AppPermission> findByAppRoleAndDeleted(AppRole appRole, Boolean deleted);
 
-    List<AppPermission> findByAppRoleId(Long appRoleId);
+    List<AppPermission> findByAppUserAndResourceAndDeleted(AppUser appUser, Resource resource, Boolean deleted);
+
+    List<AppPermission> findByAppRoleAndResourceAndDeleted(AppRole appRole, Resource resource, Boolean deleted);
+
+    List<AppPermission> findByAppUserIdAndDeleted(Long appUserId, Boolean deleted);
+
+    List<AppPermission> findByAppRoleIdAndDeleted(Long appRoleId, Boolean deleted);
 }

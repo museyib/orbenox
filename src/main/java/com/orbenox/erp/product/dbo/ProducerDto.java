@@ -7,5 +7,5 @@ import java.io.Serializable;
 /**
  * DTO for {@link Producer}
  */
-public record ProducerDto(Long id, String code, String name, Boolean active) implements Serializable {
+public record ProducerDto(Long id, String code, String name, Boolean enabled) implements Serializable {
 }

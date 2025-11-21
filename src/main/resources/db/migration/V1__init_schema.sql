@@ -9,7 +9,9 @@ CREATE TABLE app_user (
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
-    updated_by VARCHAR(100)
+    updated_by VARCHAR(100),
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE app_role (
@@ -18,7 +20,9 @@ CREATE TABLE app_role (
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
-    updated_by VARCHAR(100)
+    updated_by VARCHAR(100),
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE app_user_role (
@@ -34,7 +38,9 @@ CREATE TABLE resource (
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
-    updated_by VARCHAR(100)
+    updated_by VARCHAR(100),
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE action (
@@ -44,7 +50,9 @@ CREATE TABLE action (
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
-    updated_by VARCHAR(100)
+    updated_by VARCHAR(100),
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE app_permission (
@@ -56,7 +64,9 @@ CREATE TABLE app_permission (
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
-    updated_by VARCHAR(100)
+    updated_by VARCHAR(100),
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 create table resource_action (
@@ -67,7 +77,9 @@ create table resource_action (
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
-    updated_by VARCHAR(100)
+    updated_by VARCHAR(100),
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE unit_dimension (
@@ -77,7 +89,9 @@ CREATE TABLE unit_dimension (
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
-    updated_by VARCHAR(100)
+    updated_by VARCHAR(100),
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE unit (
@@ -91,7 +105,9 @@ CREATE TABLE unit (
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
-    updated_by VARCHAR(100)
+    updated_by VARCHAR(100),
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_unit_dimension_base
     ON unit (unit_dimension_id)

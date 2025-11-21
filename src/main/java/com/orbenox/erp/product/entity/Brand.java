@@ -1,6 +1,6 @@
 package com.orbenox.erp.product.entity;
 
-import com.orbenox.erp.common.entity.BaseEntity;
+import com.orbenox.erp.common.entity.BaseCardEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Brand extends BaseEntity {
+public class Brand extends BaseCardEntity {
 
     @Column(unique = true, nullable = false)
     private String code;
@@ -20,8 +20,4 @@ public class Brand extends BaseEntity {
     private String description;
 
     private String logoUrl;
-
-    private Boolean enabled;
-
-    private Boolean deleted;
 }

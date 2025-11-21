@@ -45,7 +45,7 @@ public class RoleController {
     @PreAuthorize("hasPermission('APP_ROLE', 'DELETE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Response<String>> delete(@PathVariable Long id) {
-        roleService.delete(id);
+        roleService.softDelete(id);
         var text = i18n.msg("role.deleted", id);
         return ResponseEntity.ok().body(Response.successMessage(text, "role.deleted"));
     }

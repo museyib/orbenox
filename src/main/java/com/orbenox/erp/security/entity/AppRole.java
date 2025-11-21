@@ -1,6 +1,6 @@
 package com.orbenox.erp.security.entity;
 
-import com.orbenox.erp.common.entity.BaseEntity;
+import com.orbenox.erp.common.entity.BaseCardEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class AppRole extends BaseEntity {
+public class AppRole extends BaseCardEntity {
     private String roleName;
 }

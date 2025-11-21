@@ -12,6 +12,6 @@ public class ActionService {
     private final ActionMapper actionMapper;
 
     public List<ActionDto> findAll() {
-        return actionMapper.toDTOList(actionRepository.findAll());
+        return actionMapper.toDTOList(actionRepository.findAllByDeleted(false));
     }
 }

@@ -27,6 +27,8 @@ public class OrbenoxApplication {
                 admin.setUserType(UserType.ADMIN);
                 admin.setRoot(true);
                 admin.setCreatedBy("system");
+                admin.setEnabled(true);
+                admin.setDeleted(false);
                 userRepository.save(admin);
             }
         };

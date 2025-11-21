@@ -8,5 +8,5 @@ import java.io.Serializable;
  * DTO for {@link Category}
  */
 public record CategoryDto(Long id, String code, String name, String description, String slug, CategoryDto parent,
-                          Boolean active) implements Serializable {
+                          Boolean enabled) implements Serializable {
 }

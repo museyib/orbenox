@@ -5,11 +5,15 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.MappedSuperclass;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-public abstract class BaseTransactionEntity {
+@Getter
+@Setter
+public abstract class BaseTransactionEntity extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime documentDate;
 

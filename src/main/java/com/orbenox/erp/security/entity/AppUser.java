@@ -1,6 +1,6 @@
 package com.orbenox.erp.security.entity;
 
-import com.orbenox.erp.common.entity.BaseEntity;
+import com.orbenox.erp.common.entity.BaseCardEntity;
 import com.orbenox.erp.security.enums.UserType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-public class AppUser extends BaseEntity {
+public class AppUser extends BaseCardEntity {
     private String username;
     private String password;
     private String displayName;

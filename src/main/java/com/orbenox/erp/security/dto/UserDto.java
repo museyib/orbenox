@@ -12,7 +12,7 @@ import java.util.Set;
  */
 
 public record UserDto(Long id, String username, String displayName, UserType userType,
-                      Set<RoleDto> roles) implements Serializable {
+                      Set<RoleDto> roles, Boolean enabled) implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

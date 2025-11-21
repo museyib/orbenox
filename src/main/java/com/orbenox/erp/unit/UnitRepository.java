@@ -7,5 +7,7 @@ import java.util.List;
 
 @Repository
 public interface UnitRepository extends JpaRepository<Unit, Long> {
-    List<Unit> findAllByUnitDimension_Id(Long unitDimensionId);
+    Unit findByIdAndDeleted(Long id, Boolean deleted);
+
+    List<Unit> findAllByUnitDimensionIdAndDeleted(Long unitDimensionId, Boolean deleted);
 }

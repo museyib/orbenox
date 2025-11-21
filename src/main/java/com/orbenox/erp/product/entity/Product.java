@@ -1,6 +1,6 @@
 package com.orbenox.erp.product.entity;
 
-import com.orbenox.erp.common.entity.BaseEntity;
+import com.orbenox.erp.common.entity.BaseCardEntity;
 import com.orbenox.erp.unit.Unit;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-public class Product extends BaseEntity {
+public class Product extends BaseCardEntity {
 
     @Column(unique = true, nullable = false)
     private String code;
@@ -32,10 +32,6 @@ public class Product extends BaseEntity {
 
     @ManyToOne
     private Unit defaultUnit;
-
-    private Boolean enabled;
-
-    private Boolean deleted;
 
     @ManyToMany
     @JoinTable(
