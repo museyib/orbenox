@@ -1,4 +1,4 @@
-package com.orbenox.erp.product.dbo;
+package com.orbenox.erp.product.dto;
 
 import com.orbenox.erp.product.entity.Category;
 

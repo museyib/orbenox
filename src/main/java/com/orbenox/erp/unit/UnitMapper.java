@@ -7,8 +7,8 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", uses = UnitDimensionMapper.class)
 public interface UnitMapper {
-    UnitDto toDto(Unit unit);
-    Unit toEntity(UnitDto unitDto);
-    List<UnitDto>  toDtoList(List<Unit> unitList);
-    void updateEntityFromDto(UnitDto unitDto, @MappingTarget Unit unit);
+    UnitDto toDto(Unit entity);
+    Unit toEntity(UnitDto dto);
+    List<UnitDto>  toDtoList(List<Unit> entityList);
+    void updateEntityFromDto(UnitDto dto, @MappingTarget Unit entity);
 }

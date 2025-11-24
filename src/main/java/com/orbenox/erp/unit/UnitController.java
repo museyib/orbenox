@@ -46,8 +46,8 @@ public class UnitController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Response<String>> delete(@PathVariable Long id) {
         unitService.softDelete(id);
-        var text = i18n.msg("uom.deleted", id);
-        return ResponseEntity.ok(Response.successMessage(text, "uom deleted"));
+        var text = i18n.msg("unit.deleted", id);
+        return ResponseEntity.ok(Response.successMessage(text, "uom.deleted"));
     }
 
     @PostMapping("/convert")

@@ -1,10 +1,14 @@
 package com.orbenox.erp.product.entity;
 
 import com.orbenox.erp.common.entity.BaseCardEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -20,4 +24,7 @@ public class Brand extends BaseCardEntity {
     private String description;
 
     private String logoUrl;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "brand")
+    private Set<Product> products;
 }

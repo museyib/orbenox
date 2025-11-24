@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @Entity
@@ -27,5 +29,13 @@ public class ProductPrice {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "unit_id", nullable = false)
     private Unit unit;
+
+    @Column(name = "price", nullable = false)
+    private BigDecimal priceValue;
+
+    private BigDecimal factorToBase;
+
+    private Boolean fixedPrice;
+
 
 }

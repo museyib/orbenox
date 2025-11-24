@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -26,4 +27,12 @@ public class Price extends BaseCardEntity {
     private Price parent;
 
     private BigDecimal factorToParent;
+
+    @ManyToMany
+    @JoinTable(
+            name = "product_price",
+            joinColumns = @JoinColumn(name = "price_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private Set<ProductPrice> products;
 }

@@ -39,5 +39,5 @@ public class Product extends BaseCardEntity {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "price_id")
     )
-    private Set<Price> prices;
+    private Set<ProductPrice> prices;
 }
