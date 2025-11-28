@@ -1,7 +1,6 @@
 package com.orbenox.erp.security.repository;
 
 import com.orbenox.erp.security.entity.AppUserRole;
-import com.orbenox.erp.security.entity.AppUserRoleId;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -10,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Set;
 
-public interface AppUserRoleRepository extends JpaRepository<AppUserRole, AppUserRoleId> {
+public interface AppUserRoleRepository extends JpaRepository<AppUserRole, Long> {
 
     @Modifying
     @Transactional

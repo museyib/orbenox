@@ -9,5 +9,5 @@ import java.io.Serializable;
  * DTO for {@link Product}
  */
 public record ProductDto(Long id, Boolean enabled, String code, String name, String description, BrandDto brand,
-                         CategoryDto category, ProducerDto producer, UnitDto defaultUnit) implements Serializable {
+                         ProductGroupDto category, ProducerDto producer, UnitDto defaultUnit) implements Serializable {
 }

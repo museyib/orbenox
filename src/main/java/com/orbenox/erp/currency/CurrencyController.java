@@ -26,14 +26,14 @@ public class CurrencyController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<CurrencyDto>> create(@RequestBody CurrencyDto currencyDto) {
-        return ResponseEntity.ok(Response.successData(currencyService.create(currencyDto)));
+    public ResponseEntity<Response<CurrencyDto>> create(@RequestBody CurrencyDto dto) {
+        return ResponseEntity.ok(Response.successData(currencyService.create(dto)));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Response<CurrencyDto>> update(@PathVariable Long id,
-                                                        @RequestBody CurrencyDto currencyDto) {
-        return ResponseEntity.ok(Response.successData(currencyService.update(id, currencyDto)));
+                                                        @RequestBody CurrencyDto dto) {
+        return ResponseEntity.ok(Response.successData(currencyService.update(id, dto)));
     }
 
     @DeleteMapping("/{id}")

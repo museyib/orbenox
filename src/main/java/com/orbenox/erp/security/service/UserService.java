@@ -35,11 +35,11 @@ public class UserService {
     private final LocalizationService i18n;
 
     public List<UserDto> findAll() {
-        return userMapper.toDTOList(userRepository.findByRootAndDeleted(false, false));
+        return userMapper.toDTOList(userRepository.findByRootFalseAndDeletedFalse());
     }
 
     public UserDto findById(Long id) {
-        return userMapper.toDTO(userRepository.findByIdAndRootAndDeleted(id, false, false).orElseThrow());
+        return userMapper.toDTO(userRepository.findByIdAndRootFalseAndDeletedFalse(id).orElseThrow());
     }
 
     public AppUser findByUsername(String username) {
@@ -53,7 +53,7 @@ public class UserService {
     }
 
     public UserDto update(Long id, UpdateUserRequest request) {
-        AppUser appUser = userRepository.findByIdAndDeleted(id, false);
+        AppUser appUser = userRepository.findByIdAndDeletedFalse(id);
         if (appUser.isRoot()) {
             if (request.getUserType().equals(ADMIN.name()))
                 throw new AlterRootException(i18n.msg("error.alterRoot"));
@@ -71,7 +71,7 @@ public class UserService {
                 .filter(toAdd::contains)
                 .map(roleDto -> {
                     AppUserRole appUserRole = new AppUserRole();
-                    AppRole appRole = roleRepository.findByIdAndDeleted(roleDto.id(), false);
+                    AppRole appRole = roleRepository.findByIdAndDeletedFalse(roleDto.id());
                     appUserRole.setAppUser(appUser);
                     appUserRole.setAppRole(appRole);
                     return appUserRole;
@@ -81,7 +81,7 @@ public class UserService {
 
         if (request.getRoles() != null) {
             Set<AppRole> roles = request.getRoles().stream()
-                    .map(roleDTO -> roleRepository.findByIdAndDeleted(roleDTO.id(), false))
+                    .map(roleDTO -> roleRepository.findByIdAndDeletedFalse(roleDTO.id()))
                     .collect(Collectors.toSet());
             appUser.setRoles(roles);
         }
@@ -89,7 +89,7 @@ public class UserService {
     }
 
     public void delete(Long id) {
-        AppUser appUser = userRepository.findByIdAndDeleted(id, false);
+        AppUser appUser = userRepository.findByIdAndDeletedFalse(id);
         if (appUser.getUsername().equals("admin")) {
             throw new AlterRootException(i18n.msg("error.deleteRoot"));
         }

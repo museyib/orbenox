@@ -1,5 +1,6 @@
 package com.orbenox.erp.security.entity;
 
+import com.orbenox.erp.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,19 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "app_user_role")
-public class AppUserRole {
-    @EmbeddedId
-    private AppUserRoleId id;
-
-    @MapsId("appUserId")
+public class AppUserRole extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "app_user_id", nullable = false)
     private AppUser appUser;
 
-    @MapsId("appRoleId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "app_role_id", nullable = false)
     private AppRole appRole;
-
 }

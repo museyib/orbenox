@@ -11,8 +11,8 @@ import java.util.Set;
  * DTO for {@link AppUser}
  */
 
-public record UserDto(Long id, String username, String displayName, UserType userType,
-                      Set<RoleDto> roles, Boolean enabled) implements Serializable {
+public record UserDto(Long id, Boolean enabled, String username, String displayName, UserType userType,
+                      Set<RoleDto> roles) implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

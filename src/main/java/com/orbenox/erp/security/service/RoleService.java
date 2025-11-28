@@ -16,11 +16,11 @@ public class RoleService {
     private final RoleMapper roleMapper;
 
     public List<RoleDto> findAll() {
-        return roleMapper.toDTOList(roleRepository.findAllByDeleted(false));
+        return roleMapper.toDTOList(roleRepository.findAllByDeletedFalse());
     }
 
     public RoleDto findById(Long id) {
-        return roleMapper.toDTO(roleRepository.findByIdAndDeleted(id, false));
+        return roleMapper.toDTO(roleRepository.findByIdAndDeletedFalse(id));
     }
 
     public RoleDto save(RoleDto roleDTO) {
@@ -29,13 +29,13 @@ public class RoleService {
     }
 
     public RoleDto update(Long id, RoleDto request) {
-        AppRole appRole = roleRepository.findByIdAndDeleted(id, false);
+        AppRole appRole = roleRepository.findByIdAndDeletedFalse(id);
         roleMapper.updateEntityFromDTO(request, appRole);
         return roleMapper.toDTO(roleRepository.save(appRole));
     }
 
     public void softDelete(Long id) {
-        AppRole appRole = roleRepository.findByIdAndDeleted(id, false);
+        AppRole appRole = roleRepository.findByIdAndDeletedFalse(id);
         appRole.setDeleted(true);
         AppRole saved = roleRepository.save(appRole);
         if (!saved.isDeleted()) {

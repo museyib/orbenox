@@ -1,0 +1,47 @@
+package com.orbenox.erp.product.controller;
+
+import com.orbenox.erp.common.Response;
+import com.orbenox.erp.localization.LocalizationService;
+import com.orbenox.erp.product.dto.ProductClassDto;
+import com.orbenox.erp.product.service.ProductClassService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/productClasses")
+public class ProductClassController {
+    private final ProductClassService productClassService;
+    private final LocalizationService i18n;
+
+    @GetMapping
+    public ResponseEntity<Response<List<ProductClassDto>>> getAll() {
+        return ResponseEntity.ok(Response.successData(productClassService.findAll()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Response<ProductClassDto>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(Response.successData(productClassService.findById(id)));
+    }
+
+    @PostMapping
+    public ResponseEntity<Response<ProductClassDto>> create(@RequestBody ProductClassDto dto) {
+        return ResponseEntity.ok(Response.successData(productClassService.create(dto)));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Response<ProductClassDto>> update(@PathVariable Long id,
+                                                        @RequestBody ProductClassDto dto) {
+        return ResponseEntity.ok(Response.successData(productClassService.update(id, dto)));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Response<String>> delete(@PathVariable Long id) {
+        productClassService.softDelete(id);
+        var text = i18n.msg("productClass.deleted", id);
+        return ResponseEntity.ok(Response.successMessage(text, "productClass.deleted"));
+    }
+}

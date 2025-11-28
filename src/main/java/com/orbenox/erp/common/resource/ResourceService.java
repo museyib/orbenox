@@ -17,11 +17,11 @@ public class ResourceService {
     private final ActionRepository actionRepository;
 
     public List<ResourceDto> findAll() {
-        return resourceMapper.toDTOList(resourceRepository.findAllByDeleted(false));
+        return resourceMapper.toDTOList(resourceRepository.findAllByDeletedFalse());
     }
 
     public ResourceDto findById(Long id) {
-        return resourceMapper.toDto(resourceRepository.findByIdAndDeleted(id, false));
+        return resourceMapper.toDto(resourceRepository.findByIdAndDeletedFalse(id));
     }
 
     public ResourceDto create(ResourceDto dto) {
@@ -29,11 +29,11 @@ public class ResourceService {
     }
 
     public ResourceDto update(Long id, ResourceDto dto) {
-        Resource resource = resourceRepository.findByIdAndDeleted(id, false);
+        Resource resource = resourceRepository.findByIdAndDeletedFalse(id);
         resourceMapper.updateEntityFromDto(dto, resource);
         if (dto.actions() != null) {
             Set<Action> actions = dto.actions().stream()
-                    .map(actionDto -> actionRepository.findByIdAndDeleted(actionDto.id(), false))
+                    .map(actionDto -> actionRepository.findByIdAndDeletedFalse(actionDto.id()))
                     .collect(Collectors.toSet());
             resource.setActions(actions);
         }

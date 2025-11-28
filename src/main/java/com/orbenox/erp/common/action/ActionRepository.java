@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ActionRepository extends JpaRepository<Action, Long> {
-    List<Action> findAllByDeleted(Boolean deleted);
+    List<Action> findAllByDeletedFalse();
 
-    Action findByIdAndDeleted(Long id, Boolean deleted);
+    Action findByIdAndDeletedFalse(Long id);
 }

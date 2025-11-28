@@ -38,7 +38,7 @@ public class PermissionService {
     private final ActionMapper actionMapper;
 
     public UserPermissionDto getUserPermission(Long userId) {
-        AppUser appUser = userRepository.findByIdAndDeleted(userId, false);
+        AppUser appUser = userRepository.findByIdAndDeletedFalse(userId);
         List<AppPermission> direct = permissionRepository.findByAppUserAndDeleted(appUser, false);
         List<AppPermission> viaRoles = appUser.getRoles()
                 .stream()
@@ -49,14 +49,14 @@ public class PermissionService {
     }
 
     public RolePermissionDto getRolePermission(Long roleId) {
-        AppRole appRole = roleRepository.findByIdAndDeleted(roleId, false);
+        AppRole appRole = roleRepository.findByIdAndDeletedFalse(roleId);
         List<AppPermission> permissions = permissionRepository.findByAppRoleAndDeleted(appRole, false);
         return permissionAggregator.toRolePermissionDto(appRole.getId(), permissions);
     }
 
     public List<ActionDto> getGrantablePermissionsForUser(Long userId, Long resourceId) {
-        AppUser appUser = userRepository.findByIdAndDeleted(userId, false);
-        Resource resource = resourceRepository.findByIdAndDeleted(resourceId, false);
+        AppUser appUser = userRepository.findByIdAndDeletedFalse(userId);
+        Resource resource = resourceRepository.findByIdAndDeletedFalse(resourceId);
         List<Action> givenPermissions = permissionRepository.findByAppUserAndResourceAndDeleted(appUser, resource, false)
                 .stream().map(AppPermission::getAction).toList();
         List<Action> allPermissions = new ArrayList<>(resource.getActions().stream().toList());
@@ -65,8 +65,8 @@ public class PermissionService {
     }
 
     public List<ActionDto> getGrantablePermissionsForRole(Long roleId, Long resourceId) {
-        AppRole appRole = roleRepository.findByIdAndDeleted(roleId, false);
-        Resource resource = resourceRepository.findByIdAndDeleted(resourceId, false);
+        AppRole appRole = roleRepository.findByIdAndDeletedFalse(roleId);
+        Resource resource = resourceRepository.findByIdAndDeletedFalse(resourceId);
         List<Action> givenPermissions = permissionRepository.findByAppRoleAndResourceAndDeleted(appRole, resource, false)
                 .stream().map(AppPermission::getAction).toList();
         List<Action> allPermissions = new ArrayList<>(resource.getActions().stream().toList());
@@ -98,9 +98,9 @@ public class PermissionService {
                 .filter(p -> toAdd.contains(p.getPermissionCode()))
                 .map(p -> {
                     AppPermission appPermission = new AppPermission();
-                    appPermission.setAppUser(userRepository.findByIdAndDeleted(userId, false));
-                    appPermission.setResource(resourceRepository.findByIdAndDeleted(p.resource().id(), false));
-                    appPermission.setAction(actionRepository.findByIdAndDeleted(p.action().id(), false));
+                    appPermission.setAppUser(userRepository.findByIdAndDeletedFalse(userId));
+                    appPermission.setResource(resourceRepository.findByIdAndDeletedFalse(p.resource().id()));
+                    appPermission.setAction(actionRepository.findByIdAndDeletedFalse(p.action().id()));
                     return appPermission;
                 }).collect(Collectors.toList());
         if (!appPermissions.isEmpty()) {
@@ -134,9 +134,9 @@ public class PermissionService {
                 .filter(p -> toAdd.contains(p.getPermissionCode()))
                 .map(p -> {
                     AppPermission appPermission = new AppPermission();
-                    appPermission.setAppRole(roleRepository.findByIdAndDeleted(roleId, false));
-                    appPermission.setResource(resourceRepository.findByIdAndDeleted(p.resource().id(), false));
-                    appPermission.setAction(actionRepository.findByIdAndDeleted(p.action().id(), false));
+                    appPermission.setAppRole(roleRepository.findByIdAndDeletedFalse(roleId));
+                    appPermission.setResource(resourceRepository.findByIdAndDeletedFalse(p.resource().id()));
+                    appPermission.setAction(actionRepository.findByIdAndDeletedFalse(p.action().id()));
                     return appPermission;
                 }).collect(Collectors.toList());
         if (!appPermissions.isEmpty()) {

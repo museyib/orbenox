@@ -21,6 +21,8 @@ public class Producer extends BaseCardEntity {
     @Column(nullable = false)
     private String name;
 
+    private String description;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "producer")
     private Set<Product> products;
 }

@@ -18,11 +18,11 @@ public class UnitService {
     }
 
     public List<UnitDto> findAllByDimensionId(Long dimensionId) {
-        return unitMapper.toDtoList(unitRepository.findAllByUnitDimensionIdAndDeleted(dimensionId, false));
+        return unitMapper.toDtoList(unitRepository.findAllByUnitDimensionIdAndDeletedFalse(dimensionId));
     }
 
     public UnitDto findById(Long id) {
-        return unitMapper.toDto(unitRepository.findByIdAndDeleted(id, false));
+        return unitMapper.toDto(unitRepository.findByIdAndDeletedFalse(id));
     }
 
     public UnitDto create(UnitDto unitDto) {
@@ -30,13 +30,13 @@ public class UnitService {
     }
 
     public UnitDto update(Long id, UnitDto unitDto) {
-        var unit = unitRepository.findByIdAndDeleted(id, false);
+        var unit = unitRepository.findByIdAndDeletedFalse(id);
         unitMapper.updateEntityFromDto(unitDto, unit);
         return unitMapper.toDto(unitRepository.save(unit));
     }
 
     public void softDelete(Long id) {
-        Unit unit = unitRepository.findByIdAndDeleted(id, false);
+        Unit unit = unitRepository.findByIdAndDeletedFalse(id);
         unit.setDeleted(true);
         Unit saved = unitRepository.save(unit);
         if (!saved.isDeleted()) {

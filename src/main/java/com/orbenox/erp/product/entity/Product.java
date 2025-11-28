@@ -25,10 +25,19 @@ public class Product extends BaseCardEntity {
     private Brand brand;
 
     @ManyToOne
-    private Category category;
+    private Producer producer;
 
     @ManyToOne
-    private Producer producer;
+    private ProductType productType;
+
+    @ManyToOne
+    private ProductGroup productGroup;
+
+    @ManyToOne
+    private ProductCategory productCategory;
+
+    @ManyToOne
+    private ProductClass productClass;
 
     @ManyToOne
     private Unit defaultUnit;

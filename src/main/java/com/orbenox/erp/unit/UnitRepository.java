@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface UnitRepository extends JpaRepository<Unit, Long> {
-    Unit findByIdAndDeleted(Long id, Boolean deleted);
+    Unit findByIdAndDeletedFalse(Long id);
 
-    List<Unit> findAllByUnitDimensionIdAndDeleted(Long unitDimensionId, Boolean deleted);
+    List<Unit> findAllByUnitDimensionIdAndDeletedFalse(Long unitDimensionId);
 }

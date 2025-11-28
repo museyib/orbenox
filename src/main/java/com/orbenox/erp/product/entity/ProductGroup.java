@@ -11,7 +11,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-public class Category extends BaseCardEntity {
+public class ProductGroup extends BaseCardEntity {
 
     @Column(nullable = false, unique = true)
     private String code;
@@ -22,13 +22,13 @@ public class Category extends BaseCardEntity {
     private String description;
 
     @ManyToOne
-    private Category parent;
+    private ProductGroup parent;
 
     @OneToMany(mappedBy = "parent")
-    private List<Category> children;
+    private List<ProductGroup> children;
 
     private String slug;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "productGroup")
     private Set<Product> products;
 }
