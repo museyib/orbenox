@@ -8,6 +8,6 @@ import java.util.Set;
 /**
  * DTO for {@link ProductType}
  */
-public record ProductTypeDto(Long id, Boolean enabled, String code, String name,
-                             String description, Set<ProductDto> products) implements Serializable {
+public record ProductTypeDto(Long id, Boolean enabled, String code, String name, String description)
+        implements Serializable {
 }

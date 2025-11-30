@@ -11,5 +11,5 @@ import java.util.Set;
  * DTO for {@link Price}
  */
 public record PriceDto(Long id, Boolean enabled, String code, String name, CurrencyDto currency,
-                       PriceDto parent, Set<ProductPrice> products) implements Serializable {
+                       PriceDto parent) implements Serializable {
 }
