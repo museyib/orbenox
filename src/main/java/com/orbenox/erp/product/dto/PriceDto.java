@@ -5,11 +5,12 @@ import com.orbenox.erp.product.entity.Price;
 import com.orbenox.erp.product.entity.ProductPrice;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Set;
 
 /**
  * DTO for {@link Price}
  */
-public record PriceDto(Long id, Boolean enabled, String code, String name, CurrencyDto currency,
+public record PriceDto(Long id, Boolean enabled, String code, String name, CurrencyDto currency, BigDecimal factorToParent,
                        PriceDto parent) implements Serializable {
 }
