@@ -25,7 +25,7 @@ public class ProductGroupService {
     public List<ProductGroupDto> findAllExcluded(Long id) {
         List<ProductGroup> groups = productGroupRepository.findAllByDeletedFalse();
         ProductGroup productGroup = productGroupRepository.findByIdAndDeletedFalse(id);
-        List<ProductGroup> excluded = productGroupRepository.findAllByDeletedAndParentId(false, id);
+        List<ProductGroup> excluded = productGroupRepository.findAllByDeletedFalseAndParentId(id);
         excluded.add(productGroup);
         groups.removeAll(excluded);
         return productGroupMapper.toDtoList(groups);
