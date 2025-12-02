@@ -2,6 +2,7 @@ package com.orbenox.erp.product.service;
 
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.product.dto.ProductGroupDto;
+import com.orbenox.erp.product.dto.ProductGroupSummary;
 import com.orbenox.erp.product.entity.ProductGroup;
 import com.orbenox.erp.product.mapper.ProductGroupMapper;
 import com.orbenox.erp.product.repository.ProductGroupRepository;
@@ -9,7 +10,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,13 +24,28 @@ public class ProductGroupService {
         return productGroupMapper.toDtoList(productGroupRepository.findAllByDeletedFalse());
     }
 
-    public List<ProductGroupDto> findAllExcluded(Long id) {
-        List<ProductGroup> groups = productGroupRepository.findAllByDeletedFalse();
-        ProductGroup productGroup = productGroupRepository.findByIdAndDeletedFalse(id);
-        List<ProductGroup> excluded = productGroupRepository.findAllByDeletedFalseAndParentId(id);
-        excluded.add(productGroup);
-        groups.removeAll(excluded);
-        return productGroupMapper.toDtoList(groups);
+    public List<ProductGroupDto> findAllExcluded(Long idToExclude) {
+        List<ProductGroupSummary> summaries = productGroupRepository.findAllSummaries();
+        Map<Long, List<ProductGroupSummary>> childrenMap = summaries.stream()
+                .collect(Collectors.groupingBy(ProductGroupSummary::getParentId, Collectors.toList()));
+        Set<Long> excludedIds = new HashSet<>();
+        Deque<Long> stack = new ArrayDeque<>();
+        stack.push(idToExclude);
+        while (!stack.isEmpty()) {
+            Long cur = stack.pop();
+            excludedIds.add(cur);
+            List<ProductGroupSummary> children = childrenMap.get(cur);
+            if (children != null) {
+                for (ProductGroupSummary group : children) {
+                    if (!excludedIds.contains(group.getId())) {
+                        stack.push(group.getId());
+                    }
+                }
+            }
+        }
+        List<Long> allowedIds = summaries.stream().map(ProductGroupSummary::getId)
+                .filter(id -> !excludedIds.contains(id)).toList();
+        return productGroupMapper.toDtoList(productGroupRepository.findAllById(allowedIds));
     }
 
     public ProductGroupDto findById(Long id) {
@@ -36,7 +53,6 @@ public class ProductGroupService {
     }
 
     public ProductGroupDto create(ProductGroupDto dto) {
-        System.out.println(dto);
         return productGroupMapper.toDto(productGroupRepository.save(productGroupMapper.toEntity(dto)));
     }
 
