@@ -19,5 +19,6 @@ public record ProductDto(Long id,
                          ProductGroupDto productGroup,
                          ProductCategoryDto productCategory,
                          ProducerDto producer,
-                         UnitDto defaultUnit) implements Serializable {
+                         UnitDto defaultUnit,
+                         String defaultBarcode) implements Serializable {
 }

@@ -42,6 +42,8 @@ public class Product extends BaseCardEntity {
     @ManyToOne
     private Unit defaultUnit;
 
+    private String defaultBarcode;
+
     @ManyToMany
     @JoinTable(
             name = "product_price",
