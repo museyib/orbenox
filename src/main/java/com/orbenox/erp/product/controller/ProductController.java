@@ -4,6 +4,7 @@ import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.product.dto.ProductDto;
 import com.orbenox.erp.product.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,13 +29,13 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<ProductDto>> create(@RequestBody ProductDto dto) {
+    public ResponseEntity<Response<ProductDto>> create(@Valid @RequestBody ProductDto dto) {
         return ResponseEntity.ok(Response.successData(productService.create(dto)));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Response<ProductDto>> update(@PathVariable Long id,
-                                                        @RequestBody ProductDto dto) {
+                                                       @Valid @RequestBody ProductDto dto) {
         return ResponseEntity.ok(Response.successData(productService.update(id, dto)));
     }
 

@@ -225,7 +225,7 @@ CREATE TABLE product (
     product_category_id BIGINT REFERENCES product_category(id),
     product_class_id BIGINT REFERENCES product_class(id),
     default_unit_id BIGINT REFERENCES unit(id),
-    default_barcode VARCHAR(50),
+    default_barcode VARCHAR(50) UNIQUE NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),

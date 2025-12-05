@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.text.MessageFormat;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.orbenox.erp.common.Utilities.getMessage;
@@ -64,11 +63,10 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .collect(Collectors.toMap(FieldError::getField,
-                        fe -> Optional.ofNullable(fe.getDefaultMessage()).orElse("Invalid value: " + fe.getRejectedValue()),
+                .collect(Collectors.toMap(FieldError::getField, fe -> "Invalid value: " + fe.getRejectedValue(),
                         (a, b) -> a));
         int code = HttpStatus.BAD_REQUEST.value();
-        String message = MessageFormat.format("{0}: {1}", i18n.msg("error.validation"), getMessage(e));
+        String message = MessageFormat.format("{0}: {1}", i18n.msg("error.validation"), errors);
         log.error(message);
         return ResponseEntity.status(code).body(Response.errorData(code, message, "error.validation", errors));
     }
