@@ -1,7 +1,7 @@
 package com.orbenox.erp.security.service;
 
 import com.orbenox.erp.security.dto.RoleDto;
-import com.orbenox.erp.security.dto.mapper.RoleMapper;
+import com.orbenox.erp.security.mapper.RoleMapper;
 import com.orbenox.erp.security.entity.AppRole;
 import com.orbenox.erp.security.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;

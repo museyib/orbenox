@@ -1,4 +1,4 @@
-package com.orbenox.erp.security.dto.mapper;
+package com.orbenox.erp.security.mapper;
 
 import com.orbenox.erp.security.dto.RoleDto;
 import com.orbenox.erp.security.entity.AppRole;

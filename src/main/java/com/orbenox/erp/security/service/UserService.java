@@ -6,7 +6,7 @@ import com.orbenox.erp.security.dto.CreateUserRequest;
 import com.orbenox.erp.security.dto.RoleDto;
 import com.orbenox.erp.security.dto.UpdateUserRequest;
 import com.orbenox.erp.security.dto.UserDto;
-import com.orbenox.erp.security.dto.mapper.UserMapper;
+import com.orbenox.erp.security.mapper.UserMapper;
 import com.orbenox.erp.security.entity.AppRole;
 import com.orbenox.erp.security.entity.AppUser;
 import com.orbenox.erp.security.entity.AppUserRole;

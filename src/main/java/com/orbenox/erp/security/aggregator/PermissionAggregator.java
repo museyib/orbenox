@@ -2,7 +2,7 @@ package com.orbenox.erp.security.aggregator;
 
 import com.orbenox.erp.security.dto.RolePermissionDto;
 import com.orbenox.erp.security.dto.UserPermissionDto;
-import com.orbenox.erp.security.dto.mapper.PermissionMapper;
+import com.orbenox.erp.security.mapper.PermissionMapper;
 import com.orbenox.erp.security.entity.AppPermission;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

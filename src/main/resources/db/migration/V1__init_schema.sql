@@ -245,12 +245,12 @@ CREATE TABLE product (
     deleted BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE price (
+CREATE TABLE price_list (
     id BIGSERIAL PRIMARY KEY,
     code VARCHAR(100) UNIQUE NOT NULL,
     name VARCHAR(255),
     currency_id BIGINT NOT NULL REFERENCES currency(id),
-    parent_id BIGINT REFERENCES price(id),
+    parent_id BIGINT REFERENCES price_list(id),
     factor_to_parent NUMERIC(20,10) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
@@ -275,14 +275,14 @@ CREATE TABLE warehouse (
 CREATE TABLE product_price (
     id BIGSERIAL PRIMARY KEY,
     product_id BIGINT NOT NULL REFERENCES product(id),
-    price_id BIGINT NOT NULL REFERENCES price(id),
+    price_list_id BIGINT NOT NULL REFERENCES price_list(id),
     unit_id BIGINT NOT NULL REFERENCES unit(id),
     price NUMERIC(20, 10) DEFAULT 0,
-    factor_to_parent NUMERIC(20,10) NOT NULL,
+    factor_to_parent NUMERIC(20,10) NOT NULL DEFAULT 1,
     fixed_price BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    UNIQUE (product_id, price_id, unit_id)
+    UNIQUE (product_id, price_list_id, unit_id)
 );

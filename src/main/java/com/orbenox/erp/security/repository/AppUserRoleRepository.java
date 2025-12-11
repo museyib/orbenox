@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Set;
 
 public interface AppUserRoleRepository extends JpaRepository<AppUserRole, Long> {
@@ -15,4 +16,6 @@ public interface AppUserRoleRepository extends JpaRepository<AppUserRole, Long> 
     @Transactional
     @Query("DELETE FROM AppUserRole r WHERE r.appUser.id = :userId and r.appRole.id IN :roles")
     void deleteByAppUserIdAndAppRole(@Param("userId") Long userId, @Param("roles") Set<Long> roles);
+
+    List<AppUserRole> findAllByAppUserId(Long appUserId);
 }

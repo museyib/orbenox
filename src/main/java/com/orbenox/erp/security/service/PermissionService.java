@@ -13,6 +13,8 @@ import com.orbenox.erp.security.dto.UserPermissionDto;
 import com.orbenox.erp.security.entity.AppPermission;
 import com.orbenox.erp.security.entity.AppRole;
 import com.orbenox.erp.security.entity.AppUser;
+import com.orbenox.erp.security.entity.AppUserRole;
+import com.orbenox.erp.security.repository.AppUserRoleRepository;
 import com.orbenox.erp.security.repository.PermissionRepository;
 import com.orbenox.erp.security.repository.RoleRepository;
 import com.orbenox.erp.security.repository.UserRepository;
@@ -36,28 +38,30 @@ public class PermissionService {
     private final ActionRepository actionRepository;
     private final PermissionAggregator permissionAggregator;
     private final ActionMapper actionMapper;
+    private final AppUserRoleRepository appUserRoleRepository;
 
     public UserPermissionDto getUserPermission(Long userId) {
-        AppUser appUser = userRepository.findByIdAndDeletedFalse(userId);
-        List<AppPermission> direct = permissionRepository.findByAppUserAndDeleted(appUser, false);
-        List<AppPermission> viaRoles = appUser.getRoles()
+        List<AppUserRole> userRoles = appUserRoleRepository.findAllByAppUserId(userId);
+        List<AppPermission> direct = permissionRepository.findByAppUserIdAndDeletedFalse(userId);
+        List<AppPermission> viaRoles = userRoles
                 .stream()
-                .flatMap(role -> permissionRepository.findByAppRoleAndDeleted(role, false).stream())
+                .flatMap(role -> permissionRepository.findByAppRoleIdAndDeletedFalse(role.getAppRole().getId())
+                        .stream())
                 .toList();
         List<AppPermission> permissions = Stream.concat(direct.stream(), viaRoles.stream()).toList();
-        return permissionAggregator.toUserPermissionDto(appUser.getId(), permissions);
+        return permissionAggregator.toUserPermissionDto(userId, permissions);
     }
 
     public RolePermissionDto getRolePermission(Long roleId) {
-        AppRole appRole = roleRepository.findByIdAndDeletedFalse(roleId);
-        List<AppPermission> permissions = permissionRepository.findByAppRoleAndDeleted(appRole, false);
-        return permissionAggregator.toRolePermissionDto(appRole.getId(), permissions);
+        List<AppPermission> permissions = permissionRepository.findByAppRoleIdAndDeletedFalse(roleId);
+        return permissionAggregator.toRolePermissionDto(roleId, permissions);
     }
 
     public List<ActionDto> getGrantablePermissionsForUser(Long userId, Long resourceId) {
         AppUser appUser = userRepository.findByIdAndDeletedFalse(userId);
         Resource resource = resourceRepository.findByIdAndDeletedFalse(resourceId);
-        List<Action> givenPermissions = permissionRepository.findByAppUserAndResourceAndDeleted(appUser, resource, false)
+        List<Action> givenPermissions =
+                permissionRepository.findByAppUserIdAndResourceIdAndDeletedFalse(appUser.getId(), resource.getId())
                 .stream().map(AppPermission::getAction).toList();
         List<Action> allPermissions = new ArrayList<>(resource.getActions().stream().toList());
         allPermissions.removeAll(givenPermissions);
@@ -67,7 +71,8 @@ public class PermissionService {
     public List<ActionDto> getGrantablePermissionsForRole(Long roleId, Long resourceId) {
         AppRole appRole = roleRepository.findByIdAndDeletedFalse(roleId);
         Resource resource = resourceRepository.findByIdAndDeletedFalse(resourceId);
-        List<Action> givenPermissions = permissionRepository.findByAppRoleAndResourceAndDeleted(appRole, resource, false)
+        List<Action> givenPermissions =
+                permissionRepository.findByAppRoleIdAndResourceIdAndDeletedFalse(appRole.getId(), resource.getId())
                 .stream().map(AppPermission::getAction).toList();
         List<Action> allPermissions = new ArrayList<>(resource.getActions().stream().toList());
         allPermissions.removeAll(givenPermissions);
@@ -76,7 +81,7 @@ public class PermissionService {
 
     public UserPermissionDto updateUserPermissions(UserPermissionDto dto) {
         Long userId = dto.getUserId();
-        List<AppPermission> existing = permissionRepository.findByAppUserIdAndDeleted(userId, false);
+        List<AppPermission> existing = permissionRepository.findByAppUserIdAndDeletedFalse(userId);
 
         Set<String> incomingCodes = dto.getPermissions().stream()
                 .map(PermissionDto::getPermissionCode)
@@ -106,13 +111,13 @@ public class PermissionService {
         if (!appPermissions.isEmpty()) {
             permissionRepository.saveAll(appPermissions);
         }
-        List<AppPermission> updated = permissionRepository.findByAppUserIdAndDeleted(userId, false);
+        List<AppPermission> updated = permissionRepository.findByAppUserIdAndDeletedFalse(userId);
         return permissionAggregator.toUserPermissionDto(dto.getUserId(), updated);
     }
 
     public UserPermissionDto updateRolePermissions(RolePermissionDto dto) {
         Long roleId = dto.getRoleId();
-        List<AppPermission> existing = permissionRepository.findByAppRoleIdAndDeleted(roleId, false);
+        List<AppPermission> existing = permissionRepository.findByAppRoleIdAndDeletedFalse(roleId);
 
         Set<String> incomingCodes = dto.getPermissions().stream()
                 .map(PermissionDto::getPermissionCode)
@@ -142,7 +147,7 @@ public class PermissionService {
         if (!appPermissions.isEmpty()) {
             permissionRepository.saveAll(appPermissions);
         }
-        List<AppPermission> updated = permissionRepository.findByAppRoleIdAndDeleted(roleId, false);
+        List<AppPermission> updated = permissionRepository.findByAppRoleIdAndDeletedFalse(roleId);
         return permissionAggregator.toUserPermissionDto(roleId, updated);
     }
 }

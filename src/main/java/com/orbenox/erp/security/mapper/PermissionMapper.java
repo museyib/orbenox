@@ -1,4 +1,4 @@
-package com.orbenox.erp.security.dto.mapper;
+package com.orbenox.erp.security.mapper;
 
 import com.orbenox.erp.common.action.ActionMapper;
 import com.orbenox.erp.common.resource.ResourceMapper;

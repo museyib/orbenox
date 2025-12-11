@@ -11,18 +11,18 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
-public class ProductPrice extends BaseEntity {
+public class ProductPriceList extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Price price;
+    private PriceList priceList;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Unit unit;
 
-    @Column(name = "price", nullable = false)
-    private BigDecimal priceValue;
+    @Column(nullable = false)
+    private BigDecimal price;
 
     private BigDecimal factorToParent;
 

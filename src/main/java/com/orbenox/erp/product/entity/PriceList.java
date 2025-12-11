@@ -12,7 +12,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-public class Price extends BaseCardEntity {
+public class PriceList extends BaseCardEntity {
 
     @Column(nullable = false, unique = true)
     private String code;
@@ -24,7 +24,7 @@ public class Price extends BaseCardEntity {
     private Currency currency;
 
     @ManyToOne
-    private Price parent;
+    private PriceList parent;
 
     private BigDecimal factorToParent;
 
@@ -34,5 +34,5 @@ public class Price extends BaseCardEntity {
             joinColumns = @JoinColumn(name = "price_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
-    private Set<ProductPrice> products;
+    private Set<ProductPriceList> products;
 }
