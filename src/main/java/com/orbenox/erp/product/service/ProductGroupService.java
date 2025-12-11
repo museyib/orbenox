@@ -21,7 +21,7 @@ public class ProductGroupService {
     private final LocalizationService i18n;
 
     public List<ProductGroupDto> findAll() {
-        return productGroupMapper.toDtoList(productGroupRepository.findAllByDeletedFalse());
+        return productGroupMapper.toDtoList(productGroupRepository.findAllByDeletedFalseOrderByIdAsc());
     }
 
     public List<ProductGroupDto> findAllExcluded(Long idToExclude) {

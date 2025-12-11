@@ -19,7 +19,7 @@ public class ProducerService {
     private final LocalizationService i18n;
 
     public List<ProducerDto> findAll() {
-        return producerMapper.toDtoList(producerRepository.findAllByDeletedFalse());
+        return producerMapper.toDtoList(producerRepository.findAllByDeletedFalseOrderByIdAsc());
     }
 
     public ProducerDto findById(Long id) {

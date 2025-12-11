@@ -118,8 +118,6 @@ CREATE UNIQUE INDEX ux_unit_dimension_base
     ON unit (unit_dimension_id)
     WHERE is_base = true;
 
-
-
 CREATE TABLE currency (
     id BIGSERIAL PRIMARY KEY,
     code VARCHAR(100) UNIQUE NOT NULL,
@@ -128,8 +126,20 @@ CREATE TABLE currency (
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled BOOLEAN,
-    deleted BOOLEAN
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE country (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(255),
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE brand (
@@ -142,8 +152,8 @@ CREATE TABLE brand (
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled BOOLEAN,
-    deleted BOOLEAN
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE producer (
@@ -155,8 +165,8 @@ CREATE TABLE producer (
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled BOOLEAN,
-    deleted BOOLEAN
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE product_type(
@@ -168,8 +178,8 @@ CREATE TABLE product_type(
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled BOOLEAN,
-    deleted BOOLEAN
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE product_group (
@@ -183,8 +193,8 @@ CREATE TABLE product_group (
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled BOOLEAN,
-    deleted BOOLEAN
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE product_category(
@@ -196,8 +206,8 @@ CREATE TABLE product_category(
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled BOOLEAN,
-    deleted BOOLEAN
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE product_class(
@@ -209,8 +219,8 @@ CREATE TABLE product_class(
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled BOOLEAN,
-    deleted BOOLEAN
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE product (
@@ -224,14 +234,15 @@ CREATE TABLE product (
     product_group_id BIGINT REFERENCES product_group(id),
     product_category_id BIGINT REFERENCES product_category(id),
     product_class_id BIGINT REFERENCES product_class(id),
+    country_id BIGINT REFERENCES country(id),
     default_unit_id BIGINT REFERENCES unit(id),
     default_barcode VARCHAR(50) UNIQUE NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled BOOLEAN,
-    deleted BOOLEAN
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE price (
@@ -245,8 +256,8 @@ CREATE TABLE price (
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled BOOLEAN,
-    deleted BOOLEAN
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE warehouse (
@@ -257,8 +268,8 @@ CREATE TABLE warehouse (
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled BOOLEAN,
-    deleted BOOLEAN
+    enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE product_price (

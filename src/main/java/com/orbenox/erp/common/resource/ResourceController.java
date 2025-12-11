@@ -42,8 +42,8 @@ public class ResourceController {
 
     @PreAuthorize("hasPermission('RESOURCE', 'DELETE')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Response<String>> deleted(@PathVariable Long id) {
-        resourceService.delete(id);
+    public ResponseEntity<Response<String>> delete(@PathVariable Long id) {
+        resourceService.softDelete(id);
         var text = i18n.msg("resource.deleted", id);
         return ResponseEntity.ok(Response.successMessage(text, "resource.deleted"));
     }

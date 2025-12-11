@@ -2,6 +2,7 @@ package com.orbenox.erp.common.resource;
 
 import com.orbenox.erp.common.action.Action;
 import com.orbenox.erp.common.action.ActionRepository;
+import com.orbenox.erp.localization.LocalizationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,10 @@ public class ResourceService {
     private final ResourceRepository resourceRepository;
     private final ResourceMapper resourceMapper;
     private final ActionRepository actionRepository;
+    private final LocalizationService i18n;
 
     public List<ResourceDto> findAll() {
-        return resourceMapper.toDTOList(resourceRepository.findAllByDeletedFalse());
+        return resourceMapper.toDtoList(resourceRepository.findAllByDeletedFalseOrderByIdAsc());
     }
 
     public ResourceDto findById(Long id) {
@@ -40,7 +42,12 @@ public class ResourceService {
         return resourceMapper.toDto(resourceRepository.save(resource));
     }
 
-    public void delete(Long id) {
-        resourceRepository.deleteById(id);
+    public void softDelete(Long id) {
+        Resource entity = resourceRepository.findByIdAndDeletedFalse(id);
+        entity.setDeleted(true);
+        Resource saved  = resourceRepository.save(entity);
+        if (!saved.isDeleted()) {
+            throw new IllegalStateException(i18n.msg("error.internal"));
+        }
     }
 }

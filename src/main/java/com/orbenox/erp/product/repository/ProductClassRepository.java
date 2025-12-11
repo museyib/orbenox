@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ProductClassRepository extends JpaRepository<ProductClass, Long> {
-    List<ProductClass> findAllByDeletedFalse();
+    List<ProductClass> findAllByDeletedFalseOrderByIdAsc();
 
     ProductClass findByIdAndDeletedFalse(Long id);
 }

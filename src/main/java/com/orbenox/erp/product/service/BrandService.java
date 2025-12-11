@@ -19,7 +19,7 @@ public class BrandService {
     private final LocalizationService i18n;
 
     public List<BrandDto> findAll() {
-        return currencyMapper.toDtoList(currencyRepository.findAllByDeletedFalse());
+        return currencyMapper.toDtoList(currencyRepository.findAllByDeletedFalseOrderByIdAsc());
     }
 
     public BrandDto findById(Long id) {

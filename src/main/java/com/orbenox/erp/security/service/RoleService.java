@@ -16,7 +16,7 @@ public class RoleService {
     private final RoleMapper roleMapper;
 
     public List<RoleDto> findAll() {
-        return roleMapper.toDTOList(roleRepository.findAllByDeletedFalse());
+        return roleMapper.toDTOList(roleRepository.findAllByDeletedFalseOrderByIdAsc());
     }
 
     public RoleDto findById(Long id) {

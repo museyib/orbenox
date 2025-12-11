@@ -21,7 +21,7 @@ public class PriceService {
     private final LocalizationService i18n;
 
     public List<PriceDto> findAll() {
-        return priceMapper.toDtoList(priceRepository.findAllByDeletedFalse());
+        return priceMapper.toDtoList(priceRepository.findAllByDeletedFalseOrderByIdAsc());
     }
     
     public List<PriceDto> findAllExcluded(Long idToExclude) {

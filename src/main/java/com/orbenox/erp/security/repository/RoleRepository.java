@@ -11,7 +11,7 @@ public interface RoleRepository  extends JpaRepository<AppRole,Long> {
     @NonNull
     Optional<AppRole> findById(@NonNull Long id);
 
-    List<AppRole> findAllByDeletedFalse();
+    List<AppRole> findAllByDeletedFalseOrderByIdAsc();
 
     AppRole findByIdAndDeletedFalse(Long id);
 }

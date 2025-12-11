@@ -14,11 +14,11 @@ public class UnitService {
     private final LocalizationService i18n;
 
     public List<UnitDto> findAll() {
-        return unitMapper.toDtoList(unitRepository.findAll());
+        return unitMapper.toDtoList(unitRepository.findAllByDeletedFalseOrderByIdAsc());
     }
 
     public List<UnitDto> findAllByDimensionId(Long dimensionId) {
-        return unitMapper.toDtoList(unitRepository.findAllByUnitDimensionIdAndDeletedFalse(dimensionId));
+        return unitMapper.toDtoList(unitRepository.findAllByUnitDimensionIdAndDeletedFalseOrderByIdAsc(dimensionId));
     }
 
     public UnitDto findById(Long id) {

@@ -19,7 +19,7 @@ public class ProductService {
     private final LocalizationService i18n;
 
     public List<ProductDto> findAll() {
-        return productMapper.toDtoList(productRepository.findAllByDeletedFalse());
+        return productMapper.toDtoList(productRepository.findAllByDeletedFalseOrderByIdAsc());
     }
 
     public ProductDto findById(Long id) {

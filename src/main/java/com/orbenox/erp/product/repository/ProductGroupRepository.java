@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ProductGroupRepository extends JpaRepository<ProductGroup, Long> {
-    List<ProductGroup> findAllByDeletedFalse();
+    List<ProductGroup> findAllByDeletedFalseOrderByIdAsc();
 
     ProductGroup findByIdAndDeletedFalse(Long id);
 

@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface PriceRepository extends JpaRepository<Price, Long> {
-    List<Price> findAllByDeletedFalse();
+    List<Price> findAllByDeletedFalseOrderByIdAsc();
 
     Price findByIdAndDeletedFalse(Long id);
 

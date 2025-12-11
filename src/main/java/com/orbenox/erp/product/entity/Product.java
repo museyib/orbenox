@@ -1,5 +1,6 @@
 package com.orbenox.erp.product.entity;
 
+import com.orbenox.erp.common.country.Country;
 import com.orbenox.erp.common.entity.BaseCardEntity;
 import com.orbenox.erp.unit.Unit;
 import jakarta.persistence.*;
@@ -38,6 +39,9 @@ public class Product extends BaseCardEntity {
 
     @ManyToOne
     private ProductClass productClass;
+
+    @ManyToOne
+    private Country country;
 
     @ManyToOne
     private Unit defaultUnit;

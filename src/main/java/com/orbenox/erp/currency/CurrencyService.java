@@ -15,7 +15,7 @@ public class CurrencyService {
     private final LocalizationService i18n;
 
     public List<CurrencyDto> findAll() {
-        return currencyMapper.toDtoList(currencyRepository.findAllByDeletedFalse());
+        return currencyMapper.toDtoList(currencyRepository.findAllByDeletedFalseOrderByIdAsc());
     }
 
     public CurrencyDto findById(Long id) {
