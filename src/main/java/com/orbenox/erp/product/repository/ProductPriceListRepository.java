@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ProductPriceListRepository extends JpaRepository<ProductPriceList, Long> {
     List<ProductPriceList> findAllByProductId(Long productId);
+
+    ProductPriceList findByProductIdAndPriceListIdAndUnitId(Long productId, Long priceListId, Long unitId);
 }

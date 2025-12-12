@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * DTO for {@link AppRole}
  */
-public record RoleDto(Long id, Boolean enabled, String roleName) implements Serializable {
+public record RoleDto(Long id, Boolean enabled, String code, String name) implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

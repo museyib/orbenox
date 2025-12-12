@@ -16,7 +16,8 @@ CREATE TABLE app_user (
 
 CREATE TABLE app_role (
     id BIGSERIAL PRIMARY KEY,
-    role_name VARCHAR(100) NOT NULL,
+    code VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -272,7 +273,7 @@ CREATE TABLE warehouse (
     deleted BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE product_price (
+CREATE TABLE product_price_list (
     id BIGSERIAL PRIMARY KEY,
     product_id BIGINT NOT NULL REFERENCES product(id),
     price_list_id BIGINT NOT NULL REFERENCES price_list(id),

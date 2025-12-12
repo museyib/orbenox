@@ -6,6 +6,7 @@ import com.orbenox.erp.security.dto.CreateUserRequest;
 import com.orbenox.erp.security.dto.RoleDto;
 import com.orbenox.erp.security.dto.UpdateUserRequest;
 import com.orbenox.erp.security.dto.UserDto;
+import com.orbenox.erp.security.mapper.RoleMapper;
 import com.orbenox.erp.security.mapper.UserMapper;
 import com.orbenox.erp.security.entity.AppRole;
 import com.orbenox.erp.security.entity.AppUser;
@@ -33,13 +34,16 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final LocalizationService i18n;
+    private final RoleMapper roleMapper;
 
     public List<UserDto> findAll() {
         return userMapper.toDTOList(userRepository.findByRootFalseAndDeletedFalse());
     }
 
     public UserDto findById(Long id) {
-        return userMapper.toDTO(userRepository.findByIdAndRootFalseAndDeletedFalse(id).orElseThrow());
+        AppUser appUser = userRepository.findByIdAndRootFalseAndDeletedFalse(id).orElseThrow();
+        appUser.setRoles(appUser.getRoles().stream().filter(appRole -> !appRole.isDeleted()).collect(Collectors.toSet()));
+        return userMapper.toDTO(appUser);
     }
 
     public AppUser findByUsername(String username) {
@@ -49,6 +53,8 @@ public class UserService {
     public UserDto create(CreateUserRequest request) {
         AppUser appUser = userMapper.toEntity(request);
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        appUser.setUserType(appUser.getUserType());
+        appUser.setRoles(roleMapper.toEntityList(request.getRoles()));
         return userMapper.toDTO(userRepository.save(appUser));
     }
 

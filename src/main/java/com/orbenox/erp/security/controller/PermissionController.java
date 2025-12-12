@@ -21,7 +21,7 @@ public class PermissionController {
     @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
     @GetMapping("/user/{id}")
     public ResponseEntity<Response<UserPermissionDto>> findByUserId(@PathVariable Long id) {
-        return ResponseEntity.ok(Response.successData(permissionService.getUserPermission(id)));
+        return ResponseEntity.ok(Response.successData(permissionService.getDirectUserPermission(id)));
     }
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")

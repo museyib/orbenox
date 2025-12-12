@@ -13,5 +13,6 @@ public interface ProductPriceListMapper {
     ProductPriceListDto toDto(ProductPriceList entity);
     ProductPriceList toEntity(ProductPriceListDto dto);
     List<ProductPriceListDto> toDtoList(List<ProductPriceList> entityList);
+    List<ProductPriceList> toEntityList(List<ProductPriceListDto> dtoList);
     void updateEntityFromDto(ProductPriceListDto dto, @MappingTarget ProductPriceList entity);
 }

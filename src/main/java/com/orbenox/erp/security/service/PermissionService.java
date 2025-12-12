@@ -40,6 +40,11 @@ public class PermissionService {
     private final ActionMapper actionMapper;
     private final AppUserRoleRepository appUserRoleRepository;
 
+    public UserPermissionDto getDirectUserPermission(Long userId) {
+        List<AppPermission> permissions = permissionRepository.findByAppUserIdAndDeletedFalse(userId);
+        return permissionAggregator.toUserPermissionDto(userId, permissions);
+    }
+
     public UserPermissionDto getUserPermission(Long userId) {
         List<AppUserRole> userRoles = appUserRoleRepository.findAllByAppUserId(userId);
         List<AppPermission> direct = permissionRepository.findByAppUserIdAndDeletedFalse(userId);

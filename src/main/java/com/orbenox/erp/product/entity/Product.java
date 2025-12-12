@@ -50,9 +50,9 @@ public class Product extends BaseCardEntity {
 
     @ManyToMany
     @JoinTable(
-            name = "product_price",
+            name = "product_price_list",
             joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "price_id")
+            inverseJoinColumns = @JoinColumn(name = "price_list_id")
     )
     private Set<ProductPriceList> prices;
 }

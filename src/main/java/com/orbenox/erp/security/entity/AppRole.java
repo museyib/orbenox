@@ -9,5 +9,8 @@ import lombok.Setter;
 @Setter
 @Entity
 public class AppRole extends BaseCardEntity {
-    private String roleName;
+    @Column(unique = true, nullable = false)
+    private String code;
+    @Column(nullable = false)
+    private String name;
 }

@@ -26,4 +26,21 @@ public class ProductPriceListService {
         productPricesDto.setPrices(dtoList);
         return productPricesDto;
     }
+
+    public ProductPriceListDto findDefaultPriceByProduct(Long productId, Long priceListId, Long unitId) {
+        ProductPriceList entity = productPriceListRepository.findByProductIdAndPriceListIdAndUnitId(
+                productId,
+                priceListId,
+                unitId);
+        return productPriceListMapper.toDto(entity);
+    }
+
+    public ProductPricesDto create(ProductPricesDto dto) {
+        List<ProductPriceList> entityList = productPriceListMapper.toEntityList(dto.getPrices());
+        List<ProductPriceList> saved = productPriceListRepository.saveAll(entityList);
+        ProductPricesDto savedDto = new ProductPricesDto();
+        savedDto.setProductId(dto.getProductId());
+        savedDto.setPrices(productPriceListMapper.toDtoList(saved));
+        return savedDto;
+    }
 }
