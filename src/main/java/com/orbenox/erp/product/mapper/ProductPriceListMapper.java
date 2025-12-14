@@ -1,5 +1,6 @@
 package com.orbenox.erp.product.mapper;
 
+import com.orbenox.erp.price.PriceListMapper;
 import com.orbenox.erp.product.dto.ProductPriceListDto;
 import com.orbenox.erp.product.entity.ProductPriceList;
 import com.orbenox.erp.unit.UnitMapper;

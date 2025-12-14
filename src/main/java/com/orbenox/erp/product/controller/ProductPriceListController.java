@@ -1,6 +1,7 @@
 package com.orbenox.erp.product.controller;
 
 import com.orbenox.erp.common.Response;
+import com.orbenox.erp.product.dto.PriceData;
 import com.orbenox.erp.product.dto.ProductPriceListDto;
 import com.orbenox.erp.product.dto.ProductPricesDto;
 import com.orbenox.erp.product.service.ProductPriceListService;
@@ -15,8 +16,8 @@ public class ProductPriceListController {
     private final ProductPriceListService productPriceListService;
 
     @GetMapping("/{productId}")
-    public ResponseEntity<Response<ProductPricesDto>> getAllByProductId(@PathVariable Long productId) {
-        return ResponseEntity.ok(Response.successData(productPriceListService.findAllByProductId(productId)));
+    public ResponseEntity<Response<PriceData>> getAllByProductId(@PathVariable Long productId) {
+        return ResponseEntity.ok(Response.successData(productPriceListService.getPriceDataByProductId(productId)));
     }
 
     @GetMapping("/{productId}/byPriceListId")

@@ -1,6 +1,7 @@
 package com.orbenox.erp.product.entity;
 
 import com.orbenox.erp.common.entity.BaseEntity;
+import com.orbenox.erp.price.PriceList;
 import com.orbenox.erp.unit.Unit;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,13 +13,13 @@ import java.math.BigDecimal;
 @Setter
 @Entity
 public class ProductPriceList extends BaseEntity {
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private Product product;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private PriceList priceList;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private Unit unit;
 
     @Column(nullable = false)

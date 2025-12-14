@@ -1,5 +1,6 @@
 package com.orbenox.erp.product.dto;
 
+import com.orbenox.erp.price.PriceListDto;
 import com.orbenox.erp.product.entity.ProductPriceList;
 import com.orbenox.erp.unit.UnitDto;
 

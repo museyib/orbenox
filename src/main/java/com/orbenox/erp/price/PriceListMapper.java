@@ -1,8 +1,6 @@
-package com.orbenox.erp.product.mapper;
+package com.orbenox.erp.price;
 
 import com.orbenox.erp.currency.CurrencyMapper;
-import com.orbenox.erp.product.dto.PriceListDto;
-import com.orbenox.erp.product.entity.PriceList;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

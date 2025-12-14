@@ -7,8 +7,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-
 @Getter
 @Setter
 @Entity
@@ -47,12 +45,4 @@ public class Product extends BaseCardEntity {
     private Unit defaultUnit;
 
     private String defaultBarcode;
-
-    @ManyToMany
-    @JoinTable(
-            name = "product_price_list",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "price_list_id")
-    )
-    private Set<ProductPriceList> prices;
 }

@@ -1,11 +1,6 @@
-package com.orbenox.erp.product.service;
+package com.orbenox.erp.price;
 
 import com.orbenox.erp.localization.LocalizationService;
-import com.orbenox.erp.product.dto.PriceListDto;
-import com.orbenox.erp.product.dto.PriceSummary;
-import com.orbenox.erp.product.entity.PriceList;
-import com.orbenox.erp.product.mapper.PriceListMapper;
-import com.orbenox.erp.product.repository.PriceListRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,25 +20,25 @@ public class PriceListService {
     }
     
     public List<PriceListDto> findAllExcluded(Long idToExclude) {
-        List<PriceSummary> summaries = priceListRepository.findAllSummaries();
-        Map<Long, List<PriceSummary>> childrenMap = summaries.stream()
-                .collect(Collectors.groupingBy(PriceSummary::getParentId, Collectors.toList()));
+        List<PriceListSummary> summaries = priceListRepository.findAllSummaries();
+        Map<Long, List<PriceListSummary>> childrenMap = summaries.stream()
+                .collect(Collectors.groupingBy(PriceListSummary::getParentId, Collectors.toList()));
         Set<Long> excludedIds = new HashSet<>();
         Deque<Long> stack = new ArrayDeque<>();
         stack.push(idToExclude);
         while (!stack.isEmpty()) {
             Long cur = stack.pop();
             excludedIds.add(cur);
-            List<PriceSummary> children = childrenMap.get(cur);
+            List<PriceListSummary> children = childrenMap.get(cur);
             if (children != null) {
-                for (PriceSummary group : children) {
+                for (PriceListSummary group : children) {
                     if (!excludedIds.contains(group.getId())) {
                         stack.push(group.getId());
                     }
                 }
             }
         }
-        List<Long> allowedIds = summaries.stream().map(PriceSummary::getId)
+        List<Long> allowedIds = summaries.stream().map(PriceListSummary::getId)
                 .filter(id -> !excludedIds.contains(id)).toList();
         return priceListMapper.toDtoList(priceListRepository.findAllById(allowedIds));
     }

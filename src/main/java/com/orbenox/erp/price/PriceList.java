@@ -1,4 +1,4 @@
-package com.orbenox.erp.product.entity;
+package com.orbenox.erp.price;
 
 import com.orbenox.erp.common.entity.BaseCardEntity;
 import com.orbenox.erp.currency.Currency;
@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -27,12 +26,4 @@ public class PriceList extends BaseCardEntity {
     private PriceList parent;
 
     private BigDecimal factorToParent;
-
-    @ManyToMany
-    @JoinTable(
-            name = "product_price_list",
-            joinColumns = @JoinColumn(name = "price_list_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    private Set<ProductPriceList> products;
 }

@@ -1,7 +1,6 @@
-package com.orbenox.erp.product.dto;
+package com.orbenox.erp.price;
 
 import com.orbenox.erp.currency.CurrencyDto;
-import com.orbenox.erp.product.entity.PriceList;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

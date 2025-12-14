@@ -1,9 +1,7 @@
-package com.orbenox.erp.product.controller;
+package com.orbenox.erp.price;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
-import com.orbenox.erp.product.dto.PriceListDto;
-import com.orbenox.erp.product.service.PriceListService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
