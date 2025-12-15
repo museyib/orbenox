@@ -11,7 +11,10 @@ public interface PriceListRepository extends JpaRepository<PriceList, Long> {
     PriceList findByIdAndDeletedFalse(Long id);
 
     @Query("""
-            select p.id as id, p.code as code, p.name as name, coalesce(p.parent.id, 0) as parentId
-                        from PriceList p where p.deleted = false""")
+            SELECT p.id AS id,
+                p.code AS code,
+                p.name AS name,
+                coalesce(p.parent.id, 0) AS parentId
+            FROM PriceList p WHERE p.deleted = false""")
     List<PriceListSummary> findAllSummaries();
 }
