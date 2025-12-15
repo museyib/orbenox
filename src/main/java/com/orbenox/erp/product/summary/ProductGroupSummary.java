@@ -1,4 +1,4 @@
-package com.orbenox.erp.product.dto;
+package com.orbenox.erp.product.summary;
 
 public interface ProductGroupSummary {
     Long getId();

@@ -3,7 +3,7 @@ package com.orbenox.erp.product.controller;
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.product.dto.PriceData;
 import com.orbenox.erp.product.dto.ProductPriceListDto;
-import com.orbenox.erp.product.dto.ProductPricesDto;
+import com.orbenox.erp.product.request.UpdateProductPriceRequest;
 import com.orbenox.erp.product.service.ProductPriceListService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ public class ProductPriceListController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<ProductPricesDto>> create(@RequestBody ProductPricesDto productPricesDto) {
-        return ResponseEntity.ok(Response.successData(productPriceListService.create(productPricesDto)));
+    public ResponseEntity<Response<PriceData>> create(@RequestBody UpdateProductPriceRequest request) {
+        return ResponseEntity.ok(Response.successData(productPriceListService.updateProductPrices(request)));
     }
 }

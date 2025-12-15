@@ -2,7 +2,7 @@ package com.orbenox.erp.product.service;
 
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.product.dto.ProductGroupDto;
-import com.orbenox.erp.product.dto.ProductGroupSummary;
+import com.orbenox.erp.product.summary.ProductGroupSummary;
 import com.orbenox.erp.product.entity.ProductGroup;
 import com.orbenox.erp.product.mapper.ProductGroupMapper;
 import com.orbenox.erp.product.repository.ProductGroupRepository;

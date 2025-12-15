@@ -1,6 +1,6 @@
 package com.orbenox.erp.product.repository;
 
-import com.orbenox.erp.product.dto.ProductGroupSummary;
+import com.orbenox.erp.product.summary.ProductGroupSummary;
 import com.orbenox.erp.product.entity.ProductGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
