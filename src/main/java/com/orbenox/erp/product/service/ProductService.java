@@ -5,6 +5,7 @@ import com.orbenox.erp.product.dto.ProductDto;
 import com.orbenox.erp.product.entity.Product;
 import com.orbenox.erp.product.mapper.ProductMapper;
 import com.orbenox.erp.product.repository.ProductRepository;
+import com.orbenox.erp.product.summary.ProductSummary;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,8 @@ public class ProductService {
     private final ProductMapper productMapper;
     private final LocalizationService i18n;
 
-    public List<ProductDto> findAll() {
-        return productMapper.toDtoList(productRepository.findAllByDeletedFalseOrderByIdAsc());
+    public List<ProductSummary> findAll() {
+        return productRepository.getAllItems();
     }
 
     public ProductDto findById(Long id) {

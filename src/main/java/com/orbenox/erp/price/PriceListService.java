@@ -15,36 +15,36 @@ public class PriceListService {
     private final PriceListMapper priceListMapper;
     private final LocalizationService i18n;
 
-    public List<PriceListDto> findAll() {
-        return priceListMapper.toDtoList(priceListRepository.findAllByDeletedFalseOrderByIdAsc());
+    public List<PriceListItem> findAll() {
+        return priceListRepository.getAllItems();
     }
     
     public List<PriceListDto> findAllExcluded(Long idToExclude) {
-        List<PriceListSummary> summaries = priceListRepository.findAllSummaries();
-        Map<Long, List<PriceListSummary>> childrenMap = summaries.stream()
-                .collect(Collectors.groupingBy(PriceListSummary::getParentId, Collectors.toList()));
+        List<PriceListItem> summaries = priceListRepository.getAllItems();
+        Map<Long, List<PriceListItem>> childrenMap = summaries.stream()
+                .collect(Collectors.groupingBy(PriceListItem::getParentId, Collectors.toList()));
         Set<Long> excludedIds = new HashSet<>();
         Deque<Long> stack = new ArrayDeque<>();
         stack.push(idToExclude);
         while (!stack.isEmpty()) {
             Long cur = stack.pop();
             excludedIds.add(cur);
-            List<PriceListSummary> children = childrenMap.get(cur);
+            List<PriceListItem> children = childrenMap.get(cur);
             if (children != null) {
-                for (PriceListSummary group : children) {
+                for (PriceListItem group : children) {
                     if (!excludedIds.contains(group.getId())) {
                         stack.push(group.getId());
                     }
                 }
             }
         }
-        List<Long> allowedIds = summaries.stream().map(PriceListSummary::getId)
+        List<Long> allowedIds = summaries.stream().map(PriceListItem::getId)
                 .filter(id -> !excludedIds.contains(id)).toList();
         return priceListMapper.toDtoList(priceListRepository.findAllById(allowedIds));
     }
 
-    public PriceListDto findById(Long id) {
-        return priceListMapper.toDto(priceListRepository.findByIdAndDeletedFalse(id));
+    public PriceListItem findById(Long id) {
+        return priceListRepository.getItemById(id);
     }
 
     public PriceListDto create(PriceListDto dto) {

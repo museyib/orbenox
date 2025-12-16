@@ -16,7 +16,7 @@ public class PriceListController {
     private final LocalizationService i18n;
 
     @GetMapping
-    public ResponseEntity<Response<List<PriceListDto>>> getAll() {
+    public ResponseEntity<Response<List<PriceListItem>>> getAll() {
         return ResponseEntity.ok(Response.successData(priceListService.findAll()));
     }
 
@@ -26,7 +26,7 @@ public class PriceListController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response<PriceListDto>> getById(@PathVariable Long id) {
+    public ResponseEntity<Response<PriceListItem>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(priceListService.findById(id)));
     }
 

@@ -2,6 +2,7 @@ package com.orbenox.erp.product.repository;
 
 import com.orbenox.erp.product.summary.ProductGroupSummary;
 import com.orbenox.erp.product.entity.ProductGroup;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -10,6 +11,7 @@ import java.util.List;
 public interface ProductGroupRepository extends JpaRepository<ProductGroup, Long> {
     List<ProductGroup> findAllByDeletedFalseOrderByIdAsc();
 
+    @EntityGraph(attributePaths = {"parent", "children"})
     ProductGroup findByIdAndDeletedFalse(Long id);
 
     @Query("""

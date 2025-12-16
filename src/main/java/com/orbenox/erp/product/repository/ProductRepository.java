@@ -17,4 +17,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         SELECT p.id as id, p.code as code, p.name as name from Product p
         WHERE p.id = :productId and p.deleted = false""")
     ProductSummary getProductSummaryByProductId(@Param("productId") Long productId);
+    @Query("""
+        SELECT p.id as id,
+            p.code as code,
+            p.name as name,
+            p.brand as brand
+        FROM Product p
+        WHERE p.deleted = false""")
+    List<ProductSummary> getAllItems();
 }
