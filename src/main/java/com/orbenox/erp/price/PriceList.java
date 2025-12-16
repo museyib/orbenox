@@ -19,10 +19,10 @@ public class PriceList extends BaseCardEntity {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Currency currency;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private PriceList parent;
 
     private BigDecimal factorToParent;

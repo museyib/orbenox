@@ -3,6 +3,7 @@ package com.orbenox.erp.unit;
 import com.orbenox.erp.common.entity.BaseCardEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +18,7 @@ public class Unit extends BaseCardEntity {
     private String code;
     private String name;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private UnitDimension unitDimension;
 
     @Column(nullable = false)

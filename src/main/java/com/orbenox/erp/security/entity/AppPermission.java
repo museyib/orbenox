@@ -11,16 +11,16 @@ import lombok.Setter;
 @Setter
 @Entity
 public class AppPermission extends BaseCardEntity {
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Resource resource;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Action action;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private AppRole appRole;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private AppUser appUser;
 
     public String getPermissionCode() {

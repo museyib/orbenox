@@ -12,14 +12,14 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
-public class ProductPriceList extends BaseEntity {
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+public class ProductPrice extends BaseEntity {
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Product product;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private PriceList priceList;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Unit unit;
 
     @Column(nullable = false)
@@ -28,6 +28,4 @@ public class ProductPriceList extends BaseEntity {
     private BigDecimal factorToParent;
 
     private Boolean fixedPrice;
-
-
 }

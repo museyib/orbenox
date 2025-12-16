@@ -2,7 +2,7 @@ package com.orbenox.erp.product.summary;
 
 import java.math.BigDecimal;
 
-public interface PriceSummary {
+public interface PriceLineSummary {
     Long getId();
     String getPriceKey();
     ProductSummary getProduct();

@@ -1,0 +1,83 @@
+package com.orbenox.erp.product.service;
+
+import com.orbenox.erp.common.entity.BaseEntity;
+import com.orbenox.erp.price.PriceList;
+import com.orbenox.erp.product.dto.*;
+import com.orbenox.erp.product.entity.Product;
+import com.orbenox.erp.product.entity.ProductPrice;
+import com.orbenox.erp.product.repository.ProductPriceRepository;
+import com.orbenox.erp.product.repository.ProductRepository;
+import com.orbenox.erp.product.request.ProductPriceRequest;
+import com.orbenox.erp.product.request.UpdateProductPriceRequest;
+import com.orbenox.erp.product.summary.PriceLineSummary;
+import com.orbenox.erp.product.summary.ProductSummary;
+import com.orbenox.erp.unit.Unit;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class ProductPriceService {
+    private final ProductPriceRepository productPriceRepository;
+    private final ProductRepository productRepository;
+    private final EntityManager entityManager;
+
+    public ProductPricingData getPriceDataByProductId(Long productId) {
+        ProductSummary product = productRepository.getProductSummaryByProductId(productId);
+        List<PriceLineSummary> priceSummaries = productPriceRepository.getSummariesByProductId(productId);
+        ProductPricingData pricingData = new ProductPricingData();
+        pricingData.setProduct(product);
+        pricingData.setPrices(priceSummaries);
+        return pricingData;
+    }
+
+    @Transactional
+    public ProductPricingData updateProductPrices(UpdateProductPriceRequest request) {
+        List<Long> ids = request.getPriceListToUpdate().stream().map(ProductPriceRequest::getId).toList();
+        Map<Long, ProductPrice> priceMap = productPriceRepository.findAllById(ids).stream().collect(Collectors.toMap(BaseEntity::getId, Function.identity()));
+        List<ProductPrice> entityListToUpdate = request.getPriceListToUpdate().stream()
+                .map(item -> {
+                    ProductPrice entity = priceMap.get(item.getId());
+                    if (entity == null)
+                        throw new IllegalArgumentException("Product price not found: " + item.getId());
+                    entity.setPrice(item.getPrice());
+                    entity.setFactorToParent(item.getFactorToParent());
+                    entity.setFixedPrice(item.getFixedPrice());
+                    return entity;
+                }).toList();
+        Product product = entityManager.getReference(Product.class, request.getProduct().getId());
+        List<ProductPrice> entityListToInsert = request.getPriceListToInsert().stream()
+                .map(item -> {
+                    PriceList priceList = entityManager.getReference(PriceList.class, item.getPriceList().getId());
+                    Unit unit = entityManager.getReference(Unit.class, item.getUnit().getId());
+                    ProductPrice entity = new ProductPrice();
+                    entity.setProduct(product);
+                    entity.setUnit(unit);
+                    entity.setPriceList(priceList);
+                    entity.setPrice(item.getPrice());
+                    entity.setFactorToParent(item.getFactorToParent());
+                    entity.setFixedPrice(item.getFixedPrice());
+                    return entity;
+                }).toList();
+        List<ProductPrice> toSave =  new ArrayList<>();
+        toSave.addAll(entityListToUpdate);
+        toSave.addAll(entityListToInsert);
+        productPriceRepository.saveAll(toSave);
+        List<PriceLineSummary> summaries = productPriceRepository.getSummariesByProductId(request.getProduct().getId());
+        ProductPricingData productPricingData = new ProductPricingData();
+        ProductSummary productSummary = summaries.isEmpty() ?
+                productRepository.getProductSummaryByProductId(request.getProduct().getId()) :
+                summaries.get(0).getProduct();
+        productPricingData.setProduct(productSummary);
+        productPricingData.setPrices(summaries);
+        return productPricingData;
+    }
+}

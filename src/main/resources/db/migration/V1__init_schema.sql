@@ -273,7 +273,7 @@ CREATE TABLE warehouse (
     deleted BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE product_price_list (
+CREATE TABLE product_price (
     id BIGSERIAL PRIMARY KEY,
     product_id BIGINT NOT NULL REFERENCES product(id),
     price_list_id BIGINT NOT NULL REFERENCES price_list(id),

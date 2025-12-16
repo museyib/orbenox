@@ -16,7 +16,7 @@ public class Resource extends BaseCardEntity {
     private String code;
     private String name;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "resource_action",
             joinColumns = @JoinColumn(name = "resource_id"),

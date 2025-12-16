@@ -21,7 +21,7 @@ public class ProductGroup extends BaseCardEntity {
 
     private String description;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductGroup parent;
 
     @OneToMany(mappedBy = "parent")

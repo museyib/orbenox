@@ -22,7 +22,7 @@ public class AppUser extends BaseCardEntity {
     private UserType userType;
     private boolean root;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "app_user_role",
             joinColumns = @JoinColumn(name = "app_user_id"),
