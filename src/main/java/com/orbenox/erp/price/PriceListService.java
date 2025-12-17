@@ -22,7 +22,8 @@ public class PriceListService {
     public List<PriceListDto> findAllExcluded(Long idToExclude) {
         List<PriceListItem> summaries = priceListRepository.getAllItems();
         Map<Long, List<PriceListItem>> childrenMap = summaries.stream()
-                .collect(Collectors.groupingBy(PriceListItem::getParentId, Collectors.toList()));
+                .collect(Collectors.groupingBy(PriceListItem::getParentId,
+                        Collectors.toList()));
         Set<Long> excludedIds = new HashSet<>();
         Deque<Long> stack = new ArrayDeque<>();
         stack.push(idToExclude);
@@ -44,7 +45,7 @@ public class PriceListService {
     }
 
     public PriceListItem findById(Long id) {
-        return priceListRepository.getItemById(id);
+        return priceListRepository.getItemById(id).orElseThrow();
     }
 
     public PriceListDto create(PriceListDto dto) {

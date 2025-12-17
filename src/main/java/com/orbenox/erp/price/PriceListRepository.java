@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PriceListRepository extends JpaRepository<PriceList, Long> {
     PriceList findByIdAndDeletedFalse(Long id);
@@ -15,7 +16,7 @@ public interface PriceListRepository extends JpaRepository<PriceList, Long> {
                 p.name AS name,
                 p.factorToParent AS factorToParent,
                 p.enabled AS enabled,
-                coalesce(p.parent.id, 0) AS parentId,
+                coalesce(p.parent.id, 0L) AS parentId,
                 p.currency as currency
             FROM PriceList p WHERE p.deleted = false
             ORDER BY p.id""")
@@ -27,9 +28,8 @@ public interface PriceListRepository extends JpaRepository<PriceList, Long> {
                 p.name AS name,
                 p.factorToParent AS factorToParent,
                 p.enabled AS enabled,
-                coalesce(p.parent.id, 0) AS parentId,
+                coalesce(p.parent.id, 0L) AS parentId,
                 p.currency as currency
-            FROM PriceList p WHERE p.id = :id AND p.deleted = false
-            ORDER BY p.id""")
-    PriceListItem getItemById(@Param("id") Long id);
+            FROM PriceList p WHERE p.id = :id AND p.deleted = false""")
+    Optional<PriceListItem> getItemById(@Param("id") Long id);
 }
