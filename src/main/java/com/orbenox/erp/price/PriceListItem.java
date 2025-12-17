@@ -8,12 +8,20 @@ public interface PriceListItem {
     String getName();
     BigDecimal getFactorToParent();
     Boolean getEnabled();
-    Long getParentId();
+    PriceListParent getParent();
     CurrencyItem getCurrency();
 
     interface CurrencyItem {
         Long getId();
         String getCode();
         String getName();
+        boolean isEnabled();
+    }
+
+    interface PriceListParent {
+        Long getId();
+        String getCode();
+        String getName();
+        boolean isEnabled();
     }
 }

@@ -21,7 +21,7 @@ public class PriceListController {
     }
 
     @GetMapping("/getExcluded/{id}")
-    public ResponseEntity<Response<List<PriceListDto>>> getAllExcluded(@PathVariable Long id) {
+    public ResponseEntity<Response<List<PriceListItem.PriceListParent>>> getAllExcluded(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(priceListService.findAllExcluded(id)));
     }
 
