@@ -31,12 +31,12 @@ public class PriceListController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<PriceListDto>> create(@RequestBody PriceListDto dto) {
+    public ResponseEntity<Response<PriceListItem>> create(@RequestBody PriceListDto dto) {
         return ResponseEntity.ok(Response.successData(priceListService.create(dto)));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<PriceListDto>> update(@PathVariable Long id,
+    public ResponseEntity<Response<PriceListItem>> update(@PathVariable Long id,
                                                          @RequestBody PriceListDto dto) {
         return ResponseEntity.ok(Response.successData(priceListService.update(id, dto)));
     }

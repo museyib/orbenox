@@ -20,13 +20,13 @@ public class PriceListService {
     }
     
     public List<PriceListItem.PriceListParent> findAllExcluded(Long idToExclude) {
-        List<PriceListItem> summaries = priceListRepository.getAllItems();
-        Map<Long, List<PriceListItem>> childrenMap = summaries.stream()
-                .collect(Collectors.groupingBy(priceListItem -> {
-                    if (priceListItem.getParent() == null)
-                        return priceListItem.getId();
-                    return priceListItem.getParent().getId();
-                    }, Collectors.toList()));
+        List<PriceListItem> items = priceListRepository.getAllItems();
+        Map<Long, List<PriceListItem>> childrenMap = items.stream()
+                .collect(Collectors.groupingBy(
+                        priceListItem -> priceListItem.getParent() == null
+                                ? priceListItem.getId()
+                                : priceListItem.getParent().getId(),
+                        Collectors.toList()));
         Set<Long> excludedIds = new HashSet<>();
         Deque<Long> stack = new ArrayDeque<>();
         stack.push(idToExclude);
@@ -42,7 +42,7 @@ public class PriceListService {
                 }
             }
         }
-        List<Long> allowedIds = summaries.stream().map(PriceListItem::getId)
+        List<Long> allowedIds = items.stream().map(PriceListItem::getId)
                 .filter(id -> !excludedIds.contains(id)).toList();
         return priceListRepository.getParentPriceListItems(allowedIds);
     }
@@ -51,14 +51,16 @@ public class PriceListService {
         return priceListRepository.getItemById(id);
     }
 
-    public PriceListDto create(PriceListDto dto) {
-        return priceListMapper.toDto(priceListRepository.save(priceListMapper.toEntity(dto)));
+    public PriceListItem create(PriceListDto dto) {
+        priceListRepository.save(priceListMapper.toEntity(dto));
+        return priceListRepository.getItemById(dto.id());
     }
 
-    public PriceListDto update(Long id, PriceListDto dto) {
+    @Transactional
+    public PriceListItem update(Long id, PriceListDto dto) {
         PriceList entity = priceListRepository.findByIdAndDeletedFalse(id);
         priceListMapper.updateEntityFromDto(dto, entity);
-        return priceListMapper.toDto(priceListRepository.save(entity));
+        return priceListRepository.getItemById(dto.id());
     }
 
     @Transactional

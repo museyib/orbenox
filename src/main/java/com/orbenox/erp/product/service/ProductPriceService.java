@@ -6,11 +6,9 @@ import com.orbenox.erp.product.dto.*;
 import com.orbenox.erp.product.entity.Product;
 import com.orbenox.erp.product.entity.ProductPrice;
 import com.orbenox.erp.product.repository.ProductPriceRepository;
-import com.orbenox.erp.product.repository.ProductRepository;
 import com.orbenox.erp.product.request.ProductPriceRequest;
 import com.orbenox.erp.product.request.UpdateProductPriceRequest;
-import com.orbenox.erp.product.summary.PriceLineSummary;
-import com.orbenox.erp.product.summary.ProductSummary;
+import com.orbenox.erp.product.projection.ProductPriceItem;
 import com.orbenox.erp.unit.Unit;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -27,12 +25,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductPriceService {
     private final ProductPriceRepository productPriceRepository;
-    private final ProductRepository productRepository;
     private final EntityManager entityManager;
 
     public ProductPricingData getPriceDataByProductId(Long productId) {
-        ProductSummary product = productRepository.getProductSummaryByProductId(productId);
-        List<PriceLineSummary> priceSummaries = productPriceRepository.getSummariesByProductId(productId);
+        ProductPriceItem.Product product = productPriceRepository.getProductItemByProductId(productId);
+        List<ProductPriceItem> priceSummaries = productPriceRepository.getItemsByProductId(productId);
         ProductPricingData pricingData = new ProductPricingData();
         pricingData.setProduct(product);
         pricingData.setPrices(priceSummaries);
@@ -71,13 +68,13 @@ public class ProductPriceService {
         toSave.addAll(entityListToUpdate);
         toSave.addAll(entityListToInsert);
         productPriceRepository.saveAll(toSave);
-        List<PriceLineSummary> summaries = productPriceRepository.getSummariesByProductId(request.getProduct().getId());
+        List<ProductPriceItem> items = productPriceRepository.getItemsByProductId(request.getProduct().getId());
         ProductPricingData productPricingData = new ProductPricingData();
-        ProductSummary productSummary = summaries.isEmpty() ?
-                productRepository.getProductSummaryByProductId(request.getProduct().getId()) :
-                summaries.get(0).getProduct();
-        productPricingData.setProduct(productSummary);
-        productPricingData.setPrices(summaries);
+        ProductPriceItem.Product productItem = items.isEmpty() ?
+                productPriceRepository.getProductItemByProductId(request.getProduct().getId()) :
+                items.get(0).getProduct();
+        productPricingData.setProduct(productItem);
+        productPricingData.setPrices(items);
         return productPricingData;
     }
 }

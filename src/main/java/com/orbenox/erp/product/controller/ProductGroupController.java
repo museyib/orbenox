@@ -3,6 +3,7 @@ package com.orbenox.erp.product.controller;
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.product.dto.ProductGroupDto;
+import com.orbenox.erp.product.projection.ProductGroupItem;
 import com.orbenox.erp.product.service.ProductGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class ProductGroupController {
     }
 
     @GetMapping("/getExcluded/{id}")
-    public ResponseEntity<Response<List<ProductGroupDto>>> getAllExcluded(@PathVariable Long id) {
+    public ResponseEntity<Response<List<ProductGroupItem.Parent>>> getAllExcluded(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(productGroupService.findAllExcluded(id)));
     }
 

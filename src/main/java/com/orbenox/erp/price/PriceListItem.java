@@ -7,7 +7,7 @@ public interface PriceListItem {
     String getCode();
     String getName();
     BigDecimal getFactorToParent();
-    Boolean getEnabled();
+    boolean isEnabled();
     PriceListParent getParent();
     CurrencyItem getCurrency();
 

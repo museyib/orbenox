@@ -1,6 +1,6 @@
 package com.orbenox.erp.product.repository;
 
-import com.orbenox.erp.product.summary.PriceLineSummary;
+import com.orbenox.erp.product.projection.ProductPriceItem;
 import com.orbenox.erp.product.entity.ProductPrice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,8 +9,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProductPriceRepository extends JpaRepository<ProductPrice, Long> {
-    ProductPrice findByProductIdAndPriceListIdAndUnitId(Long productId, Long priceListId, Long unitId);
-
     @Query("""
             SELECT p.id as id,
                 p.product as product,
@@ -22,5 +20,10 @@ public interface ProductPriceRepository extends JpaRepository<ProductPrice, Long
                 p.priceList.parent.id as parentId
             FROM ProductPrice p
             WHERE p.product.id = :productId""")
-    List<PriceLineSummary> getSummariesByProductId(@Param("productId") Long productId);
+    List<ProductPriceItem> getItemsByProductId(@Param("productId") Long productId);
+
+    @Query("""
+        SELECT p.id as id, p.code as code, p.name as name from Product p
+        WHERE p.id = :productId and p.deleted = false""")
+    ProductPriceItem.Product getProductItemByProductId(@Param("productId") Long productId);
 }

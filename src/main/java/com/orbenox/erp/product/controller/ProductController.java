@@ -4,7 +4,7 @@ import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.product.dto.ProductDto;
 import com.orbenox.erp.product.service.ProductService;
-import com.orbenox.erp.product.summary.ProductSummary;
+import com.orbenox.erp.product.projection.ProductItem;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class ProductController {
     private final LocalizationService i18n;
 
     @GetMapping
-    public ResponseEntity<Response<List<ProductSummary>>> getAll() {
+    public ResponseEntity<Response<List<ProductItem>>> getAll() {
         return ResponseEntity.ok(Response.successData(productService.findAll()));
     }
 
