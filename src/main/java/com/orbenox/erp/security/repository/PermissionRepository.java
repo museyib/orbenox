@@ -1,5 +1,6 @@
 package com.orbenox.erp.security.repository;
 
+import com.orbenox.erp.common.action.ActionItem;
 import com.orbenox.erp.security.entity.AppPermission;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,9 +24,24 @@ public interface PermissionRepository extends JpaRepository<AppPermission,Long> 
 
     List<AppPermission> findByAppRoleIdAndDeletedFalse(Long appRoleId);
 
-    List<AppPermission> findByAppUserIdAndResourceIdAndDeletedFalse(Long appUserId, Long resourceId);
-
-    List<AppPermission> findByAppRoleIdAndResourceIdAndDeletedFalse(Long appRoleId, Long resourceId);
-
     List<AppPermission> findByAppUserIdAndDeletedFalse(Long appUserId);
+
+    @Query("""
+        SELECT p.action
+        FROM AppPermission p
+        WHERE p.appUser.id = :appUserId
+                AND p.resource.id = :resourceId
+                AND p.deleted = false
+        ORDER BY p.id""")
+    List<ActionItem> getActionItemsByAppUserIdAndResourceId(@Param("appUserId") Long appUserId,
+                                                            @Param("resourceId") Long resourceId);
+    @Query("""
+        SELECT p.action
+        FROM AppPermission p
+        WHERE p.appRole.id = :appUserId
+                AND p.resource.id = :resourceId
+                AND p.deleted = false
+        ORDER BY p.id""")
+    List<ActionItem> getActionItemsByAppRoleIdAndResourceId(@Param("appRoleId") Long appRoleId,
+                                                            @Param("resourceId") Long resourceId);
 }

@@ -18,25 +18,25 @@ public class ResourceController {
 
     @PreAuthorize("hasPermission('RESOURCE', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<ResourceDto>>> getActions() {
+    public ResponseEntity<Response<List<ResourceItem>>> getActions() {
         return ResponseEntity.ok(Response.successData(resourceService.findAll()));
     }
 
     @PreAuthorize("hasPermission('RESOURCE', 'READ')")
     @GetMapping("/{id}")
-    public ResponseEntity<Response<ResourceDto>> getById(@PathVariable Long id) {
+    public ResponseEntity<Response<ResourceData>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(resourceService.findById(id)));
     }
 
     @PreAuthorize("hasPermission('RESOURCE', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<ResourceDto>> create(@RequestBody ResourceDto resourceDto) {
+    public ResponseEntity<Response<ResourceItem>> create(@RequestBody ResourceDto resourceDto) {
         return ResponseEntity.ok(Response.successData(resourceService.create(resourceDto)));
     }
 
     @PreAuthorize("hasPermission('RESOURCE', 'UPDATE')")
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<ResourceDto>> update(@PathVariable Long id, @RequestBody ResourceDto resourceDto) {
+    public ResponseEntity<Response<ResourceItem>> update(@PathVariable Long id, @RequestBody ResourceDto resourceDto) {
         return ResponseEntity.ok(Response.successData(resourceService.update(id, resourceDto)));
     }
 

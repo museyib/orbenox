@@ -18,25 +18,25 @@ public class CountryController {
 
     @PreAuthorize("hasPermission('COUNTRY', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<CountryDto>>> getActions() {
+    public ResponseEntity<Response<List<CountryItem>>> getActions() {
         return ResponseEntity.ok(Response.successData(countryService.findAll()));
     }
 
     @PreAuthorize("hasPermission('COUNTRY', 'READ')")
     @GetMapping("/{id}")
-    public ResponseEntity<Response<CountryDto>> getById(@PathVariable Long id) {
+    public ResponseEntity<Response<CountryItem>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(countryService.findById(id)));
     }
 
     @PreAuthorize("hasPermission('COUNTRY', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<CountryDto>> create(@RequestBody CountryDto countryDto) {
+    public ResponseEntity<Response<CountryItem>> create(@RequestBody CountryDto countryDto) {
         return ResponseEntity.ok(Response.successData(countryService.create(countryDto)));
     }
 
     @PreAuthorize("hasPermission('COUNTRY', 'UPDATE')")
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<CountryDto>> update(@PathVariable Long id, @RequestBody CountryDto countryDto) {
+    public ResponseEntity<Response<CountryItem>> update(@PathVariable Long id, @RequestBody CountryDto countryDto) {
         return ResponseEntity.ok(Response.successData(countryService.update(id, countryDto)));
     }
 

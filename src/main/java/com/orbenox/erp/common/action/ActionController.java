@@ -16,7 +16,7 @@ public class ActionController {
 
     @PreAuthorize("hasPermission('ACION', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<ActionDto>>> getActions() {
-        return ResponseEntity.ok(Response.successData(actionService.findAll()));
+    public ResponseEntity<Response<List<ActionItem>>> getActions() {
+        return ResponseEntity.ok(Response.successData(actionService.getAllItems()));
     }
 }

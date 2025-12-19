@@ -8,6 +8,7 @@ import java.io.Serializable;
  * DTO for {@link ProductGroup}
  */
 public record ProductGroupDto(Long id, Boolean enabled, String code, String name, String description, String slug,
-                              ProductGroupDto parent)
+                              Parent parent)
         implements Serializable {
+    public record Parent(Long id, Boolean enabled, String code, String name) {}
 }

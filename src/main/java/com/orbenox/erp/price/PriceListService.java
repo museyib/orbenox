@@ -1,19 +1,20 @@
 package com.orbenox.erp.price;
 
-import com.orbenox.erp.localization.LocalizationService;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import com.orbenox.erp.currency.Currency;
 
 @Service
 @RequiredArgsConstructor
 public class PriceListService {
     private final PriceListRepository priceListRepository;
     private final PriceListMapper priceListMapper;
-    private final LocalizationService i18n;
+    private final EntityManager em;
 
     public List<PriceListItem> findAll() {
         return priceListRepository.getAllItems();
@@ -52,14 +53,16 @@ public class PriceListService {
     }
 
     public PriceListItem create(PriceListDto dto) {
-        priceListRepository.save(priceListMapper.toEntity(dto));
-        return priceListRepository.getItemById(dto.id());
+        PriceList priceList = priceListRepository.save(priceListMapper.toEntity(dto));
+        return priceListRepository.getItemById(priceList.getId());
     }
 
     @Transactional
     public PriceListItem update(Long id, PriceListDto dto) {
         PriceList entity = priceListRepository.findByIdAndDeletedFalse(id);
         priceListMapper.updateEntityFromDto(dto, entity);
+        Currency currency = em.getReference(Currency.class, dto.currency().id());
+        entity.setCurrency(currency);
         return priceListRepository.getItemById(dto.id());
     }
 
@@ -67,9 +70,5 @@ public class PriceListService {
     public void softDelete(Long id) {
         PriceList entity = priceListRepository.findByIdAndDeletedFalse(id);
         entity.setDeleted(true);
-        PriceList saved = priceListRepository.save(entity);
-        if (!saved.isDeleted()) {
-            throw new IllegalStateException(i18n.msg("error.internal"));
-        }
     }
 }

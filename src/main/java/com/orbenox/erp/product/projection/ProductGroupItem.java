@@ -10,6 +10,7 @@ public interface ProductGroupItem {
 
     interface Parent {
         Long getId();
+        String getCode();
         String getName();
         boolean isEnabled();
     }

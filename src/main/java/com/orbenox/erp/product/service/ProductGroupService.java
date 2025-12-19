@@ -1,6 +1,5 @@
 package com.orbenox.erp.product.service;
 
-import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.product.dto.ProductGroupDto;
 import com.orbenox.erp.product.projection.ProductGroupItem;
 import com.orbenox.erp.product.entity.ProductGroup;
@@ -18,10 +17,9 @@ import java.util.stream.Collectors;
 public class ProductGroupService {
     private final ProductGroupRepository productGroupRepository;
     private final ProductGroupMapper productGroupMapper;
-    private final LocalizationService i18n;
 
-    public List<ProductGroupDto> findAll() {
-        return productGroupMapper.toDtoList(productGroupRepository.findAllByDeletedFalseOrderByIdAsc());
+    public List<ProductGroupItem> getAllItems() {
+        return productGroupRepository.getAllItems();
     }
 
     public List<ProductGroupItem.Parent> findAllExcluded(Long idToExclude) {
@@ -52,27 +50,25 @@ public class ProductGroupService {
         return productGroupRepository.getParentItems(allowedIds);
     }
 
-    public ProductGroupDto findById(Long id) {
-        return productGroupMapper.toDto(productGroupRepository.findByIdAndDeletedFalse(id));
+    public ProductGroupItem getItemById(Long id) {
+        return productGroupRepository.getItemById(id);
     }
 
-    public ProductGroupDto create(ProductGroupDto dto) {
-        return productGroupMapper.toDto(productGroupRepository.save(productGroupMapper.toEntity(dto)));
+    public ProductGroupItem create(ProductGroupDto dto) {
+        ProductGroup productGroup = productGroupRepository.save(productGroupMapper.toEntity(dto));
+        return productGroupRepository.getItemById(productGroup.getId());
     }
 
-    public ProductGroupDto update(Long id, ProductGroupDto dto) {
+    @Transactional
+    public ProductGroupItem update(Long id, ProductGroupDto dto) {
         ProductGroup entity = productGroupRepository.findByIdAndDeletedFalse(id);
         productGroupMapper.updateEntityFromDto(dto, entity);
-        return productGroupMapper.toDto(productGroupRepository.save(entity));
+        return productGroupRepository.getItemById(id);
     }
 
     @Transactional
     public void softDelete(Long id) {
         ProductGroup entity = productGroupRepository.findByIdAndDeletedFalse(id);
         entity.setDeleted(true);
-        ProductGroup saved = productGroupRepository.save(entity);
-        if (!saved.isDeleted()) {
-            throw new IllegalStateException(i18n.msg("error.internal"));
-        }
     }
 }

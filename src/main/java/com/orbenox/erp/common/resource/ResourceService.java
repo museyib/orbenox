@@ -1,8 +1,9 @@
 package com.orbenox.erp.common.resource;
 
 import com.orbenox.erp.common.action.Action;
+import com.orbenox.erp.common.action.ActionItem;
 import com.orbenox.erp.common.action.ActionRepository;
-import com.orbenox.erp.localization.LocalizationService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,21 +17,27 @@ public class ResourceService {
     private final ResourceRepository resourceRepository;
     private final ResourceMapper resourceMapper;
     private final ActionRepository actionRepository;
-    private final LocalizationService i18n;
 
-    public List<ResourceDto> findAll() {
-        return resourceMapper.toDtoList(resourceRepository.findAllByDeletedFalseOrderByIdAsc());
+    public List<ResourceItem> findAll() {
+        return resourceRepository.getAllItems();
     }
 
-    public ResourceDto findById(Long id) {
-        return resourceMapper.toDto(resourceRepository.findByIdAndDeletedFalse(id));
+    public ResourceData findById(Long id) {
+        ResourceItem resourceItem = resourceRepository.getItemById(id);
+        List<ActionItem> actionItems = resourceRepository.getActionItemsByResourceId(id);
+        ResourceData resourceData = new ResourceData();
+        resourceData.setResource(resourceItem);
+        resourceData.setActions(actionItems);
+        return resourceData;
     }
 
-    public ResourceDto create(ResourceDto dto) {
-        return resourceMapper.toDto(resourceRepository.save(resourceMapper.toEntity(dto)));
+    public ResourceItem create(ResourceDto dto) {
+        Resource resource = resourceRepository.save(resourceMapper.toEntity(dto));
+        return resourceRepository.getItemById(resource.getId());
     }
 
-    public ResourceDto update(Long id, ResourceDto dto) {
+    @Transactional
+    public ResourceItem update(Long id, ResourceDto dto) {
         Resource resource = resourceRepository.findByIdAndDeletedFalse(id);
         resourceMapper.updateEntityFromDto(dto, resource);
         if (dto.actions() != null) {
@@ -39,15 +46,12 @@ public class ResourceService {
                     .collect(Collectors.toSet());
             resource.setActions(actions);
         }
-        return resourceMapper.toDto(resourceRepository.save(resource));
+        return resourceRepository.getItemById(id);
     }
 
+    @Transactional
     public void softDelete(Long id) {
         Resource entity = resourceRepository.findByIdAndDeletedFalse(id);
         entity.setDeleted(true);
-        Resource saved  = resourceRepository.save(entity);
-        if (!saved.isDeleted()) {
-            throw new IllegalStateException(i18n.msg("error.internal"));
-        }
     }
 }

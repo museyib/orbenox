@@ -16,22 +16,22 @@ public class CurrencyController {
     private final LocalizationService i18n;
 
     @GetMapping
-    public ResponseEntity<Response<List<CurrencyDto>>> getAll() {
+    public ResponseEntity<Response<List<CurrencyItem>>> getAll() {
         return ResponseEntity.ok(Response.successData(currencyService.findAll()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response<CurrencyDto>> getById(@PathVariable Long id) {
+    public ResponseEntity<Response<CurrencyItem>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(currencyService.findById(id)));
     }
 
     @PostMapping
-    public ResponseEntity<Response<CurrencyDto>> create(@RequestBody CurrencyDto dto) {
+    public ResponseEntity<Response<CurrencyItem>> create(@RequestBody CurrencyDto dto) {
         return ResponseEntity.ok(Response.successData(currencyService.create(dto)));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<CurrencyDto>> update(@PathVariable Long id,
+    public ResponseEntity<Response<CurrencyItem>> update(@PathVariable Long id,
                                                         @RequestBody CurrencyDto dto) {
         return ResponseEntity.ok(Response.successData(currencyService.update(id, dto)));
     }

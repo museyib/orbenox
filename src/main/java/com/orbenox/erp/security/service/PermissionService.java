@@ -1,18 +1,12 @@
 package com.orbenox.erp.security.service;
 
-import com.orbenox.erp.common.action.Action;
-import com.orbenox.erp.common.action.ActionDto;
-import com.orbenox.erp.common.action.ActionMapper;
-import com.orbenox.erp.common.action.ActionRepository;
-import com.orbenox.erp.common.resource.Resource;
+import com.orbenox.erp.common.action.*;
 import com.orbenox.erp.common.resource.ResourceRepository;
 import com.orbenox.erp.security.aggregator.PermissionAggregator;
 import com.orbenox.erp.security.dto.PermissionDto;
 import com.orbenox.erp.security.dto.RolePermissionDto;
 import com.orbenox.erp.security.dto.UserPermissionDto;
 import com.orbenox.erp.security.entity.AppPermission;
-import com.orbenox.erp.security.entity.AppRole;
-import com.orbenox.erp.security.entity.AppUser;
 import com.orbenox.erp.security.entity.AppUserRole;
 import com.orbenox.erp.security.repository.AppUserRoleRepository;
 import com.orbenox.erp.security.repository.PermissionRepository;
@@ -21,7 +15,6 @@ import com.orbenox.erp.security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,7 +30,6 @@ public class PermissionService {
     private final PermissionRepository permissionRepository;
     private final ActionRepository actionRepository;
     private final PermissionAggregator permissionAggregator;
-    private final ActionMapper actionMapper;
     private final AppUserRoleRepository appUserRoleRepository;
 
     public UserPermissionDto getDirectUserPermission(Long userId) {
@@ -62,26 +54,18 @@ public class PermissionService {
         return permissionAggregator.toRolePermissionDto(roleId, permissions);
     }
 
-    public List<ActionDto> getGrantablePermissionsForUser(Long userId, Long resourceId) {
-        AppUser appUser = userRepository.findByIdAndDeletedFalse(userId);
-        Resource resource = resourceRepository.findByIdAndDeletedFalse(resourceId);
-        List<Action> givenPermissions =
-                permissionRepository.findByAppUserIdAndResourceIdAndDeletedFalse(appUser.getId(), resource.getId())
-                .stream().map(AppPermission::getAction).toList();
-        List<Action> allPermissions = new ArrayList<>(resource.getActions().stream().toList());
+    public List<ActionItem> getGrantablePermissionsForUser(Long userId, Long resourceId) {
+        List<ActionItem> givenPermissions = permissionRepository.getActionItemsByAppUserIdAndResourceId(userId, resourceId);
+        List<ActionItem> allPermissions = resourceRepository.getActionItemsByResourceId(resourceId);
         allPermissions.removeAll(givenPermissions);
-        return actionMapper.toDTOList(allPermissions);
+        return allPermissions;
     }
 
-    public List<ActionDto> getGrantablePermissionsForRole(Long roleId, Long resourceId) {
-        AppRole appRole = roleRepository.findByIdAndDeletedFalse(roleId);
-        Resource resource = resourceRepository.findByIdAndDeletedFalse(resourceId);
-        List<Action> givenPermissions =
-                permissionRepository.findByAppRoleIdAndResourceIdAndDeletedFalse(appRole.getId(), resource.getId())
-                .stream().map(AppPermission::getAction).toList();
-        List<Action> allPermissions = new ArrayList<>(resource.getActions().stream().toList());
+    public List<ActionItem> getGrantablePermissionsForRole(Long roleId, Long resourceId) {
+        List<ActionItem> givenPermissions = permissionRepository.getActionItemsByAppRoleIdAndResourceId(roleId, resourceId);
+        List<ActionItem> allPermissions = resourceRepository.getActionItemsByResourceId(resourceId);
         allPermissions.removeAll(givenPermissions);
-        return actionMapper.toDTOList(allPermissions);
+        return allPermissions;
     }
 
     public UserPermissionDto updateUserPermissions(UserPermissionDto dto) {

@@ -19,8 +19,8 @@ public class ProductGroupController {
     private final LocalizationService i18n;
 
     @GetMapping
-    public ResponseEntity<Response<List<ProductGroupDto>>> getAll() {
-        return ResponseEntity.ok(Response.successData(productGroupService.findAll()));
+    public ResponseEntity<Response<List<ProductGroupItem>>> getAll() {
+        return ResponseEntity.ok(Response.successData(productGroupService.getAllItems()));
     }
 
     @GetMapping("/getExcluded/{id}")
@@ -29,17 +29,17 @@ public class ProductGroupController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response<ProductGroupDto>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(Response.successData(productGroupService.findById(id)));
+    public ResponseEntity<Response<ProductGroupItem>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(Response.successData(productGroupService.getItemById(id)));
     }
 
     @PostMapping
-    public ResponseEntity<Response<ProductGroupDto>> create(@RequestBody ProductGroupDto dto) {
+    public ResponseEntity<Response<ProductGroupItem>> create(@RequestBody ProductGroupDto dto) {
         return ResponseEntity.ok(Response.successData(productGroupService.create(dto)));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<ProductGroupDto>> update(@PathVariable Long id,
+    public ResponseEntity<Response<ProductGroupItem>> update(@PathVariable Long id,
                                                         @RequestBody ProductGroupDto dto) {
         return ResponseEntity.ok(Response.successData(productGroupService.update(id, dto)));
     }

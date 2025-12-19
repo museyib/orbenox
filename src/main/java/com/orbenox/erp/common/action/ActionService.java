@@ -9,9 +9,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ActionService {
     private final ActionRepository actionRepository;
-    private final ActionMapper actionMapper;
 
-    public List<ActionDto> findAll() {
-        return actionMapper.toDTOList(actionRepository.findAllByDeletedFalseOrderByIdAsc());
+    public List<ActionItem> getAllItems() {
+        return actionRepository.getAllItems();
     }
 }

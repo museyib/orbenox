@@ -1,7 +1,7 @@
 package com.orbenox.erp.security.controller;
 
 import com.orbenox.erp.common.Response;
-import com.orbenox.erp.common.action.ActionDto;
+import com.orbenox.erp.common.action.ActionItem;
 import com.orbenox.erp.security.dto.RolePermissionDto;
 import com.orbenox.erp.security.dto.UserPermissionDto;
 import com.orbenox.erp.security.service.PermissionService;
@@ -26,8 +26,8 @@ public class PermissionController {
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
     @GetMapping("/availableForUser")
-    public ResponseEntity<Response<List<ActionDto>>> getAvailableForUser(@RequestParam Long userId,
-                                                                         @RequestParam Long resourceId) {
+    public ResponseEntity<Response<List<ActionItem>>> getAvailableForUser(@RequestParam Long userId,
+                                                                          @RequestParam Long resourceId) {
         return ResponseEntity.ok(Response.successData(permissionService.getGrantablePermissionsForUser(userId, resourceId)));
     }
 
@@ -45,7 +45,7 @@ public class PermissionController {
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
     @GetMapping("/availableForRole")
-    public ResponseEntity<Response<List<ActionDto>>> getAvailableForRole(@RequestParam Long roleId,
+    public ResponseEntity<Response<List<ActionItem>>> getAvailableForRole(@RequestParam Long roleId,
                                                                          @RequestParam Long resourceId) {
         return ResponseEntity.ok(Response.successData(permissionService.getGrantablePermissionsForRole(roleId, resourceId)));
     }

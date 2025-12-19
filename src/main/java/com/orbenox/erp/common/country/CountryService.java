@@ -1,6 +1,5 @@
 package com.orbenox.erp.common.country;
 
-import com.orbenox.erp.localization.LocalizationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,33 +11,30 @@ import java.util.List;
 public class CountryService {
     private final CountryRepository countryRepository;
     private final CountryMapper countryMapper;
-    private final LocalizationService i18n;
 
-    public List<CountryDto> findAll() {
-        return countryMapper.toDtoList(countryRepository.findAllByDeletedFalseOrderByIdAsc());
+    public List<CountryItem> findAll() {
+        return countryRepository.getAllItems();
     }
 
-    public CountryDto findById(Long id) {
-        return countryMapper.toDto(countryRepository.findByIdAndDeletedFalse(id));
+    public CountryItem findById(Long id) {
+        return countryRepository.getItemById(id);
     }
 
-    public CountryDto create(CountryDto dto) {
-        return countryMapper.toDto(countryRepository.save(countryMapper.toEntity(dto)));
+    public CountryItem create(CountryDto dto) {
+        Country country = countryRepository.save(countryMapper.toEntity(dto));
+        return countryRepository.getItemById(country.getId());
     }
 
-    public CountryDto update(Long id, CountryDto dto) {
+    @Transactional
+    public CountryItem update(Long id, CountryDto dto) {
         Country country = countryRepository.findByIdAndDeletedFalse(id);
         countryMapper.updateEntityFromDto(dto, country);
-        return countryMapper.toDto(countryRepository.save(country));
+        return countryRepository.getItemById(id);
     }
 
     @Transactional
     public void softDelete(Long id) {
         Country entity = countryRepository.findByIdAndDeletedFalse(id);
         entity.setDeleted(true);
-        Country saved  = countryRepository.save(entity);
-        if (!saved.isDeleted()) {
-            throw new IllegalStateException(i18n.msg("error.internal"));
-        }
     }
 }
