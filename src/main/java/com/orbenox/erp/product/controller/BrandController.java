@@ -2,6 +2,7 @@ package com.orbenox.erp.product.controller;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.product.dto.BrandDto;
+import com.orbenox.erp.product.projection.BrandItem;
 import com.orbenox.erp.product.service.BrandService;
 import com.orbenox.erp.localization.LocalizationService;
 import lombok.RequiredArgsConstructor;
@@ -18,22 +19,22 @@ public class BrandController {
     private final LocalizationService i18n;
 
     @GetMapping
-    public ResponseEntity<Response<List<BrandDto>>> getAll() {
-        return ResponseEntity.ok(Response.successData(brandService.findAll()));
+    public ResponseEntity<Response<List<BrandItem>>> getAll() {
+        return ResponseEntity.ok(Response.successData(brandService.getAllItems()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response<BrandDto>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(Response.successData(brandService.findById(id)));
+    public ResponseEntity<Response<BrandItem>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(Response.successData(brandService.getItemById(id)));
     }
 
     @PostMapping
-    public ResponseEntity<Response<BrandDto>> create(@RequestBody BrandDto dto) {
+    public ResponseEntity<Response<BrandItem>> create(@RequestBody BrandDto dto) {
         return ResponseEntity.ok(Response.successData(brandService.create(dto)));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<BrandDto>> update(@PathVariable Long id,
+    public ResponseEntity<Response<BrandItem>> update(@PathVariable Long id,
                                                         @RequestBody BrandDto dto) {
         return ResponseEntity.ok(Response.successData(brandService.update(id, dto)));
     }

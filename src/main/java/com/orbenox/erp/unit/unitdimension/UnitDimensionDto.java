@@ -1,4 +1,4 @@
-package com.orbenox.erp.unit;
+package com.orbenox.erp.unit.unitdimension;
 
 import java.io.Serializable;
 

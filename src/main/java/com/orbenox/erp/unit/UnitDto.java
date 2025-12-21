@@ -1,5 +1,7 @@
 package com.orbenox.erp.unit;
 
+import com.orbenox.erp.unit.unitdimension.UnitDimensionDto;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -7,5 +9,5 @@ import java.math.BigDecimal;
  * DTO for {@link Unit}
  */
 public record UnitDto(Long id, Boolean enabled, String code, String name, UnitDimensionDto unitDimension,
-                      Boolean isBase, BigDecimal factorToBase, BigDecimal offsetToBase) implements Serializable {
+                      Boolean base, BigDecimal factorToBase, BigDecimal offsetToBase) implements Serializable {
 }

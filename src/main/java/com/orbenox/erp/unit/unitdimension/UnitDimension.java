@@ -1,4 +1,4 @@
-package com.orbenox.erp.unit;
+package com.orbenox.erp.unit.unitdimension;
 
 import com.orbenox.erp.common.entity.BaseCardEntity;
 import jakarta.persistence.Column;

@@ -16,7 +16,7 @@ VALUES
     ('VOLUME', 'Həcm', 'system'),
     ('TEMPERATURE', 'Temperatur', 'system');
 
-INSERT INTO unit (code, unit_dimension_id, is_base, factor_to_base, offset_to_base, name, created_by)
+INSERT INTO unit (code, unit_dimension_id, base, factor_to_base, offset_to_base, name, created_by)
 VALUES
     ('PCS', 1, TRUE, 1, 0, 'Ədəd', 'system'),
     ('KG', 2, FALSE, 1000, 0, 'Kiloqram', 'system'),

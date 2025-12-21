@@ -1,9 +1,9 @@
 package com.orbenox.erp.product.service;
 
-import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.product.dto.ProductTypeDto;
 import com.orbenox.erp.product.entity.ProductType;
 import com.orbenox.erp.product.mapper.ProductTypeMapper;
+import com.orbenox.erp.product.projection.ProductTypeItem;
 import com.orbenox.erp.product.repository.ProductTypeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,33 +16,30 @@ import java.util.List;
 public class ProductTypeService {
     private final ProductTypeRepository productTypeRepository;
     private final ProductTypeMapper productTypeMapper;
-    private final LocalizationService i18n;
 
-    public List<ProductTypeDto> findAll() {
-        return productTypeMapper.toDtoList(productTypeRepository.findAllByDeletedFalseOrderByIdAsc());
+    public List<ProductTypeItem> findAll() {
+        return productTypeRepository.getAllItems();
     }
 
-    public ProductTypeDto findById(Long id) {
-        return productTypeMapper.toDto(productTypeRepository.findByIdAndDeletedFalse(id));
+    public ProductTypeItem findById(Long id) {
+        return productTypeRepository.getItemById(id);
     }
 
-    public ProductTypeDto create(ProductTypeDto dto) {
-        return productTypeMapper.toDto(productTypeRepository.save(productTypeMapper.toEntity(dto)));
+    public ProductTypeItem create(ProductTypeDto dto) {
+        ProductType productType = productTypeRepository.save(productTypeMapper.toEntity(dto));
+        return productTypeRepository.getItemById(productType.getId());
     }
 
-    public ProductTypeDto update(Long id, ProductTypeDto dto) {
+    @Transactional
+    public ProductTypeItem update(Long id, ProductTypeDto dto) {
         ProductType entity = productTypeRepository.findByIdAndDeletedFalse(id);
         productTypeMapper.updateEntityFromDto(dto, entity);
-        return productTypeMapper.toDto(productTypeRepository.save(entity));
+        return productTypeRepository.getItemById(id);
     }
 
     @Transactional
     public void softDelete(Long id) {
         ProductType entity = productTypeRepository.findByIdAndDeletedFalse(id);
         entity.setDeleted(true);
-        ProductType saved = productTypeRepository.save(entity);
-        if (!saved.isDeleted()) {
-            throw new IllegalStateException(i18n.msg("error.internal"));
-        }
     }
 }

@@ -2,6 +2,8 @@ package com.orbenox.erp.unit;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -9,9 +11,48 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
     @EntityGraph(attributePaths = "unitDimension")
     Unit findByIdAndDeletedFalse(Long id);
 
-    @EntityGraph(attributePaths = "unitDimension")
-    List<Unit> findAllByUnitDimensionIdAndDeletedFalseOrderByIdAsc(Long unitDimensionId);
+    @Query("""
+        SELECT u.id as id,
+               u.code as code,
+               u.name as name,
+               u.enabled as enabled,
+               u.base as base,
+               u.factorToBase as factorToBase,
+               u.offsetToBase as offsetToBase,
+               d as unitDimension
+        FROM Unit u
+        LEFT JOIN u.unitDimension d
+        WHERE u.deleted = false
+        ORDER BY u.id""")
+    List<UnitItem> getAllItems();
 
-    @EntityGraph(attributePaths = "unitDimension")
-    List<Unit> findAllByDeletedFalseOrderByIdAsc();
+    @Query("""
+        SELECT u.id as id,
+               u.code as code,
+               u.name as name,
+               u.enabled as enabled,
+               u.base as base,
+               u.factorToBase as factorToBase,
+               u.offsetToBase as offsetToBase,
+               d as unitDimension
+        FROM Unit u
+        LEFT JOIN u.unitDimension d
+        WHERE u.unitDimension.id = :unitDimensionId AND u.deleted = false
+        ORDER BY u.id""")
+    List<UnitItem> getItemsByUnitDimensionId(@Param("unitDimensionId") Long unitDimensionId);
+
+    @Query("""
+        SELECT u.id as id,
+               u.code as code,
+               u.name as name,
+               u.enabled as enabled,
+               u.base as base,
+               u.factorToBase as factorToBase,
+               u.offsetToBase as offsetToBase,
+               d as unitDimension
+        FROM Unit u
+        LEFT JOIN u.unitDimension d
+        WHERE u.id = :id AND u.deleted = false
+        ORDER BY u.id""")
+    UnitItem getItemById(@Param("id") Long id);
 }

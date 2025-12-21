@@ -1,6 +1,8 @@
 package com.orbenox.erp.unit;
 
-import com.orbenox.erp.localization.LocalizationService;
+import com.orbenox.erp.unit.unitdimension.UnitDimension;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,36 +13,37 @@ import java.util.List;
 public class UnitService {
     private final UnitMapper unitMapper;
     private final UnitRepository unitRepository;
-    private final LocalizationService i18n;
+    private final EntityManager em;
 
-    public List<UnitDto> findAll() {
-        return unitMapper.toDtoList(unitRepository.findAllByDeletedFalseOrderByIdAsc());
+    public List<UnitItem> getAllItems() {
+        return unitRepository.getAllItems();
     }
 
-    public List<UnitDto> findAllByDimensionId(Long dimensionId) {
-        return unitMapper.toDtoList(unitRepository.findAllByUnitDimensionIdAndDeletedFalseOrderByIdAsc(dimensionId));
+    public List<UnitItem> findAllByDimensionId(Long dimensionId) {
+        return unitRepository.getItemsByUnitDimensionId(dimensionId);
     }
 
-    public UnitDto findById(Long id) {
-        return unitMapper.toDto(unitRepository.findByIdAndDeletedFalse(id));
+    public UnitItem findById(Long id) {
+        return unitRepository.getItemById(id);
     }
 
-    public UnitDto create(UnitDto unitDto) {
-        return unitMapper.toDto(unitRepository.save(unitMapper.toEntity(unitDto)));
+    public UnitItem create(UnitDto unitDto) {
+        Unit unit = unitRepository.save(unitMapper.toEntity(unitDto));
+        return unitRepository.getItemById(unit.getId());
     }
 
-    public UnitDto update(Long id, UnitDto unitDto) {
-        var unit = unitRepository.findByIdAndDeletedFalse(id);
+    @Transactional
+    public UnitItem update(Long id, UnitDto unitDto) {
+        Unit unit = unitRepository.findByIdAndDeletedFalse(id);
         unitMapper.updateEntityFromDto(unitDto, unit);
-        return unitMapper.toDto(unitRepository.save(unit));
+        UnitDimension unitDimension = em.getReference(UnitDimension.class, unitDto.unitDimension().id());
+        unit.setUnitDimension(unitDimension);
+        return unitRepository.getItemById(id);
     }
 
+    @Transactional
     public void softDelete(Long id) {
         Unit unit = unitRepository.findByIdAndDeletedFalse(id);
         unit.setDeleted(true);
-        Unit saved = unitRepository.save(unit);
-        if (!saved.isDeleted()) {
-            throw new IllegalStateException(i18n.msg("error.internal"));
-        }
     }
 }

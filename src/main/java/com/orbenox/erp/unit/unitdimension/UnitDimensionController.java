@@ -1,4 +1,4 @@
-package com.orbenox.erp.unit;
+package com.orbenox.erp.unit.unitdimension;
 
 import com.orbenox.erp.common.Response;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ public class UnitDimensionController {
     private final UnitDimensionService unitService;
 
     @GetMapping
-    public ResponseEntity<Response<List<UnitDimensionDto>>> getAll() {
-        return ResponseEntity.ok(Response.successData(unitService.findAll()));
+    public ResponseEntity<Response<List<UnitDimensionItem>>> getAll() {
+        return ResponseEntity.ok(Response.successData(unitService.getAllItems()));
     }
 }

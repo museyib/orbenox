@@ -3,6 +3,7 @@ package com.orbenox.erp.product.controller;
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.product.dto.ProductCategoryDto;
+import com.orbenox.erp.product.projection.ProductCategoryItem;
 import com.orbenox.erp.product.service.ProductCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,22 +19,22 @@ public class ProductCategoryController {
     private final LocalizationService i18n;
 
     @GetMapping
-    public ResponseEntity<Response<List<ProductCategoryDto>>> getAll() {
-        return ResponseEntity.ok(Response.successData(productCategoryService.findAll()));
+    public ResponseEntity<Response<List<ProductCategoryItem>>> getAll() {
+        return ResponseEntity.ok(Response.successData(productCategoryService.getAllItems()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response<ProductCategoryDto>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(Response.successData(productCategoryService.findById(id)));
+    public ResponseEntity<Response<ProductCategoryItem>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(Response.successData(productCategoryService.getItemById(id)));
     }
 
     @PostMapping
-    public ResponseEntity<Response<ProductCategoryDto>> create(@RequestBody ProductCategoryDto dto) {
+    public ResponseEntity<Response<ProductCategoryItem>> create(@RequestBody ProductCategoryDto dto) {
         return ResponseEntity.ok(Response.successData(productCategoryService.create(dto)));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<ProductCategoryDto>> update(@PathVariable Long id,
+    public ResponseEntity<Response<ProductCategoryItem>> update(@PathVariable Long id,
                                                         @RequestBody ProductCategoryDto dto) {
         return ResponseEntity.ok(Response.successData(productCategoryService.update(id, dto)));
     }

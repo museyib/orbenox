@@ -105,7 +105,7 @@ CREATE TABLE unit (
     unit_dimension_id BIGINT NOT NULL REFERENCES unit_dimension(id),
     code VARCHAR(100) UNIQUE NOT NULL,
     name VARCHAR(255),
-    is_base BOOLEAN NOT NULL DEFAULT FALSE,
+    base BOOLEAN NOT NULL DEFAULT FALSE,
     factor_to_base NUMERIC(20,10) NOT NULL,
     offset_to_base NUMERIC(20,10) NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT now(),
@@ -117,7 +117,7 @@ CREATE TABLE unit (
 );
 CREATE UNIQUE INDEX ux_unit_dimension_base
     ON unit (unit_dimension_id)
-    WHERE is_base = true;
+    WHERE base = true;
 
 CREATE TABLE currency (
     id BIGSERIAL PRIMARY KEY,

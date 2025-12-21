@@ -1,14 +1,13 @@
 package com.orbenox.erp.unit;
 
+import com.orbenox.erp.unit.unitdimension.UnitDimensionMapper;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-
-import java.util.List;
 
 @Mapper(componentModel = "spring", uses = UnitDimensionMapper.class)
 public interface UnitMapper {
-    UnitDto toDto(Unit entity);
     Unit toEntity(UnitDto dto);
-    List<UnitDto>  toDtoList(List<Unit> entityList);
+    @Mapping(target = "unitDimension", ignore = true)
     void updateEntityFromDto(UnitDto dto, @MappingTarget Unit entity);
 }

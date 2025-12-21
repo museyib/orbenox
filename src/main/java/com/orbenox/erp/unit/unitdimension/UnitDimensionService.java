@@ -1,4 +1,4 @@
-package com.orbenox.erp.unit;
+package com.orbenox.erp.unit.unitdimension;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,9 +9,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UnitDimensionService {
     private final UnitDimensionRepository unitDimensionRepository;
-    private final UnitDimensionMapper unitDimensionMapper;
 
-    public List<UnitDimensionDto> findAll() {
-        return unitDimensionMapper.toDtoList(unitDimensionRepository.findAll());
+    public List<UnitDimensionItem> getAllItems() {
+        return unitDimensionRepository.getAllItems();
     }
 }

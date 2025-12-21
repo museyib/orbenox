@@ -18,27 +18,27 @@ public class UnitController {
     private final LocalizationService i18n;
 
     @GetMapping
-    public ResponseEntity<Response<List<UnitDto>>> getAll() {
-        return ResponseEntity.ok(Response.successData(unitService.findAll()));
+    public ResponseEntity<Response<List<UnitItem>>> getAll() {
+        return ResponseEntity.ok(Response.successData(unitService.getAllItems()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response<UnitDto>> findById(@PathVariable Long id) {
+    public ResponseEntity<Response<UnitItem>> findById(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(unitService.findById(id)));
     }
 
     @GetMapping("/byDimension/{dimensionId}")
-    public ResponseEntity<Response<List<UnitDto>>> getAllByDimensionId(@PathVariable Long dimensionId) {
+    public ResponseEntity<Response<List<UnitItem>>> getAllByDimensionId(@PathVariable Long dimensionId) {
         return ResponseEntity.ok(Response.successData(unitService.findAllByDimensionId(dimensionId)));
     }
 
     @PostMapping
-    public ResponseEntity<Response<UnitDto>> create(@RequestBody UnitDto uomDto) {
+    public ResponseEntity<Response<UnitItem>> create(@RequestBody UnitDto uomDto) {
         return ResponseEntity.ok(Response.successData(unitService.create(uomDto)));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<UnitDto>> update(@PathVariable Long id,
+    public ResponseEntity<Response<UnitItem>> update(@PathVariable Long id,
                                                     @RequestBody UnitDto uomDto) {
         return ResponseEntity.ok(Response.successData(unitService.update(id, uomDto)));
     }
