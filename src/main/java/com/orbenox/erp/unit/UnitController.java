@@ -2,6 +2,7 @@ package com.orbenox.erp.unit;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
+import com.orbenox.erp.product.projection.ProductItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +23,14 @@ public class UnitController {
         return ResponseEntity.ok(Response.successData(unitService.getAllItems()));
     }
 
+    @GetMapping("/simple")
+    public ResponseEntity<Response<List<ProductItem.Unit>>> getSimpleItems() {
+        return ResponseEntity.ok(Response.successData(unitService.getSimpleItems()));
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<Response<UnitItem>> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(Response.successData(unitService.findById(id)));
+    public ResponseEntity<Response<UnitItem>> getItemById(@PathVariable Long id) {
+        return ResponseEntity.ok(Response.successData(unitService.getItemById(id)));
     }
 
     @GetMapping("/byDimension/{dimensionId}")

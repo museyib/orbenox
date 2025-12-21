@@ -19,13 +19,13 @@ public class CountryController {
     @PreAuthorize("hasPermission('COUNTRY', 'READ')")
     @GetMapping
     public ResponseEntity<Response<List<CountryItem>>> getActions() {
-        return ResponseEntity.ok(Response.successData(countryService.findAll()));
+        return ResponseEntity.ok(Response.successData(countryService.getAllItems()));
     }
 
     @PreAuthorize("hasPermission('COUNTRY', 'READ')")
     @GetMapping("/{id}")
     public ResponseEntity<Response<CountryItem>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(Response.successData(countryService.findById(id)));
+        return ResponseEntity.ok(Response.successData(countryService.getItemById(id)));
     }
 
     @PreAuthorize("hasPermission('COUNTRY', 'CREATE')")

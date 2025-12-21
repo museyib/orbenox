@@ -13,8 +13,6 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper(componentModel = "spring")
 public interface RoleMapper {
-    RoleDto toDTO(AppRole role);
-    List<RoleDto> toDTOList(List<AppRole> roles);
     AppRole toEntity(RoleDto dto);
     Set<AppRole> toEntityList(List<RoleDto> dtoList);
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)

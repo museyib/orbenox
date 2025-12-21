@@ -1,10 +1,10 @@
 package com.orbenox.erp.product.service;
 
-import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.product.dto.ProductDto;
+import com.orbenox.erp.product.entity.Product;
 import com.orbenox.erp.product.mapper.ProductMapper;
-import com.orbenox.erp.product.repository.ProductRepository;
 import com.orbenox.erp.product.projection.ProductItem;
+import com.orbenox.erp.product.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,33 +16,30 @@ import java.util.List;
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    private final LocalizationService i18n;
 
-    public List<ProductItem> findAll() {
+    public List<ProductItem> getAllItems() {
         return productRepository.getAllItems();
     }
 
-    public ProductDto findById(Long id) {
-        return productMapper.toDto(productRepository.findByIdAndDeletedFalse(id));
+    public ProductItem getItemById(Long id) {
+        return productRepository.getItemById(id);
     }
 
-    public ProductDto create(ProductDto dto) {
-        return productMapper.toDto(productRepository.save(productMapper.toEntity(dto)));
+    public ProductItem create(ProductDto dto) {
+        Product product = productRepository.save(productMapper.toEntity(dto));
+        return productRepository.getItemById(product.getId());
     }
 
-    public ProductDto update(Long id, ProductDto dto) {
+    @Transactional
+    public ProductItem update(Long id, ProductDto dto) {
         com.orbenox.erp.product.entity.Product entity = productRepository.findByIdAndDeletedFalse(id);
         productMapper.updateEntityFromDto(dto, entity);
-        return productMapper.toDto(productRepository.save(entity));
+        return productRepository.getItemById(id);
     }
 
     @Transactional
     public void softDelete(Long id) {
         com.orbenox.erp.product.entity.Product entity = productRepository.findByIdAndDeletedFalse(id);
         entity.setDeleted(true);
-        com.orbenox.erp.product.entity.Product saved = productRepository.save(entity);
-        if (!saved.isDeleted()) {
-            throw new IllegalStateException(i18n.msg("error.internal"));
-        }
     }
 }

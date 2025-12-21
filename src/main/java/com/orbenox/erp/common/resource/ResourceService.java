@@ -18,11 +18,11 @@ public class ResourceService {
     private final ResourceMapper resourceMapper;
     private final ActionRepository actionRepository;
 
-    public List<ResourceItem> findAll() {
+    public List<ResourceItem> getAllItems() {
         return resourceRepository.getAllItems();
     }
 
-    public ResourceData findById(Long id) {
+    public ResourceData getItemById(Long id) {
         ResourceItem resourceItem = resourceRepository.getItemById(id);
         List<ActionItem> actionItems = resourceRepository.getActionItemsByResourceId(id);
         ResourceData resourceData = new ResourceData();

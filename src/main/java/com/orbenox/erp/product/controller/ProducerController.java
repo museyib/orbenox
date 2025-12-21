@@ -20,12 +20,12 @@ public class ProducerController {
 
     @GetMapping
     public ResponseEntity<Response<List<ProducerItem>>> getAll() {
-        return ResponseEntity.ok(Response.successData(producerService.findAll()));
+        return ResponseEntity.ok(Response.successData(producerService.getAllItems()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Response<ProducerItem>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(Response.successData(producerService.findById(id)));
+        return ResponseEntity.ok(Response.successData(producerService.getItemById(id)));
     }
 
     @PostMapping

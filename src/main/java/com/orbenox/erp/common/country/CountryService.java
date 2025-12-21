@@ -12,11 +12,11 @@ public class CountryService {
     private final CountryRepository countryRepository;
     private final CountryMapper countryMapper;
 
-    public List<CountryItem> findAll() {
+    public List<CountryItem> getAllItems() {
         return countryRepository.getAllItems();
     }
 
-    public CountryItem findById(Long id) {
+    public CountryItem getItemById(Long id) {
         return countryRepository.getItemById(id);
     }
 

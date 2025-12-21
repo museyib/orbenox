@@ -4,6 +4,8 @@ import com.orbenox.erp.common.Response;
 import com.orbenox.erp.common.action.ActionItem;
 import com.orbenox.erp.security.dto.RolePermissionDto;
 import com.orbenox.erp.security.dto.UserPermissionDto;
+import com.orbenox.erp.security.projection.RolePermissionData;
+import com.orbenox.erp.security.projection.UserPermissionData;
 import com.orbenox.erp.security.service.PermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,7 @@ public class PermissionController {
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
     @GetMapping("/user/{id}")
-    public ResponseEntity<Response<UserPermissionDto>> findByUserId(@PathVariable Long id) {
+    public ResponseEntity<Response<UserPermissionData>> findByUserId(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(permissionService.getDirectUserPermission(id)));
     }
 
@@ -33,13 +35,13 @@ public class PermissionController {
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'UPDATE')")
     @PatchMapping("/user")
-    public ResponseEntity<Response<UserPermissionDto>>  updateUserPermissions(@RequestBody UserPermissionDto permissions) {
+    public ResponseEntity<Response<UserPermissionData>> updateUserPermissions(@RequestBody UserPermissionDto permissions) {
         return ResponseEntity.ok(Response.successData(permissionService.updateUserPermissions(permissions)));
     }
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
     @GetMapping("/role/{id}")
-    public ResponseEntity<Response<RolePermissionDto>> findByRoleId(@PathVariable Long id) {
+    public ResponseEntity<Response<RolePermissionData>> findByRoleId(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(permissionService.getRolePermission(id)));
     }
 
@@ -52,7 +54,7 @@ public class PermissionController {
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'UPDATE')")
     @PatchMapping("/role")
-    public ResponseEntity<Response<UserPermissionDto>>  updateRolePermissions(@RequestBody RolePermissionDto permissions) {
+    public ResponseEntity<Response<RolePermissionData>> updateRolePermissions(@RequestBody RolePermissionDto permissions) {
         return ResponseEntity.ok(Response.successData(permissionService.updateRolePermissions(permissions)));
     }
 }

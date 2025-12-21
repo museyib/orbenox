@@ -4,7 +4,8 @@ import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.security.dto.CreateUserRequest;
 import com.orbenox.erp.security.dto.UpdateUserRequest;
-import com.orbenox.erp.security.dto.UserDto;
+import com.orbenox.erp.security.dto.UserData;
+import com.orbenox.erp.security.projection.UserItem;
 import com.orbenox.erp.security.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,25 +23,25 @@ public class UserController {
 
     @PreAuthorize("hasPermission('APP_USER', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<UserDto>>> getAllUsers() {
-        return ResponseEntity.ok(Response.successData(userService.findAll()));
+    public ResponseEntity<Response<List<UserItem>>> getAllUsers() {
+        return ResponseEntity.ok(Response.successData(userService.getAllItems()));
     }
 
     @PreAuthorize("hasPermission('APP_USER', 'READ')")
     @GetMapping("/{id}")
-    public ResponseEntity<Response<UserDto>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(Response.successData(userService.findById(id)));
+    public ResponseEntity<Response<UserData>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(Response.successData(userService.getItemById(id)));
     }
 
     @PreAuthorize("hasPermission('APP_USER', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<UserDto>> create(@RequestBody CreateUserRequest request) {
+    public ResponseEntity<Response<UserItem>> create(@RequestBody CreateUserRequest request) {
         return ResponseEntity.ok(Response.successData(userService.create(request)));
     }
 
     @PreAuthorize("hasPermission('APP_USER', 'UPDATE')")
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<UserDto>> update(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
+    public ResponseEntity<Response<UserItem>> update(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
         return ResponseEntity.ok(Response.successData(userService.update(id, request)));
     }
 

@@ -5,15 +5,19 @@ import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.security.dto.CreateUserRequest;
 import com.orbenox.erp.security.dto.RoleDto;
 import com.orbenox.erp.security.dto.UpdateUserRequest;
-import com.orbenox.erp.security.dto.UserDto;
-import com.orbenox.erp.security.mapper.RoleMapper;
-import com.orbenox.erp.security.mapper.UserMapper;
+import com.orbenox.erp.security.dto.UserData;
 import com.orbenox.erp.security.entity.AppRole;
 import com.orbenox.erp.security.entity.AppUser;
 import com.orbenox.erp.security.entity.AppUserRole;
+import com.orbenox.erp.security.mapper.RoleMapper;
+import com.orbenox.erp.security.mapper.UserMapper;
+import com.orbenox.erp.security.projection.RoleItem;
+import com.orbenox.erp.security.projection.UserItem;
 import com.orbenox.erp.security.repository.AppUserRoleRepository;
 import com.orbenox.erp.security.repository.RoleRepository;
 import com.orbenox.erp.security.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,38 +39,44 @@ public class UserService {
     private final UserMapper userMapper;
     private final LocalizationService i18n;
     private final RoleMapper roleMapper;
+    private final EntityManager em;
 
-    public List<UserDto> findAll() {
-        return userMapper.toDTOList(userRepository.findByRootFalseAndDeletedFalse());
+    public List<UserItem> getAllItems() {
+        return userRepository.getAllItems();
     }
 
-    public UserDto findById(Long id) {
-        AppUser appUser = userRepository.findByIdAndRootFalseAndDeletedFalse(id).orElseThrow();
-        appUser.setRoles(appUser.getRoles().stream().filter(appRole -> !appRole.isDeleted()).collect(Collectors.toSet()));
-        return userMapper.toDTO(appUser);
+    public UserData getItemById(Long id) {
+        UserItem appUser = userRepository.getItemById(id);
+        List<RoleItem> roles = userRepository.getRolesByUserId(id);
+        UserData userData = new UserData();
+        userData.setUser(appUser);
+        userData.setRoles(roles);
+        return userData;
     }
 
-    public AppUser findByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow();
+    public UserItem getByUsername(String username) {
+        return userRepository.getItemByUsername(username);
     }
 
-    public UserDto create(CreateUserRequest request) {
+    public UserItem create(CreateUserRequest request) {
         AppUser appUser = userMapper.toEntity(request);
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         appUser.setUserType(appUser.getUserType());
         appUser.setRoles(roleMapper.toEntityList(request.getRoles()));
-        return userMapper.toDTO(userRepository.save(appUser));
+        AppUser saved = userRepository.save(appUser);
+        return userRepository.getItemById(saved.getId());
     }
 
-    public UserDto update(Long id, UpdateUserRequest request) {
+    @Transactional
+    public UserItem update(Long id, UpdateUserRequest request) {
         AppUser appUser = userRepository.findByIdAndDeletedFalse(id);
         if (appUser.isRoot()) {
             if (request.getUserType().equals(ADMIN.name()))
                 throw new AlterRootException(i18n.msg("error.alterRoot"));
         }
-        userMapper.updateEntityFromDTO(request,appUser);
+        userMapper.updateEntityFromDto(request, appUser);
         Set<RoleDto> incomingRoles = request.getRoles();
-        Set<RoleDto> existingRoles = userMapper.toDTO(appUser).roles();
+        Set<RoleDto> existingRoles = userMapper.toDto(appUser).roles();
         Set<RoleDto> toRemove = new HashSet<>(existingRoles);
         Set<RoleDto> toAdd = new HashSet<>(incomingRoles);
         toRemove.removeAll(incomingRoles);
@@ -77,7 +87,7 @@ public class UserService {
                 .filter(toAdd::contains)
                 .map(roleDto -> {
                     AppUserRole appUserRole = new AppUserRole();
-                    AppRole appRole = roleRepository.findByIdAndDeletedFalse(roleDto.id());
+                    AppRole appRole = em.getReference(AppRole.class, roleDto.id());
                     appUserRole.setAppUser(appUser);
                     appUserRole.setAppRole(appRole);
                     return appUserRole;
@@ -87,21 +97,19 @@ public class UserService {
 
         if (request.getRoles() != null) {
             Set<AppRole> roles = request.getRoles().stream()
-                    .map(roleDTO -> roleRepository.findByIdAndDeletedFalse(roleDTO.id()))
+                    .map(roleDto -> roleRepository.findByIdAndDeletedFalse(roleDto.id()))
                     .collect(Collectors.toSet());
             appUser.setRoles(roles);
         }
-        return userMapper.toDTO(userRepository.save(appUser));
+        return userRepository.getItemById(id);
     }
 
+    @Transactional
     public void delete(Long id) {
         AppUser appUser = userRepository.findByIdAndDeletedFalse(id);
         if (appUser.getUsername().equals("admin")) {
             throw new AlterRootException(i18n.msg("error.deleteRoot"));
         }
         appUser.setDeleted(true);
-        AppUser deleted = userRepository.save(appUser);
-        if (!deleted.getDeleted())
-            throw new IllegalStateException(i18n.msg("error.internal"));
     }
 }

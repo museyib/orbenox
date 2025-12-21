@@ -1,9 +1,11 @@
 package com.orbenox.erp.security.service;
 
 import com.orbenox.erp.security.dto.RoleDto;
-import com.orbenox.erp.security.mapper.RoleMapper;
 import com.orbenox.erp.security.entity.AppRole;
+import com.orbenox.erp.security.mapper.RoleMapper;
+import com.orbenox.erp.security.projection.RoleItem;
 import com.orbenox.erp.security.repository.RoleRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,31 +17,29 @@ public class RoleService {
     private final RoleRepository roleRepository;
     private final RoleMapper roleMapper;
 
-    public List<RoleDto> findAll() {
-        return roleMapper.toDTOList(roleRepository.findAllByDeletedFalseOrderByIdAsc());
+    public List<RoleItem> getAllItems() {
+        return roleRepository.getAllItems();
     }
 
-    public RoleDto findById(Long id) {
-        return roleMapper.toDTO(roleRepository.findByIdAndDeletedFalse(id));
+    public RoleItem getItemById(Long id) {
+        return roleRepository.getItemById(id);
     }
 
-    public RoleDto save(RoleDto roleDTO) {
-        AppRole appRole = roleMapper.toEntity(roleDTO);
-        return roleMapper.toDTO(roleRepository.save(appRole));
+    public RoleItem save(RoleDto roleDTO) {
+        AppRole appRole = roleRepository.save(roleMapper.toEntity(roleDTO));
+        return roleRepository.getItemById(appRole.getId());
     }
 
-    public RoleDto update(Long id, RoleDto request) {
+    @Transactional
+    public RoleItem update(Long id, RoleDto request) {
         AppRole appRole = roleRepository.findByIdAndDeletedFalse(id);
         roleMapper.updateEntityFromDTO(request, appRole);
-        return roleMapper.toDTO(roleRepository.save(appRole));
+        return roleRepository.getItemById(id);
     }
 
+    @Transactional
     public void softDelete(Long id) {
         AppRole appRole = roleRepository.findByIdAndDeletedFalse(id);
         appRole.setDeleted(true);
-        AppRole saved = roleRepository.save(appRole);
-        if (!saved.isDeleted()) {
-            throw new IllegalStateException("Role has been deleted!");
-        }
     }
 }

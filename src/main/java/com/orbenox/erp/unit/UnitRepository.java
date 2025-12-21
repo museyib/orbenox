@@ -1,5 +1,6 @@
 package com.orbenox.erp.unit;
 
+import com.orbenox.erp.product.projection.ProductItem;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -55,4 +56,15 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
         WHERE u.id = :id AND u.deleted = false
         ORDER BY u.id""")
     UnitItem getItemById(@Param("id") Long id);
+
+
+    @Query("""
+            SELECT u.id as id,
+                   u.code as code,
+                   u.name as name,
+                   u.enabled as enabled
+            FROM Unit u
+            WHERE u.deleted = false
+            ORDER BY u.id""")
+    List<ProductItem.Unit> getSimpleItems();
 }

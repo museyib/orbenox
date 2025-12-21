@@ -1,6 +1,6 @@
 package com.orbenox.erp.security.service;
 
-import com.orbenox.erp.security.entity.AppUser;
+import com.orbenox.erp.security.projection.UserItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
@@ -19,7 +19,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
         if (authentication.getPrincipal() instanceof UserDetails userDetails) {
-            AppUser appUser = userService.findByUsername(userDetails.getUsername());
+            UserItem appUser = userService.getByUsername(userDetails.getUsername());
             String permissionCode = targetDomainObject +  ":" + permission;
             boolean isAdmin = appUser.getUserType().name().equals("ADMIN");
 
@@ -34,7 +34,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
     @Override
     public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) {
         if (authentication.getPrincipal() instanceof UserDetails userDetails) {
-            AppUser appUser = userService.findByUsername(userDetails.getUsername());
+            UserItem appUser = userService.getByUsername(userDetails.getUsername());
             String permissionCode = targetType + ":" + permission;
             boolean isAdmin = appUser.getUserType().name().equals("ADMIN");
 

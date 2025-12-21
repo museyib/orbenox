@@ -20,12 +20,12 @@ public class ProductClassController {
 
     @GetMapping
     public ResponseEntity<Response<List<ProductClassItem>>> getAll() {
-        return ResponseEntity.ok(Response.successData(productClassService.findAll()));
+        return ResponseEntity.ok(Response.successData(productClassService.getAllItems()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Response<ProductClassItem>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(Response.successData(productClassService.findById(id)));
+        return ResponseEntity.ok(Response.successData(productClassService.getItemById(id)));
     }
 
     @PostMapping

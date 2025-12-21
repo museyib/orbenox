@@ -17,12 +17,12 @@ public class CurrencyController {
 
     @GetMapping
     public ResponseEntity<Response<List<CurrencyItem>>> getAll() {
-        return ResponseEntity.ok(Response.successData(currencyService.findAll()));
+        return ResponseEntity.ok(Response.successData(currencyService.getAllItems()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Response<CurrencyItem>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(Response.successData(currencyService.findById(id)));
+        return ResponseEntity.ok(Response.successData(currencyService.getItemById(id)));
     }
 
     @PostMapping

@@ -12,11 +12,11 @@ public class CurrencyService {
     private final CurrencyRepository currencyRepository;
     private final CurrencyMapper currencyMapper;
 
-    public List<CurrencyItem> findAll() {
+    public List<CurrencyItem> getAllItems() {
         return currencyRepository.getAllItems();
     }
 
-    public CurrencyItem findById(Long id) {
+    public CurrencyItem getItemById(Long id) {
         return currencyRepository.getItemById(id);
     }
 

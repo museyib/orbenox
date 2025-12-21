@@ -19,13 +19,13 @@ public class ResourceController {
     @PreAuthorize("hasPermission('RESOURCE', 'READ')")
     @GetMapping
     public ResponseEntity<Response<List<ResourceItem>>> getActions() {
-        return ResponseEntity.ok(Response.successData(resourceService.findAll()));
+        return ResponseEntity.ok(Response.successData(resourceService.getAllItems()));
     }
 
     @PreAuthorize("hasPermission('RESOURCE', 'READ')")
     @GetMapping("/{id}")
     public ResponseEntity<Response<ResourceData>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(Response.successData(resourceService.findById(id)));
+        return ResponseEntity.ok(Response.successData(resourceService.getItemById(id)));
     }
 
     @PreAuthorize("hasPermission('RESOURCE', 'CREATE')")

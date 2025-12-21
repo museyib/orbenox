@@ -8,15 +8,12 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-import java.util.List;
-
 import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper(componentModel = "spring", uses = {RoleMapper.class})
 public interface UserMapper {
-    UserDto toDTO(AppUser user);
-    List<UserDto> toDTOList(List<AppUser> users);
+    UserDto toDto(AppUser user);
     AppUser toEntity(CreateUserRequest user);
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
-    void updateEntityFromDTO(UpdateUserRequest dto,  @MappingTarget AppUser user);
+    void updateEntityFromDto(UpdateUserRequest dto, @MappingTarget AppUser user);
 }

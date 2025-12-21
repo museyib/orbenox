@@ -17,11 +17,11 @@ public class ProductClassService {
     private final ProductClassRepository productClassRepository;
     private final ProductClassMapper productClassMapper;
 
-    public List<ProductClassItem> findAll() {
+    public List<ProductClassItem> getAllItems() {
         return productClassRepository.getAllItems();
     }
 
-    public ProductClassItem findById(Long id) {
+    public ProductClassItem getItemById(Long id) {
         return productClassRepository.getItemById(id);
     }
 

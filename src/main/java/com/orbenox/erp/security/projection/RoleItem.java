@@ -1,8 +1,10 @@
-package com.orbenox.erp.common.resource;
+package com.orbenox.erp.security.projection;
 
-public interface ResourceItem {
+public interface RoleItem {
     Long getId();
+
     String getCode();
+
     String getName();
 
     boolean isEnabled();

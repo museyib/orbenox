@@ -3,6 +3,7 @@ package com.orbenox.erp.security.controller;
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.security.dto.RoleDto;
+import com.orbenox.erp.security.projection.RoleItem;
 import com.orbenox.erp.security.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,25 +21,25 @@ public class RoleController {
 
     @PreAuthorize("hasPermission('APP_ROLE', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<RoleDto>>> getAll() {
-        return ResponseEntity.ok(Response.successData(roleService.findAll()));
+    public ResponseEntity<Response<List<RoleItem>>> getAll() {
+        return ResponseEntity.ok(Response.successData(roleService.getAllItems()));
     }
 
     @PreAuthorize("hasPermission('APP_ROLE', 'READ')")
     @GetMapping("/{id}")
-    public ResponseEntity<Response<RoleDto>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(Response.successData(roleService.findById(id)));
+    public ResponseEntity<Response<RoleItem>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(Response.successData(roleService.getItemById(id)));
     }
 
     @PreAuthorize("hasPermission('APP_ROLE', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<RoleDto>> create(@RequestBody RoleDto appRole) {
+    public ResponseEntity<Response<RoleItem>> create(@RequestBody RoleDto appRole) {
         return ResponseEntity.ok(Response.successData(roleService.save(appRole)));
     }
 
     @PreAuthorize("hasPermission('APP_ROLE', 'UPDATE')")
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<RoleDto>> updateRole(@PathVariable Long id, @RequestBody RoleDto request) {
+    public ResponseEntity<Response<RoleItem>> updateRole(@PathVariable Long id, @RequestBody RoleDto request) {
         return ResponseEntity.ok(Response.successData(roleService.update(id, request)));
     }
 

@@ -17,11 +17,11 @@ public class ProducerService {
     private final ProducerRepository producerRepository;
     private final ProducerMapper producerMapper;
 
-    public List<ProducerItem> findAll() {
+    public List<ProducerItem> getAllItems() {
         return producerRepository.getAllItems();
     }
 
-    public ProducerItem findById(Long id) {
+    public ProducerItem getItemById(Long id) {
         return producerRepository.getItemById(id);
     }
 

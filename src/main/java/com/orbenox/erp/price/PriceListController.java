@@ -17,7 +17,7 @@ public class PriceListController {
 
     @GetMapping
     public ResponseEntity<Response<List<PriceListItem>>> getAll() {
-        return ResponseEntity.ok(Response.successData(priceListService.findAll()));
+        return ResponseEntity.ok(Response.successData(priceListService.getAllItems()));
     }
 
     @GetMapping("/getExcluded/{id}")
@@ -27,7 +27,7 @@ public class PriceListController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Response<PriceListItem>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(Response.successData(priceListService.findById(id)));
+        return ResponseEntity.ok(Response.successData(priceListService.getItemById(id)));
     }
 
     @PostMapping

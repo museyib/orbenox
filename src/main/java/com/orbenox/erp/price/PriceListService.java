@@ -1,5 +1,6 @@
 package com.orbenox.erp.price;
 
+import com.orbenox.erp.currency.Currency;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import com.orbenox.erp.currency.Currency;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +16,7 @@ public class PriceListService {
     private final PriceListMapper priceListMapper;
     private final EntityManager em;
 
-    public List<PriceListItem> findAll() {
+    public List<PriceListItem> getAllItems() {
         return priceListRepository.getAllItems();
     }
     
@@ -48,7 +48,7 @@ public class PriceListService {
         return priceListRepository.getParentPriceListItems(allowedIds);
     }
 
-    public PriceListItem findById(Long id) {
+    public PriceListItem getItemById(Long id) {
         return priceListRepository.getItemById(id);
     }
 
