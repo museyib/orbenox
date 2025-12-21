@@ -33,7 +33,7 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
         SELECT a.id as id,
             a.code as code,
             a.name as name,
-            a.enabled as enabled
+                coalesce(a.enabled, false) as enabled
         FROM Resource r
         LEFT JOIN r.actions a
         WHERE r.id = :resourceId""")

@@ -5,6 +5,7 @@ import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.product.projection.ProductItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -18,6 +19,7 @@ public class UnitController {
     private final UnitConverterService unitConverterService;
     private final LocalizationService i18n;
 
+    @PreAuthorize("hasPermission('UNIT', 'DELETE')")
     @GetMapping
     public ResponseEntity<Response<List<UnitItem>>> getAll() {
         return ResponseEntity.ok(Response.successData(unitService.getAllItems()));
@@ -28,6 +30,7 @@ public class UnitController {
         return ResponseEntity.ok(Response.successData(unitService.getSimpleItems()));
     }
 
+    @PreAuthorize("hasPermission('UNIT', 'READ')")
     @GetMapping("/{id}")
     public ResponseEntity<Response<UnitItem>> getItemById(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(unitService.getItemById(id)));
@@ -38,17 +41,20 @@ public class UnitController {
         return ResponseEntity.ok(Response.successData(unitService.findAllByDimensionId(dimensionId)));
     }
 
+    @PreAuthorize("hasPermission('UNIT', 'CREATE')")
     @PostMapping
     public ResponseEntity<Response<UnitItem>> create(@RequestBody UnitDto uomDto) {
         return ResponseEntity.ok(Response.successData(unitService.create(uomDto)));
     }
 
+    @PreAuthorize("hasPermission('UNIT', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<UnitItem>> update(@PathVariable Long id,
                                                     @RequestBody UnitDto uomDto) {
         return ResponseEntity.ok(Response.successData(unitService.update(id, uomDto)));
     }
 
+    @PreAuthorize("hasPermission('UNIT', 'DELETE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Response<String>> delete(@PathVariable Long id) {
         unitService.softDelete(id);

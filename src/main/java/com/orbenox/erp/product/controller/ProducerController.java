@@ -7,6 +7,7 @@ import com.orbenox.erp.product.projection.ProducerItem;
 import com.orbenox.erp.product.service.ProducerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,27 +19,32 @@ public class ProducerController {
     private final ProducerService producerService;
     private final LocalizationService i18n;
 
+    @PreAuthorize("hasPermission('PRODUCER', 'READ')")
     @GetMapping
     public ResponseEntity<Response<List<ProducerItem>>> getAll() {
         return ResponseEntity.ok(Response.successData(producerService.getAllItems()));
     }
 
+    @PreAuthorize("hasPermission('PRODUCER', 'READ')")
     @GetMapping("/{id}")
     public ResponseEntity<Response<ProducerItem>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(producerService.getItemById(id)));
     }
 
+    @PreAuthorize("hasPermission('PRODUCER', 'CREATE')")
     @PostMapping
     public ResponseEntity<Response<ProducerItem>> create(@RequestBody ProducerDto dto) {
         return ResponseEntity.ok(Response.successData(producerService.create(dto)));
     }
 
+    @PreAuthorize("hasPermission('PRODUCER', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<ProducerItem>> update(@PathVariable Long id,
                                                         @RequestBody ProducerDto dto) {
         return ResponseEntity.ok(Response.successData(producerService.update(id, dto)));
     }
 
+    @PreAuthorize("hasPermission('PRODUCER', 'DELETE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Response<String>> delete(@PathVariable Long id) {
         producerService.softDelete(id);

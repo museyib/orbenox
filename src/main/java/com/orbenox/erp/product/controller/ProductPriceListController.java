@@ -6,6 +6,7 @@ import com.orbenox.erp.product.request.UpdateProductPriceRequest;
 import com.orbenox.erp.product.service.ProductPriceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,11 +15,13 @@ import org.springframework.web.bind.annotation.*;
 public class ProductPriceListController {
     private final ProductPriceService productPriceService;
 
+    @PreAuthorize("hasPermission('PRODUCT_PRICE', 'READ')")
     @GetMapping("/{productId}")
     public ResponseEntity<Response<ProductPricingData>> getAllByProductId(@PathVariable Long productId) {
         return ResponseEntity.ok(Response.successData(productPriceService.getPriceDataByProductId(productId)));
     }
 
+    @PreAuthorize("hasPermission('PRODUCT_PRICE', 'CREATE')")
     @PostMapping
     public ResponseEntity<Response<ProductPricingData>> create(@RequestBody UpdateProductPriceRequest request) {
         return ResponseEntity.ok(Response.successData(productPriceService.updateProductPrices(request)));

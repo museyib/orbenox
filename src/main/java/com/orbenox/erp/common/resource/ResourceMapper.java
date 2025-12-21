@@ -5,6 +5,7 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface ResourceMapper {
+    ResourceDto toDto(Resource entity);
     Resource toEntity(ResourceDto dto);
     void updateEntityFromDto(ResourceDto dto, @MappingTarget Resource entity);
 }
