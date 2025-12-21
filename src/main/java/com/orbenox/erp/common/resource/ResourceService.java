@@ -42,18 +42,17 @@ public class ResourceService {
     }
 
     @Transactional
-    public ResourceItem update(Long id, ResourceDto dto) {
+    public ResourceItem update(Long id, UpdateResourceRequest request) {
         Resource resource = resourceRepository.findByIdAndDeletedFalse(id);
-        resourceMapper.updateEntityFromDto(dto, resource);
-        Set<ActionDto> incomingActions = dto.actions();
+        resourceMapper.updateEntityFromDto(request, resource);
+        Set<ActionDto> incomingActions = request.getActions();
         Set<ActionDto> existingActions = resourceMapper.toDto(resource).actions();
         Set<ActionDto> toRemove = new HashSet<>(existingActions);
         Set<ActionDto> toAdd = new HashSet<>(incomingActions);
         toRemove.removeAll(incomingActions);
         toAdd.removeAll(existingActions);
         resourceActionRepository.deleteByResourceIdAndActions(id, toRemove.stream().map(ActionDto::id).collect(Collectors.toSet()));
-
-        List<ResourceAction> resourceActions = dto.actions().stream()
+        List<ResourceAction> resourceActions = request.getActions().stream()
                 .filter(toAdd::contains)
                 .map(actionDto -> {
                     ResourceAction resourceAction = new ResourceAction();
@@ -62,14 +61,15 @@ public class ResourceService {
                     resourceAction.setResource(resource);
                     return resourceAction;
                 }).toList();
-        resourceActionRepository.saveAll(resourceActions);
 
-        Set<Action> actions = dto.actions().stream()
+        if (!resourceActions.isEmpty())
+            resourceActionRepository.saveAll(resourceActions);
+
+        Set<Action> actions = request.getActions().stream()
                 .map(actionDto -> actionRepository.findByIdAndDeletedFalse(actionDto.id()))
                 .collect(Collectors.toSet());
         resource.setActions(actions);
 
-        resourceRepository.save(resource);
         return resourceRepository.getItemById(id);
     }
 
