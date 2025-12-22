@@ -1,6 +1,5 @@
 package com.orbenox.erp.unit;
 
-import com.orbenox.erp.product.projection.ProductItem;
 import com.orbenox.erp.unit.unitdimension.UnitDimension;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -20,7 +19,7 @@ public class UnitService {
         return unitRepository.getAllItems();
     }
 
-    public List<ProductItem.Unit> getSimpleItems() {
+    public List<SimpleUnitItem> getSimpleItems() {
         return unitRepository.getSimpleItems();
     }
 

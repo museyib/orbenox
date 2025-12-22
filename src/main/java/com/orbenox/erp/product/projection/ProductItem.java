@@ -1,6 +1,7 @@
 package com.orbenox.erp.product.projection;
 
 import com.orbenox.erp.common.country.CountryItem;
+import com.orbenox.erp.unit.SimpleUnitItem;
 
 public interface ProductItem {
     Long getId();
@@ -27,14 +28,5 @@ public interface ProductItem {
 
     CountryItem getCountry();
 
-    Unit getDefaultUnit();
-
-    interface Unit {
-        Long getId();
-
-        String getCode();
-        String getName();
-
-        boolean isEnabled();
-    }
+    SimpleUnitItem getDefaultUnit();
 }

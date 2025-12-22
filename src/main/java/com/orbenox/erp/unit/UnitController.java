@@ -2,7 +2,6 @@ package com.orbenox.erp.unit;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
-import com.orbenox.erp.product.projection.ProductItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,14 +18,14 @@ public class UnitController {
     private final UnitConverterService unitConverterService;
     private final LocalizationService i18n;
 
-    @PreAuthorize("hasPermission('UNIT', 'DELETE')")
+    @PreAuthorize("hasPermission('UNIT', 'READ')")
     @GetMapping
     public ResponseEntity<Response<List<UnitItem>>> getAll() {
         return ResponseEntity.ok(Response.successData(unitService.getAllItems()));
     }
 
     @GetMapping("/simple")
-    public ResponseEntity<Response<List<ProductItem.Unit>>> getSimpleItems() {
+    public ResponseEntity<Response<List<SimpleUnitItem>>> getSimpleItems() {
         return ResponseEntity.ok(Response.successData(unitService.getSimpleItems()));
     }
 

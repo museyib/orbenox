@@ -35,7 +35,7 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
             a.name as name,
                 coalesce(a.enabled, false) as enabled
         FROM Resource r
-        LEFT JOIN r.actions a
+            JOIN r.actions a
         WHERE r.id = :resourceId""")
     List<ActionItem> getActionItemsByResourceId(@Param("resourceId") Long resourceId);
 

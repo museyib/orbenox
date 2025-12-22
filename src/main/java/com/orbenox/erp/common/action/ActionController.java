@@ -4,7 +4,9 @@ import com.orbenox.erp.common.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -16,7 +18,12 @@ public class ActionController {
 
     @PreAuthorize("hasPermission('ACION', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<ActionItem>>> getActions() {
+    public ResponseEntity<Response<List<ActionItem>>> getAllItems() {
+        return ResponseEntity.ok(Response.successData(actionService.getAllItems()));
+    }
+
+    @GetMapping("/simple")
+    public ResponseEntity<Response<List<ActionItem>>> getSimpleItems() {
         return ResponseEntity.ok(Response.successData(actionService.getAllItems()));
     }
 }

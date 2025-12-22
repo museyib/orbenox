@@ -6,12 +6,6 @@ public interface ProductGroupItem {
     String getName();
     String getDescription();
     boolean isEnabled();
-    Parent getParent();
 
-    interface Parent {
-        Long getId();
-        String getCode();
-        String getName();
-        boolean isEnabled();
-    }
+    SimpleProductGroupItem getParent();
 }

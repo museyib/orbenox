@@ -1,7 +1,8 @@
 package com.orbenox.erp.product.repository;
 
-import com.orbenox.erp.product.projection.ProductGroupItem;
 import com.orbenox.erp.product.entity.ProductGroup;
+import com.orbenox.erp.product.projection.ProductGroupItem;
+import com.orbenox.erp.product.projection.SimpleProductGroupItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -45,5 +46,5 @@ public interface ProductGroupRepository extends JpaRepository<ProductGroup, Long
             FROM ProductGroup p
             WHERE p.id IN(:ids) AND p.deleted = false
             ORDER BY p.id""")
-    List<ProductGroupItem.Parent> getParentItems(@Param("ids") List<Long> idsToExclude);
+    List<SimpleProductGroupItem> getSimpleItems(@Param("ids") List<Long> idsToExclude);
 }

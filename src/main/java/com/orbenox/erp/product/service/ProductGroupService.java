@@ -1,9 +1,10 @@
 package com.orbenox.erp.product.service;
 
 import com.orbenox.erp.product.dto.ProductGroupDto;
-import com.orbenox.erp.product.projection.ProductGroupItem;
 import com.orbenox.erp.product.entity.ProductGroup;
 import com.orbenox.erp.product.mapper.ProductGroupMapper;
+import com.orbenox.erp.product.projection.ProductGroupItem;
+import com.orbenox.erp.product.projection.SimpleProductGroupItem;
 import com.orbenox.erp.product.repository.ProductGroupRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class ProductGroupService {
         return productGroupRepository.getAllItems();
     }
 
-    public List<ProductGroupItem.Parent> findAllExcluded(Long idToExclude) {
+    public List<SimpleProductGroupItem> findAllExcluded(Long idToExclude) {
         List<ProductGroupItem> items = productGroupRepository.getAllItems();
         Map<Long, List<ProductGroupItem>> childrenMap = items.stream()
                 .collect(Collectors.groupingBy(
@@ -47,7 +48,7 @@ public class ProductGroupService {
         }
         List<Long> allowedIds = items.stream().map(ProductGroupItem::getId)
                 .filter(id -> !excludedIds.contains(id)).toList();
-        return productGroupRepository.getParentItems(allowedIds);
+        return productGroupRepository.getSimpleItems(allowedIds);
     }
 
     public ProductGroupItem getItemById(Long id) {

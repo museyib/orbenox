@@ -7,6 +7,7 @@ import com.orbenox.erp.product.projection.ProductTypeItem;
 import com.orbenox.erp.product.service.ProductTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,28 +19,32 @@ public class ProductTypeController {
     private final ProductTypeService productTypeService;
     private final LocalizationService i18n;
 
+    @PreAuthorize("hasPermission('PRODUCT_TYPE', 'READ')")
     @GetMapping
     public ResponseEntity<Response<List<ProductTypeItem>>> getAll() {
         return ResponseEntity.ok(Response.successData(productTypeService.getAllItems()));
     }
 
+    @PreAuthorize("hasPermission('PRODUCT_TYPE', 'READ')")
     @GetMapping("/{id}")
     public ResponseEntity<Response<ProductTypeItem>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(Response.successData(productTypeService.getItemById(id)));
     }
 
+    @PreAuthorize("hasPermission('PRODUCT_TYPE', 'CREATE')")
     @PostMapping
     public ResponseEntity<Response<ProductTypeItem>> create(@RequestBody ProductTypeDto dto) {
         return ResponseEntity.ok(Response.successData(productTypeService.create(dto)));
     }
 
+    @PreAuthorize("hasPermission('PRODUCT_TYPE', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<ProductTypeItem>> update(@PathVariable Long id,
                                                         @RequestBody ProductTypeDto dto) {
         return ResponseEntity.ok(Response.successData(productTypeService.update(id, dto)));
     }
 
-    @DeleteMapping("/{id}")
+    @PreAuthorize("hasPermission('PRODUCT_TYPE', 'DELETE')")
     public ResponseEntity<Response<String>> delete(@PathVariable Long id) {
         productTypeService.softDelete(id);
         var text = i18n.msg("productType.deleted", id);

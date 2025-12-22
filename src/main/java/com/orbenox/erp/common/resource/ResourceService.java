@@ -9,7 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,15 +45,9 @@ public class ResourceService {
     public ResourceItem update(Long id, UpdateResourceRequest request) {
         Resource resource = resourceRepository.findByIdAndDeletedFalse(id);
         resourceMapper.updateEntityFromDto(request, resource);
-        Set<ActionDto> incomingActions = request.getActions();
-        Set<ActionDto> existingActions = resourceMapper.toDto(resource).actions();
-        Set<ActionDto> toRemove = new HashSet<>(existingActions);
-        Set<ActionDto> toAdd = new HashSet<>(incomingActions);
-        toRemove.removeAll(incomingActions);
-        toAdd.removeAll(existingActions);
+        Set<ActionDto> toRemove = request.getActionsToRemove();
         resourceActionRepository.deleteByResourceIdAndActions(id, toRemove.stream().map(ActionDto::id).collect(Collectors.toSet()));
-        List<ResourceAction> resourceActions = request.getActions().stream()
-                .filter(toAdd::contains)
+        List<ResourceAction> resourceActions = request.getActionsToAdd().stream()
                 .map(actionDto -> {
                     ResourceAction resourceAction = new ResourceAction();
                     Action action = em.getReference(Action.class, actionDto.id());
@@ -61,11 +55,22 @@ public class ResourceService {
                     resourceAction.setResource(resource);
                     return resourceAction;
                 }).toList();
+        List<ResourceAction> existingActions = resourceRepository.getActionItemsByResourceId(id).stream().map(item -> {
+            ResourceAction resourceAction = new ResourceAction();
+            Action action = em.getReference(Action.class, item.getId());
+            resourceAction.setAction(action);
+            resourceAction.setResource(resource);
+            return resourceAction;
+        }).toList();
 
-        if (!resourceActions.isEmpty())
-            resourceActionRepository.saveAll(resourceActions);
+        List<ResourceAction> allActions = new ArrayList<>();
+        allActions.addAll(resourceActions);
+        allActions.addAll(existingActions);
 
-        Set<Action> actions = request.getActions().stream()
+        if (!allActions.isEmpty())
+            resourceActionRepository.saveAll(allActions);
+
+        Set<Action> actions = request.getActionsToAdd().stream()
                 .map(actionDto -> actionRepository.findByIdAndDeletedFalse(actionDto.id()))
                 .collect(Collectors.toSet());
         resource.setActions(actions);
