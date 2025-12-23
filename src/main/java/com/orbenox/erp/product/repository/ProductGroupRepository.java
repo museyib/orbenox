@@ -37,6 +37,15 @@ public interface ProductGroupRepository extends JpaRepository<ProductGroup, Long
             WHERE p.id = :id and p.deleted = false""")
     ProductGroupItem getItemById(@Param("id") Long id);
 
+    @Query("""
+            SELECT p.id as id,
+                p.code as code,
+                p.name as name,
+                p.enabled as enabled
+            FROM ProductGroup p
+            WHERE p.deleted = false
+            ORDER BY p.id""")
+    List<SimpleProductGroupItem> getSimpleItems();
 
     @Query("""
             SELECT p.id as id,

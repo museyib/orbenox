@@ -31,13 +31,7 @@ public class ResourceService {
     }
 
     public ResourceItem create(ResourceDto dto) {
-        Resource resource = resourceRepository.findByCodeAndDeletedTrue(dto.code());
-        if (resource == null) {
-            resource = resourceMapper.toEntity(dto);
-        } else {
-            resource.setDeleted(false);
-            resourceMapper.updateEntityFromDto(dto, resource);
-        }
+        Resource resource = resourceMapper.toEntity(dto);
         resource.setActions(actionMapper.toEntityList(dto.actions()));
         Resource saved = resourceRepository.save(resource);
         return resourceRepository.getItemById(saved.getId());

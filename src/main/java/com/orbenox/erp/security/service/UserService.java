@@ -46,13 +46,7 @@ public class UserService {
     }
 
     public UserItem create(UserDto dto) {
-        AppUser appUser = userRepository.findByUsernameAndDeletedTrue(dto.username());
-        if (appUser == null) {
-            appUser = userMapper.toEntity(dto);
-        } else {
-            appUser.setDeleted(false);
-            userMapper.updateEntityFromDto(dto, appUser);
-        }
+        AppUser appUser = userMapper.toEntity(dto);
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         appUser.setRoles(roleMapper.toEntityList(dto.roles()));
         AppUser saved = userRepository.save(appUser);
