@@ -2,7 +2,10 @@ package com.orbenox.erp.price;
 
 import com.orbenox.erp.common.entity.BaseCardEntity;
 import com.orbenox.erp.currency.Currency;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 

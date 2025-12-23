@@ -8,5 +8,6 @@ import java.util.Set;
 /**
  * DTO for {@link Resource}
  */
-public record ResourceDto(Long id, String code, String name, Set<ActionDto> actions, Boolean enabled) implements Serializable {
+public record ResourceDto(Long id, String code, String name, Set<ActionDto> actions,
+                          Boolean enabled) implements Serializable {
 }

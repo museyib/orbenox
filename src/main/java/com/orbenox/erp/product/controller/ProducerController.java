@@ -40,7 +40,7 @@ public class ProducerController {
     @PreAuthorize("hasPermission('PRODUCER', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<ProducerItem>> update(@PathVariable Long id,
-                                                        @RequestBody ProducerDto dto) {
+                                                         @RequestBody ProducerDto dto) {
         return ResponseEntity.ok(Response.successData(producerService.update(id, dto)));
     }
 

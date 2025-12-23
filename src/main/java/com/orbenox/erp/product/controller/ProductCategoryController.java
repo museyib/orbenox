@@ -40,7 +40,7 @@ public class ProductCategoryController {
     @PreAuthorize("hasPermission('PRODUCT_CATEGORY', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<ProductCategoryItem>> update(@PathVariable Long id,
-                                                        @RequestBody ProductCategoryDto dto) {
+                                                                @RequestBody ProductCategoryDto dto) {
         return ResponseEntity.ok(Response.successData(productCategoryService.update(id, dto)));
     }
 

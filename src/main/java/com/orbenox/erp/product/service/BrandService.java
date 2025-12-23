@@ -1,7 +1,7 @@
 package com.orbenox.erp.product.service;
 
-import com.orbenox.erp.product.entity.Brand;
 import com.orbenox.erp.product.dto.BrandDto;
+import com.orbenox.erp.product.entity.Brand;
 import com.orbenox.erp.product.mapper.BrandMapper;
 import com.orbenox.erp.product.projection.BrandItem;
 import com.orbenox.erp.product.repository.BrandRepository;

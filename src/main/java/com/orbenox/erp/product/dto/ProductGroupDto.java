@@ -10,5 +10,6 @@ import java.io.Serializable;
 public record ProductGroupDto(Long id, Boolean enabled, String code, String name, String description, String slug,
                               Parent parent)
         implements Serializable {
-    public record Parent(Long id, Boolean enabled, String code, String name) {}
+    public record Parent(Long id, Boolean enabled, String code, String name) {
+    }
 }

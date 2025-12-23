@@ -2,13 +2,13 @@ package com.orbenox.erp.product.service;
 
 import com.orbenox.erp.common.entity.BaseEntity;
 import com.orbenox.erp.price.PriceList;
-import com.orbenox.erp.product.dto.*;
+import com.orbenox.erp.product.dto.ProductPricingData;
 import com.orbenox.erp.product.entity.Product;
 import com.orbenox.erp.product.entity.ProductPrice;
+import com.orbenox.erp.product.projection.ProductPriceItem;
 import com.orbenox.erp.product.repository.ProductPriceRepository;
 import com.orbenox.erp.product.request.ProductPriceRequest;
 import com.orbenox.erp.product.request.UpdateProductPriceRequest;
-import com.orbenox.erp.product.projection.ProductPriceItem;
 import com.orbenox.erp.unit.Unit;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -64,7 +64,7 @@ public class ProductPriceService {
                     entity.setFixedPrice(item.getFixedPrice());
                     return entity;
                 }).toList();
-        List<ProductPrice> toSave =  new ArrayList<>();
+        List<ProductPrice> toSave = new ArrayList<>();
         toSave.addAll(entityListToUpdate);
         toSave.addAll(entityListToInsert);
         productPriceRepository.saveAll(toSave);

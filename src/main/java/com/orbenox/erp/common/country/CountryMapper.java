@@ -6,5 +6,6 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface CountryMapper {
     Country toEntity(CountryDto dto);
+
     void updateEntityFromDto(CountryDto dto, @MappingTarget Country entity);
 }

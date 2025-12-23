@@ -21,7 +21,7 @@ public class Utilities {
     }
 
     private static boolean isEmpty(String text) {
-        return  text == null || text.isEmpty();
+        return text == null || text.isEmpty();
     }
 
     public static void writeErrorResponse(HttpServletResponse response, int code, String message) throws IOException {

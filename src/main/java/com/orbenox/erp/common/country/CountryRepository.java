@@ -9,23 +9,23 @@ import java.util.List;
 public interface CountryRepository extends JpaRepository<Country, Long> {
 
     @Query("""
-        SELECT c.id as id,
-               c.code as code,
-               c.name as name,
-               c.enabled as enabled
-        FROM Country c
-        WHERE c.deleted = false
-        ORDER BY c.id""")
+            SELECT c.id as id,
+                   c.code as code,
+                   c.name as name,
+                   c.enabled as enabled
+            FROM Country c
+            WHERE c.deleted = false
+            ORDER BY c.id""")
     List<CountryItem> getAllItems();
 
     @Query("""
-        SELECT c.id as id,
-               c.code as code,
-               c.name as name,
-               c.enabled as enabled
-        FROM Country c
-        WHERE c.id = :id AND c.deleted = false
-        """)
+            SELECT c.id as id,
+                   c.code as code,
+                   c.name as name,
+                   c.enabled as enabled
+            FROM Country c
+            WHERE c.id = :id AND c.deleted = false
+            """)
     CountryItem getItemById(@Param("id") Long id);
 
     Country findByIdAndDeletedFalse(Long id);

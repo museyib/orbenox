@@ -9,8 +9,8 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
-    ProductDto toDto(Product entity);
+
     Product toEntity(ProductDto dto);
-    List<ProductDto> toDtoList(List<Product> entityList);
+
     void updateEntityFromDto(ProductDto dto, @MappingTarget Product entity);
 }

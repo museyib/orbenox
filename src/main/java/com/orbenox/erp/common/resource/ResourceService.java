@@ -1,27 +1,21 @@
 package com.orbenox.erp.common.resource;
 
 import com.orbenox.erp.common.action.Action;
-import com.orbenox.erp.common.action.ActionDto;
 import com.orbenox.erp.common.action.ActionItem;
-import com.orbenox.erp.common.action.ActionRepository;
-import jakarta.persistence.EntityManager;
+import com.orbenox.erp.common.action.ActionMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ResourceService {
     private final ResourceRepository resourceRepository;
     private final ResourceMapper resourceMapper;
-    private final ActionRepository actionRepository;
-    private final ResourceActionRepository resourceActionRepository;
-    private final EntityManager em;
+    private final ActionMapper actionMapper;
 
     public List<ResourceItem> getAllItems() {
         return resourceRepository.getAllItems();
@@ -37,44 +31,24 @@ public class ResourceService {
     }
 
     public ResourceItem create(ResourceDto dto) {
-        Resource resource = resourceRepository.save(resourceMapper.toEntity(dto));
-        return resourceRepository.getItemById(resource.getId());
+        Resource resource = resourceRepository.findByCodeAndDeletedTrue(dto.code());
+        if (resource == null) {
+            resource = resourceMapper.toEntity(dto);
+        } else {
+            resource.setDeleted(false);
+            resourceMapper.updateEntityFromDto(dto, resource);
+        }
+        resource.setActions(actionMapper.toEntityList(dto.actions()));
+        Resource saved = resourceRepository.save(resource);
+        return resourceRepository.getItemById(saved.getId());
     }
 
     @Transactional
-    public ResourceItem update(Long id, UpdateResourceRequest request) {
+    public ResourceItem update(Long id, ResourceDto dto) {
         Resource resource = resourceRepository.findByIdAndDeletedFalse(id);
-        resourceMapper.updateEntityFromDto(request, resource);
-        Set<ActionDto> toRemove = request.getActionsToRemove();
-        resourceActionRepository.deleteByResourceIdAndActions(id, toRemove.stream().map(ActionDto::id).collect(Collectors.toSet()));
-        List<ResourceAction> resourceActions = request.getActionsToAdd().stream()
-                .map(actionDto -> {
-                    ResourceAction resourceAction = new ResourceAction();
-                    Action action = em.getReference(Action.class, actionDto.id());
-                    resourceAction.setAction(action);
-                    resourceAction.setResource(resource);
-                    return resourceAction;
-                }).toList();
-        List<ResourceAction> existingActions = resourceRepository.getActionItemsByResourceId(id).stream().map(item -> {
-            ResourceAction resourceAction = new ResourceAction();
-            Action action = em.getReference(Action.class, item.getId());
-            resourceAction.setAction(action);
-            resourceAction.setResource(resource);
-            return resourceAction;
-        }).toList();
-
-        List<ResourceAction> allActions = new ArrayList<>();
-        allActions.addAll(resourceActions);
-        allActions.addAll(existingActions);
-
-        if (!allActions.isEmpty())
-            resourceActionRepository.saveAll(allActions);
-
-        Set<Action> actions = request.getActionsToAdd().stream()
-                .map(actionDto -> actionRepository.findByIdAndDeletedFalse(actionDto.id()))
-                .collect(Collectors.toSet());
+        resourceMapper.updateEntityFromDto(dto, resource);
+        Set<Action> actions = actionMapper.toEntityList(dto.actions());
         resource.setActions(actions);
-
         return resourceRepository.getItemById(id);
     }
 

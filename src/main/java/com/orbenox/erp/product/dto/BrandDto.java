@@ -3,7 +3,6 @@ package com.orbenox.erp.product.dto;
 import com.orbenox.erp.product.entity.Brand;
 
 import java.io.Serializable;
-import java.util.Set;
 
 /**
  * DTO for {@link Brand}

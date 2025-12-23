@@ -13,7 +13,7 @@ import static com.orbenox.erp.common.Utilities.getMessage;
 import static com.orbenox.erp.common.Utilities.writeErrorResponse;
 
 @Component
-public class CustomAccessDeniedHandler  implements AccessDeniedHandler {
+public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request,
                        HttpServletResponse response,

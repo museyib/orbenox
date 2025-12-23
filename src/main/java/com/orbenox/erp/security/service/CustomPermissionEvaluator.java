@@ -20,7 +20,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
         if (authentication.getPrincipal() instanceof UserDetails userDetails) {
             UserItem appUser = userService.getByUsername(userDetails.getUsername());
-            String permissionCode = targetDomainObject +  ":" + permission;
+            String permissionCode = targetDomainObject + ":" + permission;
             boolean isAdmin = appUser.getUserType().name().equals("ADMIN");
 
             return isAdmin || permissionService.getUserPermission(appUser.getId())

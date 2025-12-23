@@ -13,25 +13,25 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
     ProductCategory findByIdAndDeletedFalse(Long id);
 
     @Query("""
-        SELECT p.id as id,
-                p.code as code,
-                p.name as name,
-                p.description as description,
-                p.enabled as enabled
-            FROM ProductCategory p
-        WHERE p.deleted = false
-        ORDER BY p.id""")
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled
+                FROM ProductCategory p
+            WHERE p.deleted = false
+            ORDER BY p.id""")
     List<ProductCategoryItem> getAllItems();
 
 
     @Query("""
-        SELECT p.id as id,
-                p.code as code,
-                p.name as name,
-                p.description as description,
-                p.enabled as enabled
-            FROM ProductCategory p
-        WHERE p.id = :id AND p.deleted = false
-        ORDER BY p.id""")
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled
+                FROM ProductCategory p
+            WHERE p.id = :id AND p.deleted = false
+            ORDER BY p.id""")
     ProductCategoryItem getItemById(@Param("id") Long id);
 }

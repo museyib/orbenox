@@ -24,6 +24,7 @@ public class CorsConfig {
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }
+
             @Override
             public void addInterceptors(@NonNull InterceptorRegistry registry) {
                 registry.addInterceptor(interceptor);

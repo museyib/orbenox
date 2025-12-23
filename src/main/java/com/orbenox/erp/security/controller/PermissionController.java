@@ -48,7 +48,7 @@ public class PermissionController {
     @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
     @GetMapping("/availableForRole")
     public ResponseEntity<Response<List<ActionItem>>> getAvailableForRole(@RequestParam Long roleId,
-                                                                         @RequestParam Long resourceId) {
+                                                                          @RequestParam Long resourceId) {
         return ResponseEntity.ok(Response.successData(permissionService.getGrantablePermissionsForRole(roleId, resourceId)));
     }
 

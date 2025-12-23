@@ -49,7 +49,7 @@ public class UnitController {
     @PreAuthorize("hasPermission('UNIT', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<UnitItem>> update(@PathVariable Long id,
-                                                    @RequestBody UnitDto uomDto) {
+                                                     @RequestBody UnitDto uomDto) {
         return ResponseEntity.ok(Response.successData(unitService.update(id, uomDto)));
     }
 

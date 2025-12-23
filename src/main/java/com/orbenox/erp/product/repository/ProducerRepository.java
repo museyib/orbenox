@@ -13,25 +13,25 @@ public interface ProducerRepository extends JpaRepository<Producer, Long> {
     Producer findByIdAndDeletedFalse(Long id);
 
     @Query("""
-        SELECT p.id as id,
-                p.code as code,
-                p.name as name,
-                p.description as description,
-                p.enabled as enabled
-            FROM Producer p
-        WHERE p.deleted = false
-        ORDER BY p.id""")
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled
+                FROM Producer p
+            WHERE p.deleted = false
+            ORDER BY p.id""")
     List<ProducerItem> getAllItems();
 
 
     @Query("""
-        SELECT p.id as id,
-                p.code as code,
-                p.name as name,
-                p.description as description,
-                p.enabled as enabled
-            FROM Producer p
-        WHERE p.id = :id AND p.deleted = false
-        ORDER BY p.id""")
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled
+                FROM Producer p
+            WHERE p.id = :id AND p.deleted = false
+            ORDER BY p.id""")
     ProducerItem getItemById(@Param("id") Long id);
 }

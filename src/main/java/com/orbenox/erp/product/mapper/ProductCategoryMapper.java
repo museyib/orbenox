@@ -8,5 +8,6 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface ProductCategoryMapper {
     ProductCategory toEntity(ProductCategoryDto dto);
+
     void updateEntityFromDto(ProductCategoryDto dto, @MappingTarget ProductCategory entity);
 }

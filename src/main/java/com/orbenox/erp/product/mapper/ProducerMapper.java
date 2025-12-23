@@ -8,5 +8,6 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface ProducerMapper {
     Producer toEntity(ProducerDto dto);
+
     void updateEntityFromDto(ProducerDto dto, @MappingTarget Producer entity);
 }

@@ -42,7 +42,7 @@ public class PriceListController {
     @PreAuthorize("hasPermission('PRICE_LIST', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<PriceListItem>> update(@PathVariable Long id,
-                                                         @RequestBody PriceListDto dto) {
+                                                          @RequestBody PriceListDto dto) {
         return ResponseEntity.ok(Response.successData(priceListService.update(id, dto)));
     }
 

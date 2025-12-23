@@ -8,5 +8,6 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface BrandMapper {
     Brand toEntity(BrandDto dto);
+
     void updateEntityFromDto(BrandDto dto, @MappingTarget Brand entity);
 }

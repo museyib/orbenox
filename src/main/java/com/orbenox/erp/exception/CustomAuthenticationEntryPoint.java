@@ -13,7 +13,7 @@ import static com.orbenox.erp.common.Utilities.getMessage;
 import static com.orbenox.erp.common.Utilities.writeErrorResponse;
 
 @Component
-public class CustomAuthenticationEntryPoint  implements AuthenticationEntryPoint {
+public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,

@@ -6,7 +6,6 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-import java.util.List;
 import java.util.Set;
 
 import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
@@ -14,7 +13,9 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 @Mapper(componentModel = "spring")
 public interface RoleMapper {
     AppRole toEntity(RoleDto dto);
-    Set<AppRole> toEntityList(List<RoleDto> dtoList);
+
+    Set<AppRole> toEntityList(Set<RoleDto> dtoList);
+
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     void updateEntityFromDTO(RoleDto dto, @MappingTarget AppRole role);
 }

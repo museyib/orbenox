@@ -29,18 +29,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(configurer ->  configurer.configure(http))
+                .cors(configurer -> configurer.configure(http))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                matcherRegistry -> matcherRegistry
-                        .requestMatchers("/ui/**", "/api/auth/login").permitAll()
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .anyRequest().authenticated())
+                        matcherRegistry -> matcherRegistry
+                                .requestMatchers("/ui/**", "/api/auth/login").permitAll()
+                                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                                .anyRequest().authenticated())
                 .formLogin(form -> form.loginPage("/ui/login").permitAll())
                 .logout(LogoutConfigurer::permitAll)
                 .exceptionHandling(handlingConfigurer -> handlingConfigurer
-                                .authenticationEntryPoint(customAuthenticationEntryPoint)
-                                .accessDeniedHandler(customAccessDeniedHandler))
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

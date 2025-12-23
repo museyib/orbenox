@@ -1,12 +1,10 @@
 package com.orbenox.erp.common.country;
 
-import com.orbenox.erp.common.action.Action;
 import com.orbenox.erp.common.entity.BaseCardEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Set;
 
 @Getter
 @Setter

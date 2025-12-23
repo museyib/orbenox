@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface RoleRepository  extends JpaRepository<AppRole,Long> {
+public interface RoleRepository extends JpaRepository<AppRole, Long> {
 
     AppRole findByIdAndDeletedFalse(Long id);
 

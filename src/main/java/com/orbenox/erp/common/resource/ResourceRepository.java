@@ -30,14 +30,16 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     ResourceItem getItemById(@Param("id") Long id);
 
     @Query("""
-        SELECT a.id as id,
-            a.code as code,
-            a.name as name,
-                coalesce(a.enabled, false) as enabled
-        FROM Resource r
-            JOIN r.actions a
-        WHERE r.id = :resourceId""")
+            SELECT a.id as id,
+                a.code as code,
+                a.name as name,
+                    coalesce(a.enabled, false) as enabled
+            FROM Resource r
+                JOIN r.actions a
+            WHERE r.id = :resourceId""")
     List<ActionItem> getActionItemsByResourceId(@Param("resourceId") Long resourceId);
 
     Resource findByIdAndDeletedFalse(Long id);
+
+    Resource findByCodeAndDeletedTrue(String code);
 }

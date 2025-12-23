@@ -46,7 +46,7 @@ public class ProductGroupController {
     @PreAuthorize("hasPermission('PRODUCT_GROUP', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<ProductGroupItem>> update(@PathVariable Long id,
-                                                        @RequestBody ProductGroupDto dto) {
+                                                             @RequestBody ProductGroupDto dto) {
         return ResponseEntity.ok(Response.successData(productGroupService.update(id, dto)));
     }
 

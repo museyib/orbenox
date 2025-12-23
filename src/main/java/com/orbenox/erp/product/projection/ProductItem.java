@@ -5,7 +5,9 @@ import com.orbenox.erp.unit.SimpleUnitItem;
 
 public interface ProductItem {
     Long getId();
+
     String getCode();
+
     String getName();
 
     String getDescription();

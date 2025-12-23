@@ -40,7 +40,7 @@ public class BrandController {
     @PreAuthorize("hasPermission('BRAND', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<BrandItem>> update(@PathVariable Long id,
-                                                        @RequestBody BrandDto dto) {
+                                                      @RequestBody BrandDto dto) {
         return ResponseEntity.ok(Response.successData(brandService.update(id, dto)));
     }
 

@@ -2,9 +2,8 @@ package com.orbenox.erp.security.controller;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
-import com.orbenox.erp.security.dto.CreateUserRequest;
-import com.orbenox.erp.security.dto.UpdateUserRequest;
 import com.orbenox.erp.security.dto.UserData;
+import com.orbenox.erp.security.dto.UserDto;
 import com.orbenox.erp.security.projection.UserItem;
 import com.orbenox.erp.security.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -35,14 +34,14 @@ public class UserController {
 
     @PreAuthorize("hasPermission('APP_USER', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<UserItem>> create(@RequestBody CreateUserRequest request) {
-        return ResponseEntity.ok(Response.successData(userService.create(request)));
+    public ResponseEntity<Response<UserItem>> create(@RequestBody UserDto dto) {
+        return ResponseEntity.ok(Response.successData(userService.create(dto)));
     }
 
     @PreAuthorize("hasPermission('APP_USER', 'UPDATE')")
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<UserItem>> update(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
-        return ResponseEntity.ok(Response.successData(userService.update(id, request)));
+    public ResponseEntity<Response<UserItem>> update(@PathVariable Long id, @RequestBody UserDto dto) {
+        return ResponseEntity.ok(Response.successData(userService.update(id, dto)));
     }
 
     @PreAuthorize("hasPermission('APP_USER', 'DELETE')")

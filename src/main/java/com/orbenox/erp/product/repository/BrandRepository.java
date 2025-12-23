@@ -13,25 +13,25 @@ public interface BrandRepository extends JpaRepository<Brand, Long> {
     Brand findByIdAndDeletedFalse(Long id);
 
     @Query("""
-        SELECT p.id as id,
-                p.code as code,
-                p.name as name,
-                p.description as description,
-                p.enabled as enabled
-            FROM Brand p
-        WHERE p.deleted = false
-        ORDER BY p.id""")
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled
+                FROM Brand p
+            WHERE p.deleted = false
+            ORDER BY p.id""")
     List<BrandItem> getAllItems();
 
 
     @Query("""
-        SELECT p.id as id,
-                p.code as code,
-                p.name as name,
-                p.description as description,
-                p.enabled as enabled
-            FROM Brand p
-        WHERE p.id = :id AND p.deleted = false
-        ORDER BY p.id""")
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled
+                FROM Brand p
+            WHERE p.id = :id AND p.deleted = false
+            ORDER BY p.id""")
     BrandItem getItemById(@Param("id") Long id);
 }

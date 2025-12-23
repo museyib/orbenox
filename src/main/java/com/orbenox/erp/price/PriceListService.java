@@ -19,7 +19,7 @@ public class PriceListService {
     public List<PriceListItem> getAllItems() {
         return priceListRepository.getAllItems();
     }
-    
+
     public List<PriceListItem.PriceListParent> findAllExcluded(Long idToExclude) {
         List<PriceListItem> items = priceListRepository.getAllItems();
         Map<Long, List<PriceListItem>> childrenMap = items.stream()
