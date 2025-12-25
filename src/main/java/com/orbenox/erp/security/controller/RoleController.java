@@ -25,11 +25,6 @@ public class RoleController {
         return ResponseEntity.ok(Response.successData(roleService.getAllItems()));
     }
 
-    @GetMapping("/simple")
-    public ResponseEntity<Response<List<RoleItem>>> getSimpleItems() {
-        return ResponseEntity.ok(Response.successData(roleService.getAllItems()));
-    }
-
     @PreAuthorize("hasPermission('APP_ROLE', 'READ')")
     @GetMapping("/{id}")
     public ResponseEntity<Response<RoleItem>> getById(@PathVariable Long id) {

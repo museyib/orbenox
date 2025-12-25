@@ -39,6 +39,7 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
     @Query("""
             SELECT u.id as id,
                 u.username as username,
+                u.password as password,
                 u.displayName as displayName,
                 u.userType as userType,
                 u.enabled as enabled
@@ -56,6 +57,4 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
             WHERE u.id = :userId AND r.deleted = false AND u.root = false
             ORDER BY r.id""")
     List<RoleItem> getRolesByUserId(@Param("userId") Long userId);
-
-    AppUser findByUsernameAndDeletedTrue(String username);
 }

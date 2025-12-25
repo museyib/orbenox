@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.orbenox.erp.security.enums.UserType.ADMIN;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -57,7 +55,7 @@ public class UserService {
     public UserItem update(Long id, UserDto request) {
         AppUser appUser = userRepository.findByIdAndDeletedFalse(id);
         if (appUser.isRoot()) {
-            if (request.userType().equals(ADMIN.name()))
+            if (request.userType().code().equals("ADMIN"))
                 throw new AlterRootException(i18n.msg("error.alterRoot"));
         }
         userMapper.updateEntityFromDto(request, appUser);

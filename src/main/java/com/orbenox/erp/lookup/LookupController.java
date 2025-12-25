@@ -18,7 +18,7 @@ import java.util.Map;
 public class LookupController {
     private final LookupService lookupService;
 
-    @PreAuthorize("hasPermission('PRODUCT', 'CREATE') or hasPermission('PRODUCT', 'UPDATE')")
+    @PreAuthorize("hasPermission('LOOKUP', 'READ')")
     @GetMapping
     public ResponseEntity<Response<Map<String, Object>>> getLookups(@RequestParam List<String> types) {
         return ResponseEntity.ok(Response.successData(lookupService.getLookups(types)));

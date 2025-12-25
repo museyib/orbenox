@@ -1,8 +1,13 @@
 package com.orbenox.erp.lookup;
 
+import com.orbenox.erp.common.action.ActionRepository;
 import com.orbenox.erp.common.country.CountryRepository;
+import com.orbenox.erp.currency.CurrencyRepository;
 import com.orbenox.erp.product.repository.*;
+import com.orbenox.erp.security.repository.RoleRepository;
+import com.orbenox.erp.security.repository.UserTypeRepository;
 import com.orbenox.erp.unit.UnitRepository;
+import com.orbenox.erp.unit.unitdimension.UnitDimensionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -22,6 +27,12 @@ public class LookupService {
     private final ProductGroupRepository productGroupRepository;
     private final UnitRepository unitRepository;
     private final CountryRepository countryRepository;
+    private final UserTypeRepository userTypeRepository;
+    private final ProductRepository productRepository;
+    private final UnitDimensionRepository unitDimensionRepository;
+    private final CurrencyRepository currencyRepository;
+    private final RoleRepository roleRepository;
+    private final ActionRepository actionRepository;
 
     @Cacheable("lookups")
     public Map<String, Object> getLookups(List<String> types) {
@@ -36,6 +47,12 @@ public class LookupService {
                 case "countries" -> result.put("countries", countryRepository.getAllItems());
                 case "productCategories" -> result.put("productCategories", productCategoryRepository.getAllItems());
                 case "producers" -> result.put("producers", producerRepository.getAllItems());
+                case "userTypes" -> result.put("userTypes", userTypeRepository.getAllItems());
+                case "products" -> result.put("products", productRepository.getAllItems());
+                case "unitDimensions" -> result.put("unitDimensions", unitDimensionRepository.getAllItems());
+                case "currencies" -> result.put("currencies", currencyRepository.getAllItems());
+                case "roles" -> result.put("roles", roleRepository.getAllItems());
+                case "actions" -> result.put("actions", actionRepository.getAllItems());
             }
         }
         return result;

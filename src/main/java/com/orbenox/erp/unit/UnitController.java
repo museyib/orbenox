@@ -24,11 +24,6 @@ public class UnitController {
         return ResponseEntity.ok(Response.successData(unitService.getAllItems()));
     }
 
-    @GetMapping("/simple")
-    public ResponseEntity<Response<List<SimpleUnitItem>>> getSimpleItems() {
-        return ResponseEntity.ok(Response.successData(unitService.getSimpleItems()));
-    }
-
     @PreAuthorize("hasPermission('UNIT', 'READ')")
     @GetMapping("/{id}")
     public ResponseEntity<Response<UnitItem>> getItemById(@PathVariable Long id) {

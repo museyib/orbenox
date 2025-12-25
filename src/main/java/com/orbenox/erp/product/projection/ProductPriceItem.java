@@ -7,7 +7,7 @@ public interface ProductPriceItem {
 
     String getPriceKey();
 
-    Product getProduct();
+    SimpleProductItem getProduct();
 
     PriceList getPriceList();
 
@@ -19,7 +19,7 @@ public interface ProductPriceItem {
 
     Boolean getFixedPrice();
 
-    Long getParentId();
+    ProductPriceItem getParent();
 
     interface PriceList {
         Long getId();
@@ -30,14 +30,6 @@ public interface ProductPriceItem {
     }
 
     interface Unit {
-        Long getId();
-
-        String getCode();
-
-        String getName();
-    }
-
-    interface Product {
         Long getId();
 
         String getCode();

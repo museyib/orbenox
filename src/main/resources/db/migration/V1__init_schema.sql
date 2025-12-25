@@ -1,10 +1,26 @@
+CREATE TABLE user_type
+(
+    id         BIGSERIAL PRIMARY KEY,
+    code       VARCHAR(100) NOT NULL,
+    name       VARCHAR(255),
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
+    enabled    BOOLEAN   DEFAULT TRUE,
+    deleted    BOOLEAN   DEFAULT FALSE
+);
+CREATE UNIQUE INDEX ux_user_type_code_active
+    ON user_type (code)
+    WHERE deleted = false;
+
 CREATE TABLE app_user
 (
     id           BIGSERIAL PRIMARY KEY,
-    username VARCHAR(100) NOT NULL,
-    password VARCHAR(200) NOT NULL,
+    username     VARCHAR(100) NOT NULL,
+    password     VARCHAR(200) NOT NULL,
     display_name VARCHAR(200),
-    user_type    VARCHAR(100),
+    user_type_id BIGINT       NOT NULL REFERENCES user_type (id),
     language     VARCHAR(10),
     root         boolean,
     created_at   TIMESTAMP DEFAULT now(),
@@ -21,8 +37,8 @@ CREATE UNIQUE INDEX ux_app_user_username_active
 CREATE TABLE app_role
 (
     id         BIGSERIAL PRIMARY KEY,
-    code VARCHAR(100) NOT NULL,
-    name VARCHAR(100) NOT NULL,
+    code       VARCHAR(100) NOT NULL,
+    name       VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -49,7 +65,7 @@ CREATE TABLE app_user_role
 CREATE TABLE resource
 (
     id         BIGSERIAL PRIMARY KEY,
-    code VARCHAR(100) NOT NULL,
+    code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255),
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
@@ -65,7 +81,7 @@ CREATE UNIQUE INDEX ux_resource_code_active
 CREATE TABLE action
 (
     id         BIGSERIAL PRIMARY KEY,
-    code VARCHAR(100) NOT NULL,
+    code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255),
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
@@ -110,7 +126,7 @@ CREATE TABLE resource_action
 CREATE TABLE unit_dimension
 (
     id         BIGSERIAL PRIMARY KEY,
-    code VARCHAR(100) NOT NULL,
+    code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255),
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
@@ -149,7 +165,7 @@ CREATE UNIQUE INDEX ux_unit_code_active
 CREATE TABLE currency
 (
     id         BIGSERIAL PRIMARY KEY,
-    code VARCHAR(100) NOT NULL,
+    code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255),
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
@@ -165,7 +181,7 @@ CREATE UNIQUE INDEX ux_currency_code_active
 CREATE TABLE country
 (
     id         BIGSERIAL PRIMARY KEY,
-    code VARCHAR(100) NOT NULL,
+    code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255),
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
@@ -181,7 +197,7 @@ CREATE UNIQUE INDEX ux_country_code_active
 CREATE TABLE brand
 (
     id          BIGSERIAL PRIMARY KEY,
-    code VARCHAR(100) NOT NULL,
+    code        VARCHAR(100) NOT NULL,
     name        VARCHAR(255),
     description VARCHAR(1000),
     logo_url    VARCHAR(200),
@@ -199,7 +215,7 @@ CREATE UNIQUE INDEX ux_brand_code_active
 CREATE TABLE producer
 (
     id          BIGSERIAL PRIMARY KEY,
-    code VARCHAR(100) NOT NULL,
+    code        VARCHAR(100) NOT NULL,
     name        VARCHAR(255),
     description VARCHAR(1000),
     created_at  TIMESTAMP DEFAULT now(),
@@ -216,7 +232,7 @@ CREATE UNIQUE INDEX ux_producer_code_active
 CREATE TABLE product_type
 (
     id          BIGSERIAL PRIMARY KEY,
-    code VARCHAR(100) NOT NULL,
+    code        VARCHAR(100) NOT NULL,
     name        VARCHAR(255),
     description VARCHAR(1000),
     created_at  TIMESTAMP DEFAULT now(),
@@ -233,7 +249,7 @@ CREATE UNIQUE INDEX ux_product_type_code_active
 CREATE TABLE product_group
 (
     id          BIGSERIAL PRIMARY KEY,
-    code VARCHAR(100) NOT NULL,
+    code        VARCHAR(100) NOT NULL,
     name        VARCHAR(255),
     description VARCHAR(1000),
     parent_id   BIGINT REFERENCES product_group (id),
@@ -252,7 +268,7 @@ CREATE UNIQUE INDEX ux_product_group_code_active
 CREATE TABLE product_category
 (
     id          BIGSERIAL PRIMARY KEY,
-    code VARCHAR(100) NOT NULL,
+    code        VARCHAR(100) NOT NULL,
     name        VARCHAR(255),
     description VARCHAR(1000),
     created_at  TIMESTAMP DEFAULT now(),
@@ -269,7 +285,7 @@ CREATE UNIQUE INDEX ux_product_category_code_active
 CREATE TABLE product_class
 (
     id          BIGSERIAL PRIMARY KEY,
-    code VARCHAR(100) NOT NULL,
+    code        VARCHAR(100) NOT NULL,
     name        VARCHAR(255),
     description VARCHAR(1000),
     created_at  TIMESTAMP DEFAULT now(),
@@ -286,7 +302,7 @@ CREATE UNIQUE INDEX ux_product_class_code_active
 CREATE TABLE product
 (
     id                  BIGSERIAL PRIMARY KEY,
-    code            VARCHAR(100)       NOT NULL,
+    code                VARCHAR(100)       NOT NULL,
     name                VARCHAR(255),
     description         VARCHAR(2000),
     product_type_id     BIGINT REFERENCES product_type (id),
@@ -297,7 +313,7 @@ CREATE TABLE product
     product_class_id    BIGINT REFERENCES product_class (id),
     country_id          BIGINT REFERENCES country (id),
     default_unit_id     BIGINT REFERENCES unit (id),
-    default_barcode VARCHAR(50) UNIQUE NOT NULL,
+    default_barcode     VARCHAR(50) UNIQUE NOT NULL,
     created_at          TIMESTAMP DEFAULT now(),
     updated_at          TIMESTAMP,
     created_by          VARCHAR(100),
@@ -331,7 +347,7 @@ CREATE UNIQUE INDEX ux_price_list_code_active
 CREATE TABLE warehouse
 (
     id         BIGSERIAL PRIMARY KEY,
-    code VARCHAR(100) NOT NULL,
+    code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255),
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,

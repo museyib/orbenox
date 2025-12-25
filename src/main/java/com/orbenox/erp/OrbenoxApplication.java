@@ -1,8 +1,9 @@
 package com.orbenox.erp;
 
 import com.orbenox.erp.security.entity.AppUser;
-import com.orbenox.erp.security.enums.UserType;
+import com.orbenox.erp.security.entity.UserType;
 import com.orbenox.erp.security.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,14 +18,14 @@ public class OrbenoxApplication {
     }
 
     @Bean
-    public CommandLineRunner init(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner init(UserRepository userRepository, PasswordEncoder passwordEncoder, EntityManager em) {
         return (args) -> {
             if (userRepository.findByUsername("admin").isEmpty()) {
                 AppUser admin = new AppUser();
                 admin.setUsername("admin");
                 admin.setPassword(passwordEncoder.encode("admin"));
                 admin.setDisplayName("Admin");
-                admin.setUserType(UserType.ADMIN);
+                admin.setUserType(em.getReference(UserType.class, 1L));
                 admin.setRoot(true);
                 admin.setCreatedBy("system");
                 admin.setEnabled(true);

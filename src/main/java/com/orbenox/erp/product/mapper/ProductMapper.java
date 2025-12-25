@@ -5,8 +5,6 @@ import com.orbenox.erp.product.entity.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 

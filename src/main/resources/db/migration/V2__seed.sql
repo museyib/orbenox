@@ -1,3 +1,8 @@
+INSERT INTO user_type (code, name, created_by)
+VALUES ('ADMIN', 'Administrators', 'system'),
+       ('USER', 'Ordinary users', 'system'),
+       ('GUEST', 'Guests', 'system');
+
 INSERT INTO action (code, name, created_by)
 VALUES ('READ', 'Action for read permission', 'system'),
        ('CREATE', 'Action for object editing permission', 'system'),

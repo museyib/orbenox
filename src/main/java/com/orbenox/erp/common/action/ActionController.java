@@ -21,9 +21,4 @@ public class ActionController {
     public ResponseEntity<Response<List<ActionItem>>> getAllItems() {
         return ResponseEntity.ok(Response.successData(actionService.getAllItems()));
     }
-
-    @GetMapping("/simple")
-    public ResponseEntity<Response<List<ActionItem>>> getSimpleItems() {
-        return ResponseEntity.ok(Response.successData(actionService.getAllItems()));
-    }
 }

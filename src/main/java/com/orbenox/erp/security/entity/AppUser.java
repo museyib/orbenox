@@ -1,7 +1,6 @@
 package com.orbenox.erp.security.entity;
 
 import com.orbenox.erp.common.entity.BaseCardEntity;
-import com.orbenox.erp.security.enums.UserType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +17,7 @@ public class AppUser extends BaseCardEntity {
     private String displayName;
     private String language;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.LAZY)
     private UserType userType;
     private boolean root;
 
