@@ -19,7 +19,7 @@ public interface ProductPriceItem {
 
     Boolean getFixedPrice();
 
-    ProductPriceItem getParent();
+    PriceList getParent();
 
     interface PriceList {
         Long getId();
