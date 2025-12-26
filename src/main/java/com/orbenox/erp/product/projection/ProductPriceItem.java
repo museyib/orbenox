@@ -2,6 +2,7 @@ package com.orbenox.erp.product.projection;
 
 import java.math.BigDecimal;
 
+@SuppressWarnings("unused")
 public interface ProductPriceItem {
     Long getId();
 
@@ -18,6 +19,10 @@ public interface ProductPriceItem {
     BigDecimal getFactorToParent();
 
     Boolean getFixedPrice();
+
+    BigDecimal getDiscountRatioLimit();
+
+    Short getRoundLength();
 
     PriceList getParent();
 

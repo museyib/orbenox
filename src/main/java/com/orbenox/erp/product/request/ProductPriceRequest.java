@@ -13,4 +13,6 @@ public class ProductPriceRequest {
     private BigDecimal price;
     private BigDecimal factorToParent;
     private Boolean fixedPrice;
+    private Short roundLength;
+    private BigDecimal discountRatioLimit;
 }

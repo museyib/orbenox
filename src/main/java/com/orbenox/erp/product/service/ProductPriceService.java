@@ -14,6 +14,7 @@ import com.orbenox.erp.unit.Unit;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class ProductPriceService {
     private final ProductPriceRepository productPriceRepository;
     private final EntityManager entityManager;
 
+    @Cacheable("productPrices")
     public ProductPricingData getPriceDataByProductId(Long productId) {
         SimpleProductItem product = productPriceRepository.getProductItemByProductId(productId);
         List<ProductPriceItem> priceSummaries = productPriceRepository.getItemsByProductId(productId);
@@ -49,6 +51,8 @@ public class ProductPriceService {
                     entity.setPrice(item.getPrice());
                     entity.setFactorToParent(item.getFactorToParent());
                     entity.setFixedPrice(item.getFixedPrice());
+                    entity.setRoundLength(item.getRoundLength());
+                    entity.setDiscountRatioLimit(item.getDiscountRatioLimit());
                     return entity;
                 }).toList();
         Product product = entityManager.getReference(Product.class, request.getProduct().getId());
@@ -63,6 +67,8 @@ public class ProductPriceService {
                     entity.setPrice(item.getPrice());
                     entity.setFactorToParent(item.getFactorToParent());
                     entity.setFixedPrice(item.getFixedPrice());
+                    entity.setRoundLength(item.getRoundLength());
+                    entity.setDiscountRatioLimit(item.getDiscountRatioLimit());
                     return entity;
                 }).toList();
         List<ProductPrice> toSave = new ArrayList<>();

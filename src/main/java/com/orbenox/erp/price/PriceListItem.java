@@ -2,6 +2,7 @@ package com.orbenox.erp.price;
 
 import java.math.BigDecimal;
 
+@SuppressWarnings("unused")
 public interface PriceListItem {
     Long getId();
 
@@ -16,6 +17,8 @@ public interface PriceListItem {
     PriceListParent getParent();
 
     CurrencyItem getCurrency();
+
+    Short getRoundLength();
 
     interface CurrencyItem {
         Long getId();

@@ -15,6 +15,7 @@ public interface PriceListRepository extends JpaRepository<PriceList, Long> {
                 p.name as name,
                 p.factorToParent as factorToParent,
                 p.enabled as enabled,
+                p.roundLength as roundLength,
                 c as currency,
                 pp as parent
             FROM PriceList p
@@ -30,6 +31,7 @@ public interface PriceListRepository extends JpaRepository<PriceList, Long> {
                 p.name as name,
                 p.factorToParent as factorToParent,
                 p.enabled as enabled,
+                p.roundLength as roundLength,
                 c as currency,
                 pp as parent
             FROM PriceList p
@@ -43,7 +45,8 @@ public interface PriceListRepository extends JpaRepository<PriceList, Long> {
             SELECT p.id as id,
                 p.code as code,
                 p.name as name,
-                p.enabled as enabled
+                p.enabled as enabled,
+                p.roundLength as roundLength
             FROM PriceList p
             WHERE p.id IN(:ids) AND p.deleted = false""")
     List<PriceListItem.PriceListParent> getParentPriceListItems(@Param("ids") List<Long> idsToExclude);

@@ -31,4 +31,8 @@ public class ProductPrice extends BaseEntity {
     private BigDecimal factorToParent;
 
     private Boolean fixedPrice;
+
+    private Short roundLength;
+
+    private BigDecimal discountRatioLimit;
 }

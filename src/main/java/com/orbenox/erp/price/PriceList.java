@@ -29,4 +29,6 @@ public class PriceList extends BaseCardEntity {
     private PriceList parent;
 
     private BigDecimal factorToParent;
+
+    private Short roundLength;
 }

@@ -19,10 +19,6 @@ public class UnitService {
         return unitRepository.getAllItems();
     }
 
-    public List<SimpleUnitItem> getSimpleItems() {
-        return unitRepository.getSimpleItems();
-    }
-
     public List<UnitItem> findAllByDimensionId(Long dimensionId) {
         return unitRepository.getItemsByUnitDimensionId(dimensionId);
     }

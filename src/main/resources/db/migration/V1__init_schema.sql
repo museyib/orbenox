@@ -333,6 +333,7 @@ CREATE TABLE price_list
     currency_id      BIGINT          NOT NULL REFERENCES currency (id),
     parent_id        BIGINT REFERENCES price_list (id),
     factor_to_parent NUMERIC(20, 10) NOT NULL,
+    round_length     INT       DEFAULT 4,
     created_at       TIMESTAMP DEFAULT now(),
     updated_at       TIMESTAMP,
     created_by       VARCHAR(100),
@@ -362,16 +363,18 @@ CREATE UNIQUE INDEX ux_warehouse_code_active
 
 CREATE TABLE product_price
 (
-    id               BIGSERIAL PRIMARY KEY,
-    product_id       BIGINT          NOT NULL REFERENCES product (id),
-    price_list_id    BIGINT          NOT NULL REFERENCES price_list (id),
-    unit_id          BIGINT          NOT NULL REFERENCES unit (id),
-    price            NUMERIC(20, 10)          DEFAULT 0,
-    factor_to_parent NUMERIC(20, 10) NOT NULL DEFAULT 1,
-    fixed_price      BOOLEAN                  DEFAULT FALSE,
-    created_at       TIMESTAMP                DEFAULT now(),
-    updated_at       TIMESTAMP,
-    created_by       VARCHAR(100),
-    updated_by       VARCHAR(100),
+    id                   BIGSERIAL PRIMARY KEY,
+    product_id           BIGINT          NOT NULL REFERENCES product (id),
+    price_list_id        BIGINT          NOT NULL REFERENCES price_list (id),
+    unit_id              BIGINT          NOT NULL REFERENCES unit (id),
+    price                NUMERIC(20, 10)          DEFAULT 0,
+    factor_to_parent     NUMERIC(20, 10) NOT NULL DEFAULT 1,
+    fixed_price          BOOLEAN                  DEFAULT FALSE,
+    round_length         INT                      DEFAULT 4,
+    discount_ratio_limit NUMERIC(20, 10)          DEFAULT 0,
+    created_at           TIMESTAMP                DEFAULT now(),
+    updated_at           TIMESTAMP,
+    created_by           VARCHAR(100),
+    updated_by           VARCHAR(100),
     UNIQUE (product_id, price_list_id, unit_id)
 );

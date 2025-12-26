@@ -18,10 +18,13 @@ public interface ProductPriceRepository extends JpaRepository<ProductPrice, Long
                 p.price as price,
                 p.factorToParent as factorToParent,
                 p.fixedPrice as fixedPrice,
+                p.roundLength as roundLength,
+                p.discountRatioLimit as discountRatioLimit,
                 pp as parent
             FROM ProductPrice p
             LEFT JOIN p.priceList.parent pp
-            WHERE p.product.id = :productId""")
+            WHERE p.product.id = :productId
+            ORDER BY p.unit.id, coalesce(pp.id, p.priceList.id) , p.priceList.id""")
     List<ProductPriceItem> getItemsByProductId(@Param("productId") Long productId);
 
     @Query("""
