@@ -4,7 +4,9 @@ import com.orbenox.erp.unit.SimpleUnitItem;
 
 @SuppressWarnings("unused")
 public interface ProductBarcodeItem {
-    ProductItem getProduct();
+    Long getId();
+
+    SimpleProductItem getProduct();
     SimpleUnitItem getUnit();
     String getBarcode();
 }

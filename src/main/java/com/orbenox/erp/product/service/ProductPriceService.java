@@ -8,6 +8,7 @@ import com.orbenox.erp.product.entity.ProductPrice;
 import com.orbenox.erp.product.projection.ProductPriceItem;
 import com.orbenox.erp.product.projection.SimpleProductItem;
 import com.orbenox.erp.product.repository.ProductPriceRepository;
+import com.orbenox.erp.product.repository.ProductRepository;
 import com.orbenox.erp.product.request.ProductPriceRequest;
 import com.orbenox.erp.product.request.UpdateProductPriceRequest;
 import com.orbenox.erp.unit.Unit;
@@ -28,10 +29,11 @@ import java.util.stream.Collectors;
 public class ProductPriceService {
     private final ProductPriceRepository productPriceRepository;
     private final EntityManager entityManager;
+    private final ProductRepository productRepository;
 
     @Cacheable("productPrices")
     public ProductPricingData getPriceDataByProductId(Long productId) {
-        SimpleProductItem product = productPriceRepository.getProductItemByProductId(productId);
+        SimpleProductItem product = productRepository.getSimpleItemById(productId);
         List<ProductPriceItem> priceSummaries = productPriceRepository.getItemsByProductId(productId);
         ProductPricingData pricingData = new ProductPricingData();
         pricingData.setProduct(product);
@@ -78,7 +80,7 @@ public class ProductPriceService {
         List<ProductPriceItem> items = productPriceRepository.getItemsByProductId(request.getProduct().getId());
         ProductPricingData productPricingData = new ProductPricingData();
         SimpleProductItem productItem = items.isEmpty() ?
-                productPriceRepository.getProductItemByProductId(request.getProduct().getId()) :
+                productRepository.getSimpleItemById(request.getProduct().getId()) :
                 items.get(0).getProduct();
         productPricingData.setProduct(productItem);
         productPricingData.setPrices(items);

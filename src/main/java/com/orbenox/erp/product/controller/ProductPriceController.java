@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/productPriceLists")
-public class ProductPriceListController {
+@RequestMapping("/api/productPrices")
+public class ProductPriceController {
     private final ProductPriceService productPriceService;
 
     @PreAuthorize("hasPermission('PRODUCT_PRICE', 'READ')")

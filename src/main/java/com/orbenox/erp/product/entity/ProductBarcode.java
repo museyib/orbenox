@@ -1,6 +1,6 @@
 package com.orbenox.erp.product.entity;
 
-import com.orbenox.erp.common.entity.BaseCardEntity;
+import com.orbenox.erp.common.entity.BaseEntity;
 import com.orbenox.erp.unit.Unit;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class ProductBarcode extends BaseCardEntity {
+public class ProductBarcode extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Product product;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

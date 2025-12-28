@@ -378,3 +378,15 @@ CREATE TABLE product_price
     updated_by           VARCHAR(100),
     UNIQUE (product_id, price_list_id, unit_id)
 );
+
+CREATE TABLE product_barcode
+(
+    id         BIGSERIAL PRIMARY KEY,
+    product_id BIGINT             NOT NULL REFERENCES product (id),
+    unit_id    BIGINT             NOT NULL REFERENCES unit (id),
+    barcode    VARCHAR(50) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100)
+);

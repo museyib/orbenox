@@ -2,7 +2,6 @@ package com.orbenox.erp.product.repository;
 
 import com.orbenox.erp.product.entity.ProductPrice;
 import com.orbenox.erp.product.projection.ProductPriceItem;
-import com.orbenox.erp.product.projection.SimpleProductItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,9 +25,4 @@ public interface ProductPriceRepository extends JpaRepository<ProductPrice, Long
             WHERE p.product.id = :productId
             ORDER BY p.unit.id, coalesce(pp.id, p.priceList.id) , p.priceList.id""")
     List<ProductPriceItem> getItemsByProductId(@Param("productId") Long productId);
-
-    @Query("""
-            SELECT p.id as id, p.code as code, p.name as name from Product p
-            WHERE p.id = :productId and p.deleted = false""")
-    SimpleProductItem getProductItemByProductId(@Param("productId") Long productId);
 }

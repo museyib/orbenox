@@ -2,6 +2,7 @@ package com.orbenox.erp.product.repository;
 
 import com.orbenox.erp.product.entity.Product;
 import com.orbenox.erp.product.projection.ProductItem;
+import com.orbenox.erp.product.projection.SimpleProductItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -48,4 +49,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             FROM Product p
             WHERE p.id = :id AND p.deleted = false""")
     ProductItem getItemById(@Param("id") Long id);
+
+    @Query("""
+            SELECT p.id as id, p.code as code, p.name as name from Product p
+            WHERE p.id = :productId and p.deleted = false""")
+    SimpleProductItem getSimpleItemById(@Param("productId") Long productId);
 }
