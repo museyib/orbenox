@@ -6,4 +6,10 @@ public interface SimpleProductItem {
     String getCode();
 
     String getName();
+
+    String getDescription();
+
+    String getDefaultBarcode();
+
+    boolean isEnabled();
 }

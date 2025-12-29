@@ -51,7 +51,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     ProductItem getItemById(@Param("id") Long id);
 
     @Query("""
-            SELECT p.id as id, p.code as code, p.name as name from Product p
+            SELECT p.id as id,
+                p.code as code,
+                p.name as name,
+                p.description as description,
+                p.defaultBarcode as defaultBarcode,
+                p.enabled as enabled
+            FROM Product p
             WHERE p.id = :productId and p.deleted = false""")
     SimpleProductItem getSimpleItemById(@Param("productId") Long productId);
 }
