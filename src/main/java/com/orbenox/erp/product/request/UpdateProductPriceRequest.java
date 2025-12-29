@@ -1,12 +1,13 @@
 package com.orbenox.erp.product.request;
 
+import com.orbenox.erp.product.dto.ProductPriceDto;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
 public class UpdateProductPriceRequest {
-    private ProductRequest product;
-    private List<ProductPriceRequest> priceListToUpdate;
-    private List<ProductPriceRequest> priceListToInsert;
+    private Long productId;
+    private List<ProductPriceDto> priceListToUpdate;
+    private List<ProductPriceDto> priceListToInsert;
 }

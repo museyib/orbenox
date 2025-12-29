@@ -3,6 +3,7 @@ package com.orbenox.erp.product.projection;
 import com.orbenox.erp.common.country.CountryItem;
 import com.orbenox.erp.unit.SimpleUnitItem;
 
+@SuppressWarnings("unused")
 public interface ProductItem {
     Long getId();
 
@@ -26,7 +27,7 @@ public interface ProductItem {
 
     ProductClassItem getProductClass();
 
-    ProductGroupItem getProductGroup();
+    SimpleProductGroupItem getProductGroup();
 
     CountryItem getCountry();
 
