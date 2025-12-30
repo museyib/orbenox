@@ -1,7 +1,7 @@
 package com.orbenox.erp.security.projection;
 
-import com.orbenox.erp.common.action.ActionItem;
-import com.orbenox.erp.common.resource.ResourceItem;
+import com.orbenox.erp.domain.action.ActionItem;
+import com.orbenox.erp.domain.resource.ResourceItem;
 
 public interface PermissionItem {
     Long getId();

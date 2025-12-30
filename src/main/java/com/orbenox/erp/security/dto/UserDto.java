@@ -1,7 +1,6 @@
 package com.orbenox.erp.security.dto;
 
 import com.orbenox.erp.security.entity.AppUser;
-import com.orbenox.erp.security.entity.UserTypeDto;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -12,8 +11,7 @@ import java.util.Set;
  */
 
 public record UserDto(Long id, Boolean enabled, String username, String password, String displayName,
-                      UserTypeDto userType,
-                      Set<RoleDto> roles) implements Serializable {
+                      UserTypeDto userType, Set<RoleDto> roles) implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

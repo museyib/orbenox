@@ -1,6 +1,6 @@
 package com.orbenox.erp.security.repository;
 
-import com.orbenox.erp.common.action.ActionItem;
+import com.orbenox.erp.domain.action.ActionItem;
 import com.orbenox.erp.security.entity.AppPermission;
 import com.orbenox.erp.security.projection.PermissionItem;
 import jakarta.transaction.Transactional;

@@ -1,11 +1,11 @@
 package com.orbenox.erp.security.controller;
 
 import com.orbenox.erp.common.Response;
-import com.orbenox.erp.common.action.ActionItem;
-import com.orbenox.erp.security.dto.RolePermissionDto;
-import com.orbenox.erp.security.dto.UserPermissionDto;
-import com.orbenox.erp.security.projection.RolePermissionData;
-import com.orbenox.erp.security.projection.UserPermissionData;
+import com.orbenox.erp.domain.action.ActionItem;
+import com.orbenox.erp.security.request.UpdateRolePermissionRequest;
+import com.orbenox.erp.security.request.UpdateUserPermissionRequest;
+import com.orbenox.erp.security.dto.RolePermissionData;
+import com.orbenox.erp.security.dto.UserPermissionData;
 import com.orbenox.erp.security.service.PermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +35,7 @@ public class PermissionController {
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'UPDATE')")
     @PatchMapping("/user")
-    public ResponseEntity<Response<UserPermissionData>> updateUserPermissions(@RequestBody UserPermissionDto permissions) {
+    public ResponseEntity<Response<UserPermissionData>> updateUserPermissions(@RequestBody UpdateUserPermissionRequest permissions) {
         return ResponseEntity.ok(Response.successData(permissionService.updateUserPermissions(permissions)));
     }
 
@@ -54,7 +54,7 @@ public class PermissionController {
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'UPDATE')")
     @PatchMapping("/role")
-    public ResponseEntity<Response<RolePermissionData>> updateRolePermissions(@RequestBody RolePermissionDto permissions) {
+    public ResponseEntity<Response<RolePermissionData>> updateRolePermissions(@RequestBody UpdateRolePermissionRequest permissions) {
         return ResponseEntity.ok(Response.successData(permissionService.updateRolePermissions(permissions)));
     }
 }

@@ -1,13 +1,13 @@
 package com.orbenox.erp.lookup;
 
-import com.orbenox.erp.common.action.ActionRepository;
-import com.orbenox.erp.common.country.CountryRepository;
-import com.orbenox.erp.currency.CurrencyRepository;
-import com.orbenox.erp.product.repository.*;
+import com.orbenox.erp.domain.action.ActionRepository;
+import com.orbenox.erp.domain.country.CountryRepository;
+import com.orbenox.erp.domain.currency.CurrencyRepository;
+import com.orbenox.erp.domain.product.repository.*;
 import com.orbenox.erp.security.repository.RoleRepository;
 import com.orbenox.erp.security.repository.UserTypeRepository;
-import com.orbenox.erp.unit.UnitRepository;
-import com.orbenox.erp.unit.unitdimension.UnitDimensionRepository;
+import com.orbenox.erp.domain.unit.UnitRepository;
+import com.orbenox.erp.domain.unit.unitdimension.UnitDimensionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;

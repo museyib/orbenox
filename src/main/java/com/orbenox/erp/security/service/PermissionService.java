@@ -1,11 +1,13 @@
 package com.orbenox.erp.security.service;
 
-import com.orbenox.erp.common.action.ActionItem;
-import com.orbenox.erp.common.action.ActionRepository;
-import com.orbenox.erp.common.resource.ResourceRepository;
+import com.orbenox.erp.domain.action.ActionItem;
+import com.orbenox.erp.domain.action.ActionRepository;
+import com.orbenox.erp.domain.resource.ResourceRepository;
 import com.orbenox.erp.security.dto.PermissionDto;
-import com.orbenox.erp.security.dto.RolePermissionDto;
-import com.orbenox.erp.security.dto.UserPermissionDto;
+import com.orbenox.erp.security.dto.RolePermissionData;
+import com.orbenox.erp.security.dto.UserPermissionData;
+import com.orbenox.erp.security.request.UpdateRolePermissionRequest;
+import com.orbenox.erp.security.request.UpdateUserPermissionRequest;
 import com.orbenox.erp.security.entity.AppPermission;
 import com.orbenox.erp.security.projection.*;
 import com.orbenox.erp.security.repository.PermissionRepository;
@@ -76,7 +78,7 @@ public class PermissionService {
     }
 
     @Transactional
-    public UserPermissionData updateUserPermissions(UserPermissionDto dto) {
+    public UserPermissionData updateUserPermissions(UpdateUserPermissionRequest dto) {
         Long userId = dto.getUserId();
         List<AppPermission> existing = permissionRepository.findByAppUserIdAndDeletedFalse(userId);
 
@@ -112,7 +114,7 @@ public class PermissionService {
     }
 
     @Transactional
-    public RolePermissionData updateRolePermissions(RolePermissionDto dto) {
+    public RolePermissionData updateRolePermissions(UpdateRolePermissionRequest dto) {
         Long roleId = dto.getRoleId();
         List<AppPermission> existing = permissionRepository.findByAppRoleIdAndDeletedFalse(roleId);
 

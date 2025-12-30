@@ -2,7 +2,7 @@ package com.orbenox.erp.security.controller;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.security.config.JwtUtil;
-import com.orbenox.erp.security.dto.LoginRequest;
+import com.orbenox.erp.security.request.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

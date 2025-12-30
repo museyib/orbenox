@@ -31,10 +31,10 @@ public class UserService {
     }
 
     public UserData getItemById(Long id) {
-        UserItem appUser = userRepository.getItemById(id);
+        UserItem userItem = userRepository.getItemById(id);
         List<RoleItem> roles = userRepository.getRolesByUserId(id);
         UserData userData = new UserData();
-        userData.setUser(appUser);
+        userData.setUser(userItem);
         userData.setRoles(roles);
         return userData;
     }

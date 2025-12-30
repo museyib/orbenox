@@ -1,7 +1,7 @@
 package com.orbenox.erp.security.dto;
 
-import com.orbenox.erp.common.action.ActionDto;
-import com.orbenox.erp.common.resource.ResourceDto;
+import com.orbenox.erp.domain.action.ActionDto;
+import com.orbenox.erp.domain.resource.ResourceDto;
 import com.orbenox.erp.security.entity.AppPermission;
 
 import java.io.Serializable;
