@@ -20,5 +20,15 @@ public interface ProductBarcodeRepository extends JpaRepository<ProductBarcode, 
             ORDER BY b.id""")
     List<ProductBarcodeItem> getItemsByProductId(@Param("productId") Long productId);
 
-    Optional<ProductBarcode> findByBarcode(String barcode);
+    @Query("""
+            SELECT b.id as id,
+                b.product as product,
+                b.unit as unit,
+                b.barcode as barcode
+            FROM ProductBarcode b
+            WHERE b.barcode = :barcode
+            ORDER BY b.id""")
+    Optional<ProductBarcodeItem> getItemByBarcode(@Param("barcode") String barcode);
+
+    ProductBarcode findByBarcode(String barcode);
 }

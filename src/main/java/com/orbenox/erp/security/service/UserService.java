@@ -5,11 +5,13 @@ import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.security.dto.UserData;
 import com.orbenox.erp.security.dto.UserDto;
 import com.orbenox.erp.security.entity.AppUser;
+import com.orbenox.erp.security.entity.UserType;
 import com.orbenox.erp.security.mapper.RoleMapper;
 import com.orbenox.erp.security.mapper.UserMapper;
 import com.orbenox.erp.security.projection.RoleItem;
 import com.orbenox.erp.security.projection.UserItem;
 import com.orbenox.erp.security.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +27,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final LocalizationService i18n;
     private final RoleMapper roleMapper;
+    private final EntityManager em;
 
     public List<UserItem> getAllItems() {
         return userRepository.getAllItems();
@@ -52,14 +55,16 @@ public class UserService {
     }
 
     @Transactional
-    public UserItem update(Long id, UserDto request) {
+    public UserItem update(Long id, UserDto dto) {
         AppUser appUser = userRepository.findByIdAndDeletedFalse(id);
         if (appUser.isRoot()) {
-            if (request.userType().code().equals("ADMIN"))
+            if (dto.userType().code().equals("ADMIN"))
                 throw new AlterRootException(i18n.msg("error.alterRoot"));
         }
-        userMapper.updateEntityFromDto(request, appUser);
-        appUser.setRoles(roleMapper.toEntityList(request.roles()));
+        userMapper.updateEntityFromDto(dto, appUser);
+        UserType userType = em.getReference(UserType.class, dto.userType().id());
+        appUser.setUserType(userType);
+        appUser.setRoles(roleMapper.toEntityList(dto.roles()));
         return userRepository.getItemById(id);
     }
 

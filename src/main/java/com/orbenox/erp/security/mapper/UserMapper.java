@@ -14,6 +14,7 @@ public interface UserMapper {
     AppUser toEntity(UserDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
+    @Mapping(target = "userType", ignore = true)
     @Mapping(target = "roles", ignore = true)
     void updateEntityFromDto(UserDto dto, @MappingTarget AppUser entity);
 }
