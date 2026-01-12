@@ -3,6 +3,7 @@ package com.orbenox.erp.lookup;
 import com.orbenox.erp.domain.action.ActionRepository;
 import com.orbenox.erp.domain.country.CountryRepository;
 import com.orbenox.erp.domain.currency.CurrencyRepository;
+import com.orbenox.erp.domain.price.PriceListRepository;
 import com.orbenox.erp.domain.product.repository.*;
 import com.orbenox.erp.security.repository.RoleRepository;
 import com.orbenox.erp.security.repository.UserTypeRepository;
@@ -33,6 +34,7 @@ public class LookupService {
     private final CurrencyRepository currencyRepository;
     private final RoleRepository roleRepository;
     private final ActionRepository actionRepository;
+    private final PriceListRepository priceListRepository;
 
     @Cacheable("lookups")
     public Map<String, Object> getLookups(List<String> types) {
@@ -53,6 +55,7 @@ public class LookupService {
                 case "currencies" -> result.put("currencies", currencyRepository.getAllItems());
                 case "roles" -> result.put("roles", roleRepository.getAllItems());
                 case "actions" -> result.put("actions", actionRepository.getAllItems());
+                case "priceLists" -> result.put("priceLists", priceListRepository.getAllItems());
             }
         }
         return result;

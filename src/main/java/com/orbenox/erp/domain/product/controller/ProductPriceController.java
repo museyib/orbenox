@@ -21,7 +21,7 @@ public class ProductPriceController {
         return ResponseEntity.ok(Response.successData(productPriceService.getPriceDataByProductId(productId)));
     }
 
-    @PreAuthorize("hasPermission('PRODUCT_PRICE', 'CREATE')")
+    @PreAuthorize("hasPermission('PRODUCT_PRICE', 'UPDATE')")
     @PostMapping
     public ResponseEntity<Response<ProductPricingData>> create(@RequestBody UpdateProductPriceRequest request) {
         return ResponseEntity.ok(Response.successData(productPriceService.updateProductPrices(request)));

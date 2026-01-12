@@ -45,6 +45,7 @@ public class ProductTypeController {
     }
 
     @PreAuthorize("hasPermission('PRODUCT_TYPE', 'DELETE')")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Response<String>> delete(@PathVariable Long id) {
         productTypeService.softDelete(id);
         var text = i18n.msg("productType.deleted", id);
