@@ -1,11 +1,14 @@
 package com.orbenox.erp.security.dto;
 
 import com.orbenox.erp.security.entity.UserType;
+import jakarta.validation.constraints.NotBlank;
 
-import java.io.Serializable;
 
 /**
  * DTO for {@link UserType}
  */
-public record UserTypeDto(Long id, Boolean enabled, String code, String name) implements Serializable {
+public record UserTypeDto(Long id,
+                          Boolean enabled,
+                          @NotBlank(message = "{code.notBlank}") String code,
+                          @NotBlank(message = "{name.notBlank}") String name) {
 }

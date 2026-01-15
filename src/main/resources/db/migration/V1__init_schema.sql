@@ -2,7 +2,7 @@ CREATE TABLE user_type
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
-    name       VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -66,7 +66,7 @@ CREATE TABLE resource
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
-    name       VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -82,7 +82,7 @@ CREATE TABLE action
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
-    name       VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -127,7 +127,7 @@ CREATE TABLE unit_dimension
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
-    name       VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -146,7 +146,7 @@ CREATE TABLE unit
     code              VARCHAR(100)    NOT NULL,
     name              VARCHAR(255),
     base              BOOLEAN         NOT NULL DEFAULT FALSE,
-    factor_to_base    NUMERIC(20, 10) NOT NULL,
+    factor_to_base NUMERIC(20, 10) NOT NULL DEFAULT 1,
     offset_to_base    NUMERIC(20, 10) NOT NULL DEFAULT 0,
     created_at        TIMESTAMP                DEFAULT now(),
     updated_at        TIMESTAMP,
@@ -166,7 +166,7 @@ CREATE TABLE currency
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
-    name       VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -182,7 +182,7 @@ CREATE TABLE country
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
-    name       VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -332,7 +332,7 @@ CREATE TABLE price_list
     name             VARCHAR(255),
     currency_id      BIGINT          NOT NULL REFERENCES currency (id),
     parent_id        BIGINT REFERENCES price_list (id),
-    factor_to_parent NUMERIC(20, 10) NOT NULL,
+    factor_to_parent NUMERIC(20, 10) NOT NULL DEFAULT 1,
     round_length     INT       DEFAULT 4,
     created_at       TIMESTAMP DEFAULT now(),
     updated_at       TIMESTAMP,
@@ -349,7 +349,7 @@ CREATE TABLE warehouse
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
-    name       VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),

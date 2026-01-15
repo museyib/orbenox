@@ -1,14 +1,17 @@
 package com.orbenox.erp.security.dto;
 
 import com.orbenox.erp.security.entity.AppRole;
+import jakarta.validation.constraints.NotBlank;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * DTO for {@link AppRole}
  */
-public record RoleDto(Long id, Boolean enabled, String code, String name) implements Serializable {
+public record RoleDto(Long id,
+                      Boolean enabled,
+                      @NotBlank(message = "{code.notBlank}") String code,
+                      @NotBlank(message = "{name.notBlank}") String name) {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

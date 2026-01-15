@@ -1,12 +1,16 @@
 package com.orbenox.erp.domain.action;
 
-import java.io.Serializable;
+import jakarta.validation.constraints.NotBlank;
+
 import java.util.Objects;
 
 /**
- * DTO for {@link for Action}
+ * DTO for {@link Action}
  */
-public record ActionDto(Long id, String code, String name, Boolean enabled) implements Serializable {
+public record ActionDto(Long id,
+                        Boolean enabled,
+                        @NotBlank(message = "{code.notBlank}") String code,
+                        @NotBlank(message = "{name.notBlank}") String name) {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

@@ -1,8 +1,8 @@
 package com.orbenox.erp.security.dto;
 
 import com.orbenox.erp.security.entity.AppUser;
+import jakarta.validation.constraints.NotNull;
 
-import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
@@ -10,8 +10,13 @@ import java.util.Set;
  * DTO for {@link AppUser}
  */
 
-public record UserDto(Long id, Boolean enabled, String username, String password, String displayName,
-                      UserTypeDto userType, Set<RoleDto> roles) implements Serializable {
+public record UserDto(Long id,
+                      Boolean enabled,
+                      String username,
+                      String password,
+                      String displayName,
+                      @NotNull(message = "{userType.notNull}") UserTypeDto userType,
+                      Set<RoleDto> roles) {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
