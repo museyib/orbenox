@@ -3,6 +3,7 @@ package com.orbenox.erp.domain.product.dto;
 import com.orbenox.erp.domain.country.CountryDto;
 import com.orbenox.erp.domain.product.entity.Product;
 import com.orbenox.erp.domain.unit.UnitDto;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
@@ -12,25 +13,27 @@ import java.io.Serializable;
  */
 public record ProductDto(Long id,
                          Boolean enabled,
+                         @NotBlank(message = "{code.notBlank}")
                          String code,
+                         @NotBlank(message = "{name.notBlank}")
                          String name,
                          String description,
-                         @NotNull(message = "Brand cannot be null")
+                         @NotNull(message = "{brand.notNull}")
                          BrandDto brand,
-                         @NotNull(message = "Product type cannot be null")
+                         @NotNull(message = "{productType.notNull}")
                          ProductTypeDto productType,
-                         @NotNull(message = "Product class cannot be null")
+                         @NotNull(message = "{productClass.notNull}")
                          ProductClassDto productClass,
-                         @NotNull(message = "Product group cannot be null")
+                         @NotNull(message = "{productGroup.notNull}")
                          ProductGroupDto productGroup,
-                         @NotNull(message = "Product category cannot be null")
+                         @NotNull(message = "{productCategory.notNull}")
                          ProductCategoryDto productCategory,
-                         @NotNull(message = "Producer cannot be null")
+                         @NotNull(message = "{producer.notNull}")
                          ProducerDto producer,
-                         @NotNull(message = "Country cannot be null")
+                         @NotNull(message = "{country.notNull}")
                          CountryDto country,
-                         @NotNull(message = "Unit cannot be null")
+                         @NotNull(message = "{defaultUnit.notNull}")
                          UnitDto defaultUnit,
-                         @NotNull(message = "Barcode cannot be null")
+                         @NotBlank(message = "{defaultBarcode.notNull}")
                          String defaultBarcode) implements Serializable {
 }

@@ -390,3 +390,16 @@ CREATE TABLE product_barcode
     created_by VARCHAR(100),
     updated_by VARCHAR(100)
 );
+
+CREATE TABLE product_unit
+(
+    id             BIGSERIAL PRIMARY KEY,
+    product_id     BIGINT          NOT NULL REFERENCES product (id),
+    unit_id        BIGINT          NOT NULL REFERENCES unit (id),
+    factor_to_base NUMERIC(20, 10) NOT NULL DEFAULT 1,
+    created_at     TIMESTAMP                DEFAULT now(),
+    updated_at     TIMESTAMP,
+    created_by     VARCHAR(100),
+    updated_by     VARCHAR(100),
+    UNIQUE (product_id, unit_id)
+)

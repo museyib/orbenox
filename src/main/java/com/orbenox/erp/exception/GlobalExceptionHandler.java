@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.orbenox.erp.common.Utilities.getMessage;
+import static io.micrometer.common.util.StringUtils.isEmpty;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -63,7 +64,8 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .collect(Collectors.toMap(FieldError::getField, fe -> "Invalid value: " + fe.getRejectedValue(),
+                .collect(Collectors.toMap(FieldError::getField,
+                        fe -> isEmpty(fe.getDefaultMessage()) ? "" : fe.getDefaultMessage(),
                         (a, b) -> a));
         int code = HttpStatus.BAD_REQUEST.value();
         String message = MessageFormat.format("{0}: {1}", i18n.msg("error.validation"), errors);

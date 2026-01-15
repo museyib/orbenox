@@ -39,21 +39,18 @@ public class ProductBarcodeService {
         List<Long> idsToUpdate = request.getBarcodesToUpdate().stream().map(ProductBarcodeDto::id).toList();
         List<Long> idsToDelete = request.getBarcodesToDelete().stream().map(ProductBarcodeDto::id).toList();
 
-        Map<Long, ProductBarcode> barcodeMap = productBarcodeRepository.findAllById(idsToUpdate).stream()
-                .collect(Collectors.toMap(BaseEntity::getId, Function.identity()));
+        Map<Long, ProductBarcode> barcodeMap = productBarcodeRepository.findAllById(idsToUpdate).stream().collect(Collectors.toMap(BaseEntity::getId, Function.identity()));
 
-        List<ProductBarcode> entityListToUpdate = request.getBarcodesToUpdate().stream()
-                .map(item -> {
-                    ProductBarcode barcode = barcodeMap.get(item.id());
-                    if (barcode == null) {
-                        throw new IllegalArgumentException("barcode not found: " + item.id());
-                    }
-                    productBarcodeMapper.updateEntityFromDto(item, barcode);
-                    return barcode;
-                }).toList();
+        List<ProductBarcode> entityListToUpdate = request.getBarcodesToUpdate().stream().map(item -> {
+            ProductBarcode barcode = barcodeMap.get(item.id());
+            if (barcode == null) {
+                throw new IllegalArgumentException("Barcode not found: " + item.id());
+            }
+            productBarcodeMapper.updateEntityFromDto(item, barcode);
+            return barcode;
+        }).toList();
 
-        List<ProductBarcode> entityListToInsert = request.getBarcodesToInsert().stream()
-                .map(productBarcodeMapper::toEntity).toList();
+        List<ProductBarcode> entityListToInsert = request.getBarcodesToInsert().stream().map(productBarcodeMapper::toEntity).toList();
 
         List<ProductBarcode> toSave = new ArrayList<>(entityListToInsert);
         toSave.addAll(entityListToUpdate);
@@ -62,9 +59,7 @@ public class ProductBarcodeService {
 
         ProductBarcodeData productBarcodeData = new ProductBarcodeData();
         List<ProductBarcodeItem> items = productBarcodeRepository.getItemsByProductId(request.getProductId());
-        SimpleProductItem product = items.isEmpty()
-                ? productRepository.getSimpleItemById(request.getProductId())
-                : items.get(0).getProduct();
+        SimpleProductItem product = items.isEmpty() ? productRepository.getSimpleItemById(request.getProductId()) : items.get(0).getProduct();
         productBarcodeData.setProduct(product);
         productBarcodeData.setBarcodes(items);
         return productBarcodeData;
