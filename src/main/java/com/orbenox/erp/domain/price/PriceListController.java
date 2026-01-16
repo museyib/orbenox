@@ -2,6 +2,7 @@ package com.orbenox.erp.domain.price;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,14 +36,14 @@ public class PriceListController {
 
     @PreAuthorize("hasPermission('PRICE_LIST', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<PriceListItem>> create(@RequestBody PriceListDto dto) {
+    public ResponseEntity<Response<PriceListItem>> create(@Valid @RequestBody PriceListDto dto) {
         return ResponseEntity.ok(Response.successData(priceListService.create(dto)));
     }
 
     @PreAuthorize("hasPermission('PRICE_LIST', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<PriceListItem>> update(@PathVariable Long id,
-                                                          @RequestBody PriceListDto dto) {
+                                                          @Valid @RequestBody PriceListDto dto) {
         return ResponseEntity.ok(Response.successData(priceListService.update(id, dto)));
     }
 

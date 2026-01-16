@@ -28,8 +28,29 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                 p.country as country,
                 p.defaultUnit as defaultUnit
             FROM Product p
-            WHERE p.deleted = false""")
+            WHERE p.deleted = false
+            ORDER BY p.id""")
     List<ProductItem> getAllItems();
+
+    @Query("""
+            SELECT p.id as id,
+                p.code as code,
+                p.name as name,
+                p.description as description,
+                p.defaultBarcode as defaultBarcode,
+                p.enabled as enabled,
+                p.brand as brand,
+                p.producer as producer,
+                p.productType as productType,
+                p.productClass as productClass,
+                p.productCategory as productCategory,
+                p.productGroup as productGroup,
+                p.country as country,
+                p.defaultUnit as defaultUnit
+            FROM Product p
+            WHERE p.deleted = false AND p.enabled = true
+            ORDER BY p.id""")
+    List<ProductItem> getEnabledItems();
 
     @Query("""
             SELECT p.id as id,

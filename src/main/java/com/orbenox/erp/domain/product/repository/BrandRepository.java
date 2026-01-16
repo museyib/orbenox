@@ -23,6 +23,16 @@ public interface BrandRepository extends JpaRepository<Brand, Long> {
             ORDER BY p.id""")
     List<BrandItem> getAllItems();
 
+    @Query("""
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled
+                FROM Brand p
+            WHERE p.deleted = false AND p.enabled = true
+            ORDER BY p.id""")
+    List<BrandItem> getEnabledItems();
 
     @Query("""
             SELECT p.id as id,

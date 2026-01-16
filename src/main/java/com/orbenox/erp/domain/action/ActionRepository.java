@@ -17,4 +17,14 @@ public interface ActionRepository extends JpaRepository<Action, Long> {
             WHERE a.deleted = false
             ORDER BY a.id""")
     List<ActionItem> getAllItems();
+
+    @Query("""
+            SELECT a.id as id,
+                a.code as code,
+                a.name as name,
+                a.enabled as enabled
+            FROM Action a
+            WHERE a.deleted = false AND a.enabled = true
+            ORDER BY a.id""")
+    List<ActionItem> getEnabledItems();
 }

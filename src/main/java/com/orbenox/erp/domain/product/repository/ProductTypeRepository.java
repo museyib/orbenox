@@ -23,6 +23,16 @@ public interface ProductTypeRepository extends JpaRepository<ProductType, Long> 
             ORDER BY p.id""")
     List<ProductTypeItem> getAllItems();
 
+    @Query("""
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled
+                FROM ProductType p
+            WHERE p.deleted = false AND p.enabled = true
+            ORDER BY p.id""")
+    List<ProductTypeItem> getEnabledItems();
 
     @Query("""
             SELECT p.id as id,

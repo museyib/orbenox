@@ -5,6 +5,7 @@ import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.domain.product.dto.ProducerDto;
 import com.orbenox.erp.domain.product.projection.ProducerItem;
 import com.orbenox.erp.domain.product.service.ProducerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,14 +34,14 @@ public class ProducerController {
 
     @PreAuthorize("hasPermission('PRODUCER', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<ProducerItem>> create(@RequestBody ProducerDto dto) {
+    public ResponseEntity<Response<ProducerItem>> create(@Valid @RequestBody ProducerDto dto) {
         return ResponseEntity.ok(Response.successData(producerService.create(dto)));
     }
 
     @PreAuthorize("hasPermission('PRODUCER', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<ProducerItem>> update(@PathVariable Long id,
-                                                         @RequestBody ProducerDto dto) {
+                                                         @Valid @RequestBody ProducerDto dto) {
         return ResponseEntity.ok(Response.successData(producerService.update(id, dto)));
     }
 

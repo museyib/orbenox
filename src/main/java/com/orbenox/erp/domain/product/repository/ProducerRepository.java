@@ -23,6 +23,16 @@ public interface ProducerRepository extends JpaRepository<Producer, Long> {
             ORDER BY p.id""")
     List<ProducerItem> getAllItems();
 
+    @Query("""
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled
+                FROM Producer p
+            WHERE p.deleted = false AND p.enabled = true
+            ORDER BY p.id""")
+    List<ProducerItem> getEnabledItems();
 
     @Query("""
             SELECT p.id as id,

@@ -48,7 +48,7 @@ public class ProductGroupService {
         }
         List<Long> allowedIds = items.stream().map(ProductGroupItem::getId)
                 .filter(id -> !excludedIds.contains(id)).toList();
-        return productGroupRepository.getSimpleItems(allowedIds);
+        return productGroupRepository.getItemsExcluded(allowedIds);
     }
 
     public ProductGroupItem getItemById(Long id) {

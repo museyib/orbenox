@@ -63,7 +63,7 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
                    u.name as name,
                    u.enabled as enabled
             FROM Unit u
-            WHERE u.deleted = false
+            WHERE u.deleted = false AND u.enabled = true
             ORDER BY u.id""")
-    List<SimpleUnitItem> getSimpleItems();
+    List<SimpleUnitItem> getEnabledItems();
 }

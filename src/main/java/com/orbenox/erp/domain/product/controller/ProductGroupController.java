@@ -6,6 +6,7 @@ import com.orbenox.erp.domain.product.dto.ProductGroupDto;
 import com.orbenox.erp.domain.product.projection.ProductGroupItem;
 import com.orbenox.erp.domain.product.projection.SimpleProductGroupItem;
 import com.orbenox.erp.domain.product.service.ProductGroupService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,14 +40,14 @@ public class ProductGroupController {
 
     @PreAuthorize("hasPermission('PRODUCT_GROUP', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<ProductGroupItem>> create(@RequestBody ProductGroupDto dto) {
+    public ResponseEntity<Response<ProductGroupItem>> create(@Valid @RequestBody ProductGroupDto dto) {
         return ResponseEntity.ok(Response.successData(productGroupService.create(dto)));
     }
 
     @PreAuthorize("hasPermission('PRODUCT_GROUP', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<ProductGroupItem>> update(@PathVariable Long id,
-                                                             @RequestBody ProductGroupDto dto) {
+                                                             @Valid @RequestBody ProductGroupDto dto) {
         return ResponseEntity.ok(Response.successData(productGroupService.update(id, dto)));
     }
 

@@ -2,6 +2,7 @@ package com.orbenox.erp.domain.country;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,13 +31,14 @@ public class CountryController {
 
     @PreAuthorize("hasPermission('COUNTRY', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<CountryItem>> create(@RequestBody CountryDto countryDto) {
+    public ResponseEntity<Response<CountryItem>> create(@Valid @RequestBody CountryDto countryDto) {
         return ResponseEntity.ok(Response.successData(countryService.create(countryDto)));
     }
 
     @PreAuthorize("hasPermission('COUNTRY', 'UPDATE')")
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<CountryItem>> update(@PathVariable Long id, @RequestBody CountryDto countryDto) {
+    public ResponseEntity<Response<CountryItem>> update(@PathVariable Long id,
+                                                        @Valid @RequestBody CountryDto countryDto) {
         return ResponseEntity.ok(Response.successData(countryService.update(id, countryDto)));
     }
 

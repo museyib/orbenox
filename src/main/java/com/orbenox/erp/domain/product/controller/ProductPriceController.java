@@ -4,6 +4,7 @@ import com.orbenox.erp.common.Response;
 import com.orbenox.erp.domain.product.dto.ProductPricingData;
 import com.orbenox.erp.domain.product.request.UpdateProductPriceRequest;
 import com.orbenox.erp.domain.product.service.ProductPriceService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +24,7 @@ public class ProductPriceController {
 
     @PreAuthorize("hasPermission('PRODUCT_PRICE', 'UPDATE')")
     @PostMapping
-    public ResponseEntity<Response<ProductPricingData>> create(@RequestBody UpdateProductPriceRequest request) {
+    public ResponseEntity<Response<ProductPricingData>> updateProductPrices(@Valid @RequestBody UpdateProductPriceRequest request) {
         return ResponseEntity.ok(Response.successData(productPriceService.updateProductPrices(request)));
     }
 }

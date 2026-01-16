@@ -43,9 +43,9 @@ public interface ProductGroupRepository extends JpaRepository<ProductGroup, Long
                 p.name as name,
                 p.enabled as enabled
             FROM ProductGroup p
-            WHERE p.deleted = false
+            WHERE p.deleted = false AND p.enabled = true
             ORDER BY p.id""")
-    List<SimpleProductGroupItem> getSimpleItems();
+    List<SimpleProductGroupItem> getEnabledItems();
 
     @Query("""
             SELECT p.id as id,
@@ -55,5 +55,5 @@ public interface ProductGroupRepository extends JpaRepository<ProductGroup, Long
             FROM ProductGroup p
             WHERE p.id IN(:ids) AND p.deleted = false
             ORDER BY p.id""")
-    List<SimpleProductGroupItem> getSimpleItems(@Param("ids") List<Long> idsToExclude);
+    List<SimpleProductGroupItem> getItemsExcluded(@Param("ids") List<Long> idsToExclude);
 }

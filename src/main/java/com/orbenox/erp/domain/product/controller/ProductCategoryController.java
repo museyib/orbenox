@@ -5,6 +5,7 @@ import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.domain.product.dto.ProductCategoryDto;
 import com.orbenox.erp.domain.product.projection.ProductCategoryItem;
 import com.orbenox.erp.domain.product.service.ProductCategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,14 +34,14 @@ public class ProductCategoryController {
 
     @PreAuthorize("hasPermission('PRODUCT_CATEGORY', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<ProductCategoryItem>> create(@RequestBody ProductCategoryDto dto) {
+    public ResponseEntity<Response<ProductCategoryItem>> create(@Valid @RequestBody ProductCategoryDto dto) {
         return ResponseEntity.ok(Response.successData(productCategoryService.create(dto)));
     }
 
     @PreAuthorize("hasPermission('PRODUCT_CATEGORY', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<ProductCategoryItem>> update(@PathVariable Long id,
-                                                                @RequestBody ProductCategoryDto dto) {
+                                                                @Valid @RequestBody ProductCategoryDto dto) {
         return ResponseEntity.ok(Response.successData(productCategoryService.update(id, dto)));
     }
 

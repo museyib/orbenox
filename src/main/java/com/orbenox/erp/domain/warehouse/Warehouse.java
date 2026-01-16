@@ -10,13 +10,8 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Warehouse extends BaseCardEntity {
-
     @Column(unique = true, nullable = false)
     private String code;
-
+    @Column(nullable = false)
     private String name;
-
-    private Boolean enabled;
-
-    private Boolean deleted;
 }

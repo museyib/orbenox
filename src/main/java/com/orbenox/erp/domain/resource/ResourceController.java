@@ -2,6 +2,7 @@ package com.orbenox.erp.domain.resource;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,13 +31,14 @@ public class ResourceController {
 
     @PreAuthorize("hasPermission('RESOURCE', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<ResourceItem>> create(@RequestBody ResourceDto resourceDto) {
+    public ResponseEntity<Response<ResourceItem>> create(@Valid @RequestBody ResourceDto resourceDto) {
         return ResponseEntity.ok(Response.successData(resourceService.create(resourceDto)));
     }
 
     @PreAuthorize("hasPermission('RESOURCE', 'UPDATE')")
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<ResourceItem>> update(@PathVariable Long id, @RequestBody ResourceDto dto) {
+    public ResponseEntity<Response<ResourceItem>> update(@PathVariable Long id,
+                                                         @Valid @RequestBody ResourceDto dto) {
         return ResponseEntity.ok(Response.successData(resourceService.update(id, dto)));
     }
 

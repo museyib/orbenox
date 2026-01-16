@@ -2,6 +2,7 @@ package com.orbenox.erp.domain.unit;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,14 +38,14 @@ public class UnitController {
 
     @PreAuthorize("hasPermission('UNIT', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<UnitItem>> create(@RequestBody UnitDto uomDto) {
+    public ResponseEntity<Response<UnitItem>> create(@Valid @RequestBody UnitDto uomDto) {
         return ResponseEntity.ok(Response.successData(unitService.create(uomDto)));
     }
 
     @PreAuthorize("hasPermission('UNIT', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<UnitItem>> update(@PathVariable Long id,
-                                                     @RequestBody UnitDto uomDto) {
+                                                     @Valid @RequestBody UnitDto uomDto) {
         return ResponseEntity.ok(Response.successData(unitService.update(id, uomDto)));
     }
 

@@ -7,6 +7,7 @@ import com.orbenox.erp.security.request.UpdateUserPermissionRequest;
 import com.orbenox.erp.security.dto.RolePermissionData;
 import com.orbenox.erp.security.dto.UserPermissionData;
 import com.orbenox.erp.security.service.PermissionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,7 +36,7 @@ public class PermissionController {
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'UPDATE')")
     @PatchMapping("/user")
-    public ResponseEntity<Response<UserPermissionData>> updateUserPermissions(@RequestBody UpdateUserPermissionRequest permissions) {
+    public ResponseEntity<Response<UserPermissionData>> updateUserPermissions(@Valid @RequestBody UpdateUserPermissionRequest permissions) {
         return ResponseEntity.ok(Response.successData(permissionService.updateUserPermissions(permissions)));
     }
 
@@ -54,7 +55,7 @@ public class PermissionController {
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'UPDATE')")
     @PatchMapping("/role")
-    public ResponseEntity<Response<RolePermissionData>> updateRolePermissions(@RequestBody UpdateRolePermissionRequest permissions) {
+    public ResponseEntity<Response<RolePermissionData>> updateRolePermissions(@Valid @RequestBody UpdateRolePermissionRequest permissions) {
         return ResponseEntity.ok(Response.successData(permissionService.updateRolePermissions(permissions)));
     }
 }

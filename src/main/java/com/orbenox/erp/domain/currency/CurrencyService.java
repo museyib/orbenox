@@ -2,6 +2,7 @@ package com.orbenox.erp.domain.currency;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,11 +21,13 @@ public class CurrencyService {
         return currencyRepository.getItemById(id);
     }
 
+    @CacheEvict(value = "lookups", allEntries = true)
     public CurrencyItem create(CurrencyDto dto) {
         Currency currency = currencyRepository.save(currencyMapper.toEntity(dto));
         return currencyRepository.getItemById(currency.getId());
     }
 
+    @CacheEvict(value = "lookups", key = "#id")
     @Transactional
     public CurrencyItem update(Long id, CurrencyDto dto) {
         Currency entity = currencyRepository.findByIdAndDeletedFalse(id);

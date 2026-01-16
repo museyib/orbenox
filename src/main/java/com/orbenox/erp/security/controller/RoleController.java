@@ -5,6 +5,7 @@ import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.security.dto.RoleDto;
 import com.orbenox.erp.security.projection.RoleItem;
 import com.orbenox.erp.security.service.RoleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,13 +34,13 @@ public class RoleController {
 
     @PreAuthorize("hasPermission('APP_ROLE', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<RoleItem>> create(@RequestBody RoleDto appRole) {
+    public ResponseEntity<Response<RoleItem>> create(@Valid @RequestBody RoleDto appRole) {
         return ResponseEntity.ok(Response.successData(roleService.save(appRole)));
     }
 
     @PreAuthorize("hasPermission('APP_ROLE', 'UPDATE')")
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<RoleItem>> updateRole(@PathVariable Long id, @RequestBody RoleDto request) {
+    public ResponseEntity<Response<RoleItem>> updateRole(@Valid @PathVariable Long id, @RequestBody RoleDto request) {
         return ResponseEntity.ok(Response.successData(roleService.update(id, request)));
     }
 

@@ -28,6 +28,17 @@ public interface RoleRepository extends JpaRepository<AppRole, Long> {
                 r.name as name,
                 r.enabled as enabled
             FROM AppRole r
+            WHERE r.deleted = false AND r.enabled = true
+            ORDER BY r.id""")
+    List<RoleItem> getEnabledItems();
+
+
+    @Query("""
+            SELECT r.id as id,
+                r.code as code,
+                r.name as name,
+                r.enabled as enabled
+            FROM AppRole r
             WHERE r.id = :id AND r.deleted = false
             ORDER BY r.id""")
     RoleItem getItemById(@Param("id") Long id);

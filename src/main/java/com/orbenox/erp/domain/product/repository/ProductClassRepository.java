@@ -23,6 +23,16 @@ public interface ProductClassRepository extends JpaRepository<ProductClass, Long
             ORDER BY p.id""")
     List<ProductClassItem> getAllItems();
 
+    @Query("""
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled
+                FROM ProductClass p
+            WHERE p.deleted = false AND p.enabled = true
+            ORDER BY p.id""")
+    List<ProductClassItem> getEnabledItems();
 
     @Query("""
             SELECT p.id as id,

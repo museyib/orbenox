@@ -15,7 +15,7 @@ public interface UserTypeRepository extends CrudRepository<UserType, Integer> {
                 t.name as name,
                 t.enabled as enabled
             FROM UserType t
-            WHERE t.deleted = false
+            WHERE t.deleted = false AND t.enabled = true
             ORDER BY t.id""")
-    List<UserTypeItem> getAllItems();
+    List<UserTypeItem> getEnabledItems();
 }

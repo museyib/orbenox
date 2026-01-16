@@ -5,6 +5,7 @@ import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.domain.product.dto.BrandDto;
 import com.orbenox.erp.domain.product.projection.BrandItem;
 import com.orbenox.erp.domain.product.service.BrandService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,14 +34,14 @@ public class BrandController {
 
     @PreAuthorize("hasPermission('BRAND', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<BrandItem>> create(@RequestBody BrandDto dto) {
+    public ResponseEntity<Response<BrandItem>> create(@Valid @RequestBody BrandDto dto) {
         return ResponseEntity.ok(Response.successData(brandService.create(dto)));
     }
 
     @PreAuthorize("hasPermission('BRAND', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<BrandItem>> update(@PathVariable Long id,
-                                                      @RequestBody BrandDto dto) {
+                                                      @Valid @RequestBody BrandDto dto) {
         return ResponseEntity.ok(Response.successData(brandService.update(id, dto)));
     }
 

@@ -5,6 +5,7 @@ import com.orbenox.erp.domain.country.CountryRepository;
 import com.orbenox.erp.domain.currency.CurrencyRepository;
 import com.orbenox.erp.domain.price.PriceListRepository;
 import com.orbenox.erp.domain.product.repository.*;
+import com.orbenox.erp.domain.warehouse.WarehouseRepository;
 import com.orbenox.erp.security.repository.RoleRepository;
 import com.orbenox.erp.security.repository.UserTypeRepository;
 import com.orbenox.erp.domain.unit.UnitRepository;
@@ -35,27 +36,29 @@ public class LookupService {
     private final RoleRepository roleRepository;
     private final ActionRepository actionRepository;
     private final PriceListRepository priceListRepository;
+    private final WarehouseRepository warehouseRepository;
 
     @Cacheable("lookups")
     public Map<String, Object> getLookups(List<String> types) {
         Map<String, Object> result = new HashMap<>();
         for (String type : types) {
             switch (type) {
-                case "brands" -> result.put("brands", brandRepository.getAllItems());
-                case "productTypes" -> result.put("productTypes", productTypeRepository.getAllItems());
-                case "productClasses" -> result.put("productClasses", productClassRepository.getAllItems());
-                case "productGroups" -> result.put("productGroups", productGroupRepository.getSimpleItems());
-                case "units" -> result.put("units", unitRepository.getSimpleItems());
-                case "countries" -> result.put("countries", countryRepository.getAllItems());
-                case "productCategories" -> result.put("productCategories", productCategoryRepository.getAllItems());
-                case "producers" -> result.put("producers", producerRepository.getAllItems());
-                case "userTypes" -> result.put("userTypes", userTypeRepository.getAllItems());
-                case "products" -> result.put("products", productRepository.getAllItems());
-                case "unitDimensions" -> result.put("unitDimensions", unitDimensionRepository.getAllItems());
-                case "currencies" -> result.put("currencies", currencyRepository.getAllItems());
-                case "roles" -> result.put("roles", roleRepository.getAllItems());
-                case "actions" -> result.put("actions", actionRepository.getAllItems());
-                case "priceLists" -> result.put("priceLists", priceListRepository.getAllItems());
+                case "brands" -> result.put("brands", brandRepository.getEnabledItems());
+                case "productTypes" -> result.put("productTypes", productTypeRepository.getEnabledItems());
+                case "productClasses" -> result.put("productClasses", productClassRepository.getEnabledItems());
+                case "productGroups" -> result.put("productGroups", productGroupRepository.getEnabledItems());
+                case "units" -> result.put("units", unitRepository.getEnabledItems());
+                case "countries" -> result.put("countries", countryRepository.getEnabledItems());
+                case "productCategories" -> result.put("productCategories", productCategoryRepository.getEnabledItems());
+                case "producers" -> result.put("producers", producerRepository.getEnabledItems());
+                case "userTypes" -> result.put("userTypes", userTypeRepository.getEnabledItems());
+                case "products" -> result.put("products", productRepository.getEnabledItems());
+                case "unitDimensions" -> result.put("unitDimensions", unitDimensionRepository.getEnabledItems());
+                case "currencies" -> result.put("currencies", currencyRepository.getEnabledItems());
+                case "roles" -> result.put("roles", roleRepository.getEnabledItems());
+                case "actions" -> result.put("actions", actionRepository.getEnabledItems());
+                case "priceLists" -> result.put("priceLists", priceListRepository.getEnabledItems());
+                case "warehouses" -> result.put("warehouses", warehouseRepository.getEnabledItems());
             }
         }
         return result;

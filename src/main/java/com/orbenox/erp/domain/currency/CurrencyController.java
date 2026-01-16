@@ -2,6 +2,7 @@ package com.orbenox.erp.domain.currency;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,14 +31,14 @@ public class CurrencyController {
 
     @PreAuthorize("hasPermission('CURRENCY', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<CurrencyItem>> create(@RequestBody CurrencyDto dto) {
+    public ResponseEntity<Response<CurrencyItem>> create(@Valid @RequestBody CurrencyDto dto) {
         return ResponseEntity.ok(Response.successData(currencyService.create(dto)));
     }
 
     @PreAuthorize("hasPermission('CURRENCY', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<CurrencyItem>> update(@PathVariable Long id,
-                                                         @RequestBody CurrencyDto dto) {
+                                                         @Valid @RequestBody CurrencyDto dto) {
         return ResponseEntity.ok(Response.successData(currencyService.update(id, dto)));
     }
 

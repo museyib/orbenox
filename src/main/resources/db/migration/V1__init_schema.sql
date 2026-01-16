@@ -2,7 +2,7 @@ CREATE TABLE user_type
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    name       VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -66,7 +66,7 @@ CREATE TABLE resource
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    name       VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -82,7 +82,7 @@ CREATE TABLE action
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    name       VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -127,7 +127,7 @@ CREATE TABLE unit_dimension
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    name       VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -146,7 +146,7 @@ CREATE TABLE unit
     code              VARCHAR(100)    NOT NULL,
     name              VARCHAR(255),
     base              BOOLEAN         NOT NULL DEFAULT FALSE,
-    factor_to_base NUMERIC(20, 10) NOT NULL DEFAULT 1,
+    factor_to_base    NUMERIC(20, 10) NOT NULL DEFAULT 1,
     offset_to_base    NUMERIC(20, 10) NOT NULL DEFAULT 0,
     created_at        TIMESTAMP                DEFAULT now(),
     updated_at        TIMESTAMP,
@@ -166,7 +166,7 @@ CREATE TABLE currency
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    name       VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -182,7 +182,7 @@ CREATE TABLE country
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    name       VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -198,7 +198,7 @@ CREATE TABLE brand
 (
     id          BIGSERIAL PRIMARY KEY,
     code        VARCHAR(100) NOT NULL,
-    name        VARCHAR(255),
+    name        VARCHAR(255) NOT NULL,
     description VARCHAR(1000),
     logo_url    VARCHAR(200),
     created_at  TIMESTAMP DEFAULT now(),
@@ -216,7 +216,7 @@ CREATE TABLE producer
 (
     id          BIGSERIAL PRIMARY KEY,
     code        VARCHAR(100) NOT NULL,
-    name        VARCHAR(255),
+    name        VARCHAR(255) NOT NULL,
     description VARCHAR(1000),
     created_at  TIMESTAMP DEFAULT now(),
     updated_at  TIMESTAMP,
@@ -233,7 +233,7 @@ CREATE TABLE product_type
 (
     id          BIGSERIAL PRIMARY KEY,
     code        VARCHAR(100) NOT NULL,
-    name        VARCHAR(255),
+    name        VARCHAR(255) NOT NULL,
     description VARCHAR(1000),
     created_at  TIMESTAMP DEFAULT now(),
     updated_at  TIMESTAMP,
@@ -250,7 +250,7 @@ CREATE TABLE product_group
 (
     id          BIGSERIAL PRIMARY KEY,
     code        VARCHAR(100) NOT NULL,
-    name        VARCHAR(255),
+    name        VARCHAR(255) NOT NULL,
     description VARCHAR(1000),
     parent_id   BIGINT REFERENCES product_group (id),
     slug        VARCHAR(100),
@@ -269,7 +269,7 @@ CREATE TABLE product_category
 (
     id          BIGSERIAL PRIMARY KEY,
     code        VARCHAR(100) NOT NULL,
-    name        VARCHAR(255),
+    name        VARCHAR(255) NOT NULL,
     description VARCHAR(1000),
     created_at  TIMESTAMP DEFAULT now(),
     updated_at  TIMESTAMP,
@@ -286,7 +286,7 @@ CREATE TABLE product_class
 (
     id          BIGSERIAL PRIMARY KEY,
     code        VARCHAR(100) NOT NULL,
-    name        VARCHAR(255),
+    name        VARCHAR(255) NOT NULL,
     description VARCHAR(1000),
     created_at  TIMESTAMP DEFAULT now(),
     updated_at  TIMESTAMP,
@@ -333,13 +333,13 @@ CREATE TABLE price_list
     currency_id      BIGINT          NOT NULL REFERENCES currency (id),
     parent_id        BIGINT REFERENCES price_list (id),
     factor_to_parent NUMERIC(20, 10) NOT NULL DEFAULT 1,
-    round_length     INT       DEFAULT 4,
-    created_at       TIMESTAMP DEFAULT now(),
+    round_length     INT                      DEFAULT 4,
+    created_at       TIMESTAMP                DEFAULT now(),
     updated_at       TIMESTAMP,
     created_by       VARCHAR(100),
     updated_by       VARCHAR(100),
-    enabled          BOOLEAN   DEFAULT TRUE,
-    deleted          BOOLEAN   DEFAULT FALSE
+    enabled          BOOLEAN                  DEFAULT TRUE,
+    deleted          BOOLEAN                  DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_price_list_code_active
     ON price_list (code)
@@ -349,7 +349,7 @@ CREATE TABLE warehouse
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    name       VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
@@ -402,4 +402,21 @@ CREATE TABLE product_unit
     created_by     VARCHAR(100),
     updated_by     VARCHAR(100),
     UNIQUE (product_id, unit_id)
+);
+
+CREATE TABLE product_warehouse
+(
+    id                BIGSERIAL PRIMARY KEY,
+    product_id        BIGINT          NOT NULL REFERENCES product (id),
+    warehouse_id      BIGINT          NOT NULL REFERENCES warehouse (id),
+    quantity          NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    reserved_quantity NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    free_quantity     NUMERIC(20, 10) GENERATED ALWAYS AS ( quantity - reserved_quantity ) STORED,
+    min_quantity      NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    max_quantity      NUMERIC(20, 10) NOT NULL DEFAULT 999999999,
+    created_at        TIMESTAMP                DEFAULT now(),
+    updated_at        TIMESTAMP,
+    created_by        VARCHAR(100),
+    updated_by        VARCHAR(100),
+    UNIQUE (product_id, warehouse_id)
 )

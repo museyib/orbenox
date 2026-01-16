@@ -6,6 +6,7 @@ import com.orbenox.erp.security.dto.UserData;
 import com.orbenox.erp.security.dto.UserDto;
 import com.orbenox.erp.security.projection.UserItem;
 import com.orbenox.erp.security.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,13 +35,14 @@ public class UserController {
 
     @PreAuthorize("hasPermission('APP_USER', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<UserItem>> create(@RequestBody UserDto dto) {
+    public ResponseEntity<Response<UserItem>> create(@Valid @RequestBody UserDto dto) {
         return ResponseEntity.ok(Response.successData(userService.create(dto)));
     }
 
     @PreAuthorize("hasPermission('APP_USER', 'UPDATE')")
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<UserItem>> update(@PathVariable Long id, @RequestBody UserDto dto) {
+    public ResponseEntity<Response<UserItem>> update(@PathVariable Long id,
+                                                     @Valid @RequestBody UserDto dto) {
         return ResponseEntity.ok(Response.successData(userService.update(id, dto)));
     }
 

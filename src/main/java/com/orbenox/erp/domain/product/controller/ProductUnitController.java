@@ -4,6 +4,7 @@ import com.orbenox.erp.common.Response;
 import com.orbenox.erp.domain.product.dto.ProductUnitData;
 import com.orbenox.erp.domain.product.request.UpdateProductUnitRequest;
 import com.orbenox.erp.domain.product.service.ProductUnitService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +24,7 @@ public class ProductUnitController {
 
     @PreAuthorize("hasPermission('PRODUCT_UNIT', 'UPDATE')")
     @PostMapping
-    public ResponseEntity<Response<ProductUnitData>> updateProductUnits(@RequestBody UpdateProductUnitRequest request) {
+    public ResponseEntity<Response<ProductUnitData>> updateProductUnits(@Valid @RequestBody UpdateProductUnitRequest request) {
         return ResponseEntity.ok(Response.successData(productUnitService.updateProductUnits(request)));
     }
 }
