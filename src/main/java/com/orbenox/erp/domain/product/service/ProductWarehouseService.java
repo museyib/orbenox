@@ -1,16 +1,18 @@
 package com.orbenox.erp.domain.product.service;
 
 import com.orbenox.erp.common.entity.BaseEntity;
-import com.orbenox.erp.domain.product.dto.ProductWarehouseData;
 import com.orbenox.erp.domain.product.dto.ProductWarehouseDto;
 import com.orbenox.erp.domain.product.entity.ProductWarehouse;
 import com.orbenox.erp.domain.product.mapper.ProductWarehouseMapper;
+import com.orbenox.erp.domain.product.projection.ProductWarehouseData;
 import com.orbenox.erp.domain.product.projection.ProductWarehouseItem;
 import com.orbenox.erp.domain.product.projection.SimpleProductItem;
 import com.orbenox.erp.domain.product.repository.ProductRepository;
 import com.orbenox.erp.domain.product.repository.ProductWarehouseRepository;
 import com.orbenox.erp.domain.product.request.UpdateProductWarehouseRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ public class ProductWarehouseService {
     private final ProductRepository productRepository;
     private final ProductWarehouseMapper productWarehouseMapper;
 
+    @Cacheable("productWarehouses")
     public ProductWarehouseData getItemsByProductId(Long productId) {
         ProductWarehouseData data = new ProductWarehouseData();
         SimpleProductItem product = productRepository.getSimpleItemById(productId);
@@ -35,6 +38,7 @@ public class ProductWarehouseService {
         return data;
     }
 
+    @CacheEvict(value = "productWarehouses", allEntries = true)
     public ProductWarehouseData updateProductWarehouses(UpdateProductWarehouseRequest request) {
         List<Long> idsToUpdate = request.getWarehousesToUpdate().stream().map(ProductWarehouseDto::id).toList();
         List<Long> idsToDelete = request.getWarehousesToDelete().stream().map(ProductWarehouseDto::id).toList();

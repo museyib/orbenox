@@ -31,7 +31,7 @@ public class WarehouseController {
 
     @PreAuthorize("hasPermission('WAREHOUSE', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<WarehouseItem>> create(@Valid @RequestBody WarehouseDto dto) {
+    public ResponseEntity<Response<WarehouseItem>> create(@Valid @RequestBody WarehouseCreateDto dto) {
         return ResponseEntity.ok(Response.successData(warehouseService.create(dto)));
     }
 

@@ -2,6 +2,7 @@ package com.orbenox.erp.security.controller;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
+import com.orbenox.erp.security.dto.RoleCreateDto;
 import com.orbenox.erp.security.dto.RoleDto;
 import com.orbenox.erp.security.projection.RoleItem;
 import com.orbenox.erp.security.service.RoleService;
@@ -34,8 +35,8 @@ public class RoleController {
 
     @PreAuthorize("hasPermission('APP_ROLE', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<RoleItem>> create(@Valid @RequestBody RoleDto appRole) {
-        return ResponseEntity.ok(Response.successData(roleService.save(appRole)));
+    public ResponseEntity<Response<RoleItem>> create(@Valid @RequestBody RoleCreateDto appRole) {
+        return ResponseEntity.ok(Response.successData(roleService.create(appRole)));
     }
 
     @PreAuthorize("hasPermission('APP_ROLE', 'UPDATE')")

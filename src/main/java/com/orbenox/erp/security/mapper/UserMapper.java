@@ -1,5 +1,6 @@
 package com.orbenox.erp.security.mapper;
 
+import com.orbenox.erp.security.dto.UserCreateDto;
 import com.orbenox.erp.security.dto.UserDto;
 import com.orbenox.erp.security.entity.AppUser;
 import org.mapstruct.BeanMapping;
@@ -11,7 +12,7 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    AppUser toEntity(UserDto dto);
+    AppUser toEntity(UserCreateDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "userType", ignore = true)

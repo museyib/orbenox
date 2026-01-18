@@ -9,7 +9,7 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper(componentModel = "spring")
 public interface ResourceMapper {
-    Resource toEntity(ResourceDto dto);
+    Resource toEntity(ResourceCreateDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "actions", ignore = true)

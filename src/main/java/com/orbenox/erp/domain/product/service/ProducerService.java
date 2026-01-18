@@ -1,5 +1,6 @@
 package com.orbenox.erp.domain.product.service;
 
+import com.orbenox.erp.domain.product.dto.ProducerCreateDto;
 import com.orbenox.erp.domain.product.dto.ProducerDto;
 import com.orbenox.erp.domain.product.entity.Producer;
 import com.orbenox.erp.domain.product.mapper.ProducerMapper;
@@ -7,6 +8,8 @@ import com.orbenox.erp.domain.product.projection.ProducerItem;
 import com.orbenox.erp.domain.product.repository.ProducerRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +20,7 @@ public class ProducerService {
     private final ProducerRepository producerRepository;
     private final ProducerMapper producerMapper;
 
+    @Cacheable("producers")
     public List<ProducerItem> getAllItems() {
         return producerRepository.getAllItems();
     }
@@ -25,11 +29,13 @@ public class ProducerService {
         return producerRepository.getItemById(id);
     }
 
-    public ProducerItem create(ProducerDto dto) {
+    @CacheEvict(value = {"producers", "lookups"}, allEntries = true)
+    public ProducerItem create(ProducerCreateDto dto) {
         Producer producer = producerRepository.save(producerMapper.toEntity(dto));
         return producerRepository.getItemById(producer.getId());
     }
 
+    @CacheEvict(value = {"producers", "lookups"}, allEntries = true)
     @Transactional
     public ProducerItem update(Long id, ProducerDto dto) {
         Producer entity = producerRepository.findByIdAndDeletedFalse(id);
@@ -37,6 +43,7 @@ public class ProducerService {
         return producerRepository.getItemById(id);
     }
 
+    @CacheEvict(value = {"producers", "lookups"}, allEntries = true)
     @Transactional
     public void softDelete(Long id) {
         Producer entity = producerRepository.findByIdAndDeletedFalse(id);

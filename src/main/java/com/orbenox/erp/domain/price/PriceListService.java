@@ -4,6 +4,8 @@ import com.orbenox.erp.domain.currency.Currency;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -16,10 +18,12 @@ public class PriceListService {
     private final PriceListMapper priceListMapper;
     private final EntityManager em;
 
+    @Cacheable("priceLists.all")
     public List<PriceListItem> getAllItems() {
         return priceListRepository.getAllItems();
     }
 
+    @Cacheable("priceLists.excluded")
     public List<PriceListItem.PriceListParent> findAllExcluded(Long idToExclude) {
         List<PriceListItem> items = priceListRepository.getAllItems();
         Map<Long, List<PriceListItem>> childrenMap = items.stream()
@@ -52,20 +56,32 @@ public class PriceListService {
         return priceListRepository.getItemById(id);
     }
 
-    public PriceListItem create(PriceListDto dto) {
+    @CacheEvict(value = {
+            "priceLists.all",
+            "priceLists.excluded",
+            "lookups"}, allEntries = true)
+    public PriceListItem create(PriceListCreateDto dto) {
         PriceList priceList = priceListRepository.save(priceListMapper.toEntity(dto));
         return priceListRepository.getItemById(priceList.getId());
     }
 
+    @CacheEvict(value = {
+            "priceLists.all",
+            "priceLists.excluded",
+            "lookups"}, allEntries = true)
     @Transactional
     public PriceListItem update(Long id, PriceListDto dto) {
         PriceList entity = priceListRepository.findByIdAndDeletedFalse(id);
         priceListMapper.updateEntityFromDto(dto, entity);
         Currency currency = em.getReference(Currency.class, dto.currency().id());
         entity.setCurrency(currency);
-        return priceListRepository.getItemById(dto.id());
+        return priceListRepository.getItemById(id);
     }
 
+    @CacheEvict(value = {
+            "priceLists.all",
+            "priceLists.excluded",
+            "lookups"}, allEntries = true)
     @Transactional
     public void softDelete(Long id) {
         PriceList entity = priceListRepository.findByIdAndDeletedFalse(id);

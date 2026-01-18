@@ -1,10 +1,11 @@
 package com.orbenox.erp.domain.product.controller;
 
 import com.orbenox.erp.common.Response;
-import com.orbenox.erp.localization.LocalizationService;
+import com.orbenox.erp.domain.product.dto.ProducerCreateDto;
 import com.orbenox.erp.domain.product.dto.ProducerDto;
 import com.orbenox.erp.domain.product.projection.ProducerItem;
 import com.orbenox.erp.domain.product.service.ProducerService;
+import com.orbenox.erp.localization.LocalizationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class ProducerController {
 
     @PreAuthorize("hasPermission('PRODUCER', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<ProducerItem>> create(@Valid @RequestBody ProducerDto dto) {
+    public ResponseEntity<Response<ProducerItem>> create(@Valid @RequestBody ProducerCreateDto dto) {
         return ResponseEntity.ok(Response.successData(producerService.create(dto)));
     }
 

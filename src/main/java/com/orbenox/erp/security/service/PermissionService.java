@@ -1,26 +1,25 @@
 package com.orbenox.erp.security.service;
 
 import com.orbenox.erp.domain.action.ActionItem;
-import com.orbenox.erp.domain.action.ActionRepository;
 import com.orbenox.erp.domain.resource.ResourceRepository;
-import com.orbenox.erp.security.dto.PermissionDto;
-import com.orbenox.erp.security.dto.RolePermissionData;
-import com.orbenox.erp.security.dto.UserPermissionData;
-import com.orbenox.erp.security.request.UpdateRolePermissionRequest;
-import com.orbenox.erp.security.request.UpdateUserPermissionRequest;
+import com.orbenox.erp.security.dto.RolePermissionDto;
+import com.orbenox.erp.security.dto.UserPermissionDto;
 import com.orbenox.erp.security.entity.AppPermission;
+import com.orbenox.erp.security.mapper.RolePermissionMapper;
+import com.orbenox.erp.security.mapper.UserPermissionMapper;
 import com.orbenox.erp.security.projection.*;
 import com.orbenox.erp.security.repository.PermissionRepository;
 import com.orbenox.erp.security.repository.RoleRepository;
 import com.orbenox.erp.security.repository.UserRepository;
+import com.orbenox.erp.security.request.UpdateRolePermissionRequest;
+import com.orbenox.erp.security.request.UpdateUserPermissionRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -30,8 +29,10 @@ public class PermissionService {
     private final RoleRepository roleRepository;
     private final ResourceRepository resourceRepository;
     private final PermissionRepository permissionRepository;
-    private final ActionRepository actionRepository;
+    private final UserPermissionMapper userPermissionMapper;
+    private final RolePermissionMapper rolePermissionMapper;
 
+    @Cacheable("permissions.user")
     public UserPermissionData getDirectUserPermission(Long userId) {
         UserItem user = userRepository.getItemById(userId);
         List<PermissionItem> permissions = permissionRepository.getPermissionsByUserId(userId);
@@ -54,6 +55,7 @@ public class PermissionService {
         return permissionData;
     }
 
+    @Cacheable("permissions.role")
     public RolePermissionData getRolePermission(Long roleId) {
         RoleItem role = roleRepository.getItemById(roleId);
         List<PermissionItem> permissions = permissionRepository.getPermissionsByRoleId(roleId);
@@ -63,89 +65,56 @@ public class PermissionService {
         return permissionData;
     }
 
-    public List<ActionItem> getGrantablePermissionsForUser(Long userId, Long resourceId) {
+    @Cacheable("availableResourceActions.user")
+    public List<ActionItem> getAvailableActionsForUser(Long userId, Long resourceId) {
         List<ActionItem> givenPermissions = permissionRepository.getActionItemsByAppUserIdAndResourceId(userId, resourceId);
         List<ActionItem> allPermissions = resourceRepository.getActionItemsByResourceId(resourceId);
         allPermissions.removeAll(givenPermissions);
         return allPermissions;
     }
 
-    public List<ActionItem> getGrantablePermissionsForRole(Long roleId, Long resourceId) {
+    @Cacheable("availableResourceActions.role")
+    public List<ActionItem> getAvailableActionsForRole(Long roleId, Long resourceId) {
         List<ActionItem> givenPermissions = permissionRepository.getActionItemsByAppRoleIdAndResourceId(roleId, resourceId);
         List<ActionItem> allPermissions = resourceRepository.getActionItemsByResourceId(resourceId);
         allPermissions.removeAll(givenPermissions);
         return allPermissions;
     }
 
+    @CacheEvict(value = {
+            "hasPermission",
+            "permissions.user",
+            "availableResourceActions.user"}, allEntries = true)
     @Transactional
-    public UserPermissionData updateUserPermissions(UpdateUserPermissionRequest dto) {
-        Long userId = dto.getUserId();
-        List<AppPermission> existing = permissionRepository.findByAppUserIdAndDeletedFalse(userId);
+    public UserPermissionData updateUserPermissions(UpdateUserPermissionRequest request) {
+        List<Long> idsToDelete = request.getPermissionsToDelete().stream().map(UserPermissionDto::id).toList();
 
-        Set<String> incomingCodes = dto.getPermissions().stream()
-                .map(PermissionDto::getPermissionCode)
-                .collect(Collectors.toSet());
+        List<AppPermission> entityListToInsert = request.getPermissionsToInsert().stream()
+                .map(userPermissionMapper::toEntity).toList();
+        permissionRepository.saveAll(entityListToInsert);
+        permissionRepository.deleteAllById(idsToDelete);
 
-        Set<String> existingCodes = existing.stream().map(AppPermission::getPermissionCode).collect(Collectors.toSet());
-
-        Set<String> toAdd = new HashSet<>(incomingCodes);
-        toAdd.removeAll(existingCodes);
-
-        Set<String> toRemove = new HashSet<>(existingCodes);
-        toRemove.removeAll(incomingCodes);
-
-        if (!toRemove.isEmpty()) {
-            permissionRepository.deleteByAppUserIdAndCodes(userId, toRemove);
-        }
-
-        List<AppPermission> appPermissions = dto.getPermissions().stream()
-                .filter(p -> toAdd.contains(p.getPermissionCode()))
-                .map(p -> {
-                    AppPermission appPermission = new AppPermission();
-                    appPermission.setAppUser(userRepository.findByIdAndDeletedFalse(userId));
-                    appPermission.setResource(resourceRepository.findByIdAndDeletedFalse(p.resource().id()));
-                    appPermission.setAction(actionRepository.findByIdAndDeletedFalse(p.action().id()));
-                    return appPermission;
-                }).collect(Collectors.toList());
-        if (!appPermissions.isEmpty()) {
-            permissionRepository.saveAll(appPermissions);
-        }
-        return getUserPermission(userId);
+        return getUserPermission(request.getUserId());
     }
 
+    @CacheEvict(value = {
+            "hasPermission",
+            "permissions.role",
+            "availableResourceActions.role"}, allEntries = true)
     @Transactional
-    public RolePermissionData updateRolePermissions(UpdateRolePermissionRequest dto) {
-        Long roleId = dto.getRoleId();
-        List<AppPermission> existing = permissionRepository.findByAppRoleIdAndDeletedFalse(roleId);
+    public RolePermissionData updateRolePermissions(UpdateRolePermissionRequest request) {
+        List<Long> idsToDelete = request.getPermissionsToDelete().stream().map(RolePermissionDto::id).toList();
 
-        Set<String> incomingCodes = dto.getPermissions().stream()
-                .map(PermissionDto::getPermissionCode)
-                .collect(Collectors.toSet());
+        List<AppPermission> entityListToInsert = request.getPermissionsToInsert().stream()
+                .map(rolePermissionMapper::toEntity).toList();
+        permissionRepository.saveAll(entityListToInsert);
+        permissionRepository.deleteAllById(idsToDelete);
 
-        Set<String> existingCodes = existing.stream().map(AppPermission::getPermissionCode).collect(Collectors.toSet());
-
-        Set<String> toAdd = new HashSet<>(incomingCodes);
-        toAdd.removeAll(existingCodes);
-
-        Set<String> toRemove = new HashSet<>(existingCodes);
-        toRemove.removeAll(incomingCodes);
-
-        if (!toRemove.isEmpty()) {
-            permissionRepository.deleteByAppRoleIdAndCodes(roleId, toRemove);
-        }
-
-        List<AppPermission> appPermissions = dto.getPermissions().stream()
-                .filter(p -> toAdd.contains(p.getPermissionCode()))
-                .map(p -> {
-                    AppPermission appPermission = new AppPermission();
-                    appPermission.setAppRole(roleRepository.findByIdAndDeletedFalse(roleId));
-                    appPermission.setResource(resourceRepository.findByIdAndDeletedFalse(p.resource().id()));
-                    appPermission.setAction(actionRepository.findByIdAndDeletedFalse(p.action().id()));
-                    return appPermission;
-                }).collect(Collectors.toList());
-        if (!appPermissions.isEmpty()) {
-            permissionRepository.saveAll(appPermissions);
-        }
-        return getRolePermission(roleId);
+        RoleItem role = roleRepository.getItemById(request.getRoleId());
+        List<PermissionItem> permissions = permissionRepository.getPermissionsByRoleId(request.getRoleId());
+        RolePermissionData permissionData = new RolePermissionData();
+        permissionData.setRole(role);
+        permissionData.setPermissions(permissions);
+        return permissionData;
     }
 }

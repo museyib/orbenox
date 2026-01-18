@@ -1,5 +1,6 @@
 package com.orbenox.erp.domain.product.service;
 
+import com.orbenox.erp.domain.product.dto.ProductGroupCreateDto;
 import com.orbenox.erp.domain.product.dto.ProductGroupDto;
 import com.orbenox.erp.domain.product.entity.ProductGroup;
 import com.orbenox.erp.domain.product.mapper.ProductGroupMapper;
@@ -8,6 +9,8 @@ import com.orbenox.erp.domain.product.projection.SimpleProductGroupItem;
 import com.orbenox.erp.domain.product.repository.ProductGroupRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,10 +22,12 @@ public class ProductGroupService {
     private final ProductGroupRepository productGroupRepository;
     private final ProductGroupMapper productGroupMapper;
 
+    @Cacheable("productGroups.all")
     public List<ProductGroupItem> getAllItems() {
         return productGroupRepository.getAllItems();
     }
 
+    @Cacheable("productGroups.excluded")
     public List<SimpleProductGroupItem> findAllExcluded(Long idToExclude) {
         List<ProductGroupItem> items = productGroupRepository.getAllItems();
         Map<Long, List<ProductGroupItem>> childrenMap = items.stream()
@@ -55,11 +60,19 @@ public class ProductGroupService {
         return productGroupRepository.getItemById(id);
     }
 
-    public ProductGroupItem create(ProductGroupDto dto) {
+    @CacheEvict(value = {
+            "productGroups.all",
+            "productGroups.excluded",
+            "lookups"}, allEntries = true)
+    public ProductGroupItem create(ProductGroupCreateDto dto) {
         ProductGroup productGroup = productGroupRepository.save(productGroupMapper.toEntity(dto));
         return productGroupRepository.getItemById(productGroup.getId());
     }
 
+    @CacheEvict(value = {
+            "productGroups.all",
+            "productGroups.excluded",
+            "lookups"}, allEntries = true)
     @Transactional
     public ProductGroupItem update(Long id, ProductGroupDto dto) {
         ProductGroup entity = productGroupRepository.findByIdAndDeletedFalse(id);
@@ -67,6 +80,10 @@ public class ProductGroupService {
         return productGroupRepository.getItemById(id);
     }
 
+    @CacheEvict(value = {
+            "productGroups.all",
+            "productGroups.excluded",
+            "lookups"}, allEntries = true)
     @Transactional
     public void softDelete(Long id) {
         ProductGroup entity = productGroupRepository.findByIdAndDeletedFalse(id);

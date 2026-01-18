@@ -6,6 +6,7 @@ import com.orbenox.erp.domain.unit.UnitDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.Objects;
 
 
 /**
@@ -25,4 +26,15 @@ public record ProductDto(Long id,
                          @NotNull(message = "{country.notNull}") CountryDto country,
                          @NotNull(message = "{unit.notNull}") UnitDto defaultUnit,
                          @NotBlank(message = "{barcode.notNull}") String defaultBarcode) {
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductDto that = (ProductDto) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

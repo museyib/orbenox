@@ -31,7 +31,7 @@ public class CurrencyController {
 
     @PreAuthorize("hasPermission('CURRENCY', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<CurrencyItem>> create(@Valid @RequestBody CurrencyDto dto) {
+    public ResponseEntity<Response<CurrencyItem>> create(@Valid @RequestBody CurrencyCreateDto dto) {
         return ResponseEntity.ok(Response.successData(currencyService.create(dto)));
     }
 

@@ -2,18 +2,21 @@ package com.orbenox.erp.security.service;
 
 import com.orbenox.erp.exception.AlterRootException;
 import com.orbenox.erp.localization.LocalizationService;
-import com.orbenox.erp.security.dto.UserData;
+import com.orbenox.erp.security.dto.UserCreateDto;
 import com.orbenox.erp.security.dto.UserDto;
 import com.orbenox.erp.security.entity.AppUser;
 import com.orbenox.erp.security.entity.UserType;
 import com.orbenox.erp.security.mapper.RoleMapper;
 import com.orbenox.erp.security.mapper.UserMapper;
 import com.orbenox.erp.security.projection.RoleItem;
+import com.orbenox.erp.security.projection.UserData;
 import com.orbenox.erp.security.projection.UserItem;
 import com.orbenox.erp.security.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +32,7 @@ public class UserService {
     private final RoleMapper roleMapper;
     private final EntityManager em;
 
+    @Cacheable("users")
     public List<UserItem> getAllItems() {
         return userRepository.getAllItems();
     }
@@ -42,11 +46,13 @@ public class UserService {
         return userData;
     }
 
+    @Cacheable("userDetails")
     public UserItem getByUsername(String username) {
         return userRepository.getItemByUsername(username);
     }
 
-    public UserItem create(UserDto dto) {
+    @CacheEvict(value = {"userDetails", "users"}, allEntries = true)
+    public UserItem create(UserCreateDto dto) {
         AppUser appUser = userMapper.toEntity(dto);
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         appUser.setRoles(roleMapper.toEntityList(dto.roles()));
@@ -54,6 +60,7 @@ public class UserService {
         return userRepository.getItemById(saved.getId());
     }
 
+    @CacheEvict(value = {"userDetails", "users"}, allEntries = true)
     @Transactional
     public UserItem update(Long id, UserDto dto) {
         AppUser appUser = userRepository.findByIdAndDeletedFalse(id);
@@ -68,6 +75,7 @@ public class UserService {
         return userRepository.getItemById(id);
     }
 
+    @CacheEvict(value = {"userDetails", "users"}, allEntries = true)
     @Transactional
     public void delete(Long id) {
         AppUser appUser = userRepository.findByIdAndDeletedFalse(id);

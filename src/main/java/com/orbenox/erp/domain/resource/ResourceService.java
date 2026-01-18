@@ -5,6 +5,8 @@ import com.orbenox.erp.domain.action.ActionItem;
 import com.orbenox.erp.domain.action.ActionMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,7 @@ public class ResourceService {
     private final ResourceMapper resourceMapper;
     private final ActionMapper actionMapper;
 
+    @Cacheable("resources")
     public List<ResourceItem> getAllItems() {
         return resourceRepository.getAllItems();
     }
@@ -30,13 +33,15 @@ public class ResourceService {
         return resourceData;
     }
 
-    public ResourceItem create(ResourceDto dto) {
+    @CacheEvict(value = {"resources", "lookups"}, allEntries = true)
+    public ResourceItem create(ResourceCreateDto dto) {
         Resource resource = resourceMapper.toEntity(dto);
         resource.setActions(actionMapper.toEntityList(dto.actions()));
         Resource saved = resourceRepository.save(resource);
         return resourceRepository.getItemById(saved.getId());
     }
 
+    @CacheEvict(value = {"resources", "lookups"}, allEntries = true)
     @Transactional
     public ResourceItem update(Long id, ResourceDto dto) {
         Resource resource = resourceRepository.findByIdAndDeletedFalse(id);
@@ -46,6 +51,7 @@ public class ResourceService {
         return resourceRepository.getItemById(id);
     }
 
+    @CacheEvict(value = {"resources", "lookups"}, allEntries = true)
     @Transactional
     public void softDelete(Long id) {
         Resource entity = resourceRepository.findByIdAndDeletedFalse(id);

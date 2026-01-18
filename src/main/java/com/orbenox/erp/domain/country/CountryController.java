@@ -31,15 +31,15 @@ public class CountryController {
 
     @PreAuthorize("hasPermission('COUNTRY', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<CountryItem>> create(@Valid @RequestBody CountryDto countryDto) {
-        return ResponseEntity.ok(Response.successData(countryService.create(countryDto)));
+    public ResponseEntity<Response<CountryItem>> create(@Valid @RequestBody CountryCreateDto dto) {
+        return ResponseEntity.ok(Response.successData(countryService.create(dto)));
     }
 
     @PreAuthorize("hasPermission('COUNTRY', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<CountryItem>> update(@PathVariable Long id,
-                                                        @Valid @RequestBody CountryDto countryDto) {
-        return ResponseEntity.ok(Response.successData(countryService.update(id, countryDto)));
+                                                        @Valid @RequestBody CountryDto dto) {
+        return ResponseEntity.ok(Response.successData(countryService.update(id, dto)));
     }
 
     @PreAuthorize("hasPermission('COUNTRY', 'DELETE')")

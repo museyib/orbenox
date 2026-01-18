@@ -1,10 +1,11 @@
 package com.orbenox.erp.domain.product.controller;
 
 import com.orbenox.erp.common.Response;
-import com.orbenox.erp.localization.LocalizationService;
+import com.orbenox.erp.domain.product.dto.BrandCreateDto;
 import com.orbenox.erp.domain.product.dto.BrandDto;
 import com.orbenox.erp.domain.product.projection.BrandItem;
 import com.orbenox.erp.domain.product.service.BrandService;
+import com.orbenox.erp.localization.LocalizationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class BrandController {
 
     @PreAuthorize("hasPermission('BRAND', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<BrandItem>> create(@Valid @RequestBody BrandDto dto) {
+    public ResponseEntity<Response<BrandItem>> create(@Valid @RequestBody BrandCreateDto dto) {
         return ResponseEntity.ok(Response.successData(brandService.create(dto)));
     }
 

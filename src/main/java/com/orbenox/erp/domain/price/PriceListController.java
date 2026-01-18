@@ -36,7 +36,7 @@ public class PriceListController {
 
     @PreAuthorize("hasPermission('PRICE_LIST', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<PriceListItem>> create(@Valid @RequestBody PriceListDto dto) {
+    public ResponseEntity<Response<PriceListItem>> create(@Valid @RequestBody PriceListCreateDto dto) {
         return ResponseEntity.ok(Response.successData(priceListService.create(dto)));
     }
 

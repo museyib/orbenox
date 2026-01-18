@@ -1,5 +1,6 @@
 package com.orbenox.erp.domain.product.service;
 
+import com.orbenox.erp.domain.product.dto.ProductClassCreateDto;
 import com.orbenox.erp.domain.product.dto.ProductClassDto;
 import com.orbenox.erp.domain.product.entity.ProductClass;
 import com.orbenox.erp.domain.product.mapper.ProductClassMapper;
@@ -7,6 +8,8 @@ import com.orbenox.erp.domain.product.projection.ProductClassItem;
 import com.orbenox.erp.domain.product.repository.ProductClassRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +20,7 @@ public class ProductClassService {
     private final ProductClassRepository productClassRepository;
     private final ProductClassMapper productClassMapper;
 
+    @Cacheable("productClasses")
     public List<ProductClassItem> getAllItems() {
         return productClassRepository.getAllItems();
     }
@@ -25,11 +29,13 @@ public class ProductClassService {
         return productClassRepository.getItemById(id);
     }
 
-    public ProductClassItem create(ProductClassDto dto) {
+    @CacheEvict(value = {"productClasses", "lookups"}, allEntries = true)
+    public ProductClassItem create(ProductClassCreateDto dto) {
         ProductClass productClass = productClassRepository.save(productClassMapper.toEntity(dto));
         return productClassRepository.getItemById(productClass.getId());
     }
 
+    @CacheEvict(value = {"productClasses", "lookups"}, allEntries = true)
     @Transactional
     public ProductClassItem update(Long id, ProductClassDto dto) {
         ProductClass entity = productClassRepository.findByIdAndDeletedFalse(id);
@@ -37,6 +43,7 @@ public class ProductClassService {
         return productClassRepository.getItemById(id);
     }
 
+    @CacheEvict(value = {"productClasses", "lookups"}, allEntries = true)
     @Transactional
     public void softDelete(Long id) {
         ProductClass entity = productClassRepository.findByIdAndDeletedFalse(id);

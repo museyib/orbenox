@@ -1,11 +1,12 @@
 package com.orbenox.erp.domain.product.controller;
 
 import com.orbenox.erp.common.Response;
-import com.orbenox.erp.localization.LocalizationService;
+import com.orbenox.erp.domain.product.dto.ProductGroupCreateDto;
 import com.orbenox.erp.domain.product.dto.ProductGroupDto;
 import com.orbenox.erp.domain.product.projection.ProductGroupItem;
 import com.orbenox.erp.domain.product.projection.SimpleProductGroupItem;
 import com.orbenox.erp.domain.product.service.ProductGroupService;
+import com.orbenox.erp.localization.LocalizationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class ProductGroupController {
 
     @PreAuthorize("hasPermission('PRODUCT_GROUP', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<ProductGroupItem>> create(@Valid @RequestBody ProductGroupDto dto) {
+    public ResponseEntity<Response<ProductGroupItem>> create(@Valid @RequestBody ProductGroupCreateDto dto) {
         return ResponseEntity.ok(Response.successData(productGroupService.create(dto)));
     }
 

@@ -31,8 +31,8 @@ public class ResourceController {
 
     @PreAuthorize("hasPermission('RESOURCE', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<ResourceItem>> create(@Valid @RequestBody ResourceDto resourceDto) {
-        return ResponseEntity.ok(Response.successData(resourceService.create(resourceDto)));
+    public ResponseEntity<Response<ResourceItem>> create(@Valid @RequestBody ResourceCreateDto dto) {
+        return ResponseEntity.ok(Response.successData(resourceService.create(dto)));
     }
 
     @PreAuthorize("hasPermission('RESOURCE', 'UPDATE')")

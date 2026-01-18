@@ -2,10 +2,10 @@ package com.orbenox.erp.security.controller;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.domain.action.ActionItem;
+import com.orbenox.erp.security.projection.RolePermissionData;
+import com.orbenox.erp.security.projection.UserPermissionData;
 import com.orbenox.erp.security.request.UpdateRolePermissionRequest;
 import com.orbenox.erp.security.request.UpdateUserPermissionRequest;
-import com.orbenox.erp.security.dto.RolePermissionData;
-import com.orbenox.erp.security.dto.UserPermissionData;
 import com.orbenox.erp.security.service.PermissionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,16 +28,16 @@ public class PermissionController {
     }
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
-    @GetMapping("/availableForUser")
-    public ResponseEntity<Response<List<ActionItem>>> getAvailableForUser(@RequestParam Long userId,
-                                                                          @RequestParam Long resourceId) {
-        return ResponseEntity.ok(Response.successData(permissionService.getGrantablePermissionsForUser(userId, resourceId)));
+    @GetMapping("/user/{userId}/availableResourceActions")
+    public ResponseEntity<Response<List<ActionItem>>> getAvailableActionsForUser(@PathVariable Long userId,
+                                                                                 @RequestParam Long resourceId) {
+        return ResponseEntity.ok(Response.successData(permissionService.getAvailableActionsForUser(userId, resourceId)));
     }
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'UPDATE')")
     @PatchMapping("/user")
-    public ResponseEntity<Response<UserPermissionData>> updateUserPermissions(@Valid @RequestBody UpdateUserPermissionRequest permissions) {
-        return ResponseEntity.ok(Response.successData(permissionService.updateUserPermissions(permissions)));
+    public ResponseEntity<Response<UserPermissionData>> updateUserPermissions(@Valid @RequestBody UpdateUserPermissionRequest request) {
+        return ResponseEntity.ok(Response.successData(permissionService.updateUserPermissions(request)));
     }
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
@@ -47,15 +47,15 @@ public class PermissionController {
     }
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
-    @GetMapping("/availableForRole")
-    public ResponseEntity<Response<List<ActionItem>>> getAvailableForRole(@RequestParam Long roleId,
-                                                                          @RequestParam Long resourceId) {
-        return ResponseEntity.ok(Response.successData(permissionService.getGrantablePermissionsForRole(roleId, resourceId)));
+    @GetMapping("/role/{roleId}/availableResourceActions")
+    public ResponseEntity<Response<List<ActionItem>>> getAvailableActionsForRole(@PathVariable Long roleId,
+                                                                                 @RequestParam Long resourceId) {
+        return ResponseEntity.ok(Response.successData(permissionService.getAvailableActionsForRole(roleId, resourceId)));
     }
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'UPDATE')")
     @PatchMapping("/role")
-    public ResponseEntity<Response<RolePermissionData>> updateRolePermissions(@Valid @RequestBody UpdateRolePermissionRequest permissions) {
-        return ResponseEntity.ok(Response.successData(permissionService.updateRolePermissions(permissions)));
+    public ResponseEntity<Response<RolePermissionData>> updateRolePermissions(@Valid @RequestBody UpdateRolePermissionRequest request) {
+        return ResponseEntity.ok(Response.successData(permissionService.updateRolePermissions(request)));
     }
 }

@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.controller;
 
 import com.orbenox.erp.common.Response;
-import com.orbenox.erp.domain.product.dto.ProductWarehouseData;
+import com.orbenox.erp.domain.product.projection.ProductWarehouseData;
 import com.orbenox.erp.domain.product.request.UpdateProductWarehouseRequest;
 import com.orbenox.erp.domain.product.service.ProductWarehouseService;
 import jakarta.validation.Valid;

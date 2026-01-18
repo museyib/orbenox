@@ -2,8 +2,9 @@ package com.orbenox.erp.security.controller;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
-import com.orbenox.erp.security.dto.UserData;
+import com.orbenox.erp.security.dto.UserCreateDto;
 import com.orbenox.erp.security.dto.UserDto;
+import com.orbenox.erp.security.projection.UserData;
 import com.orbenox.erp.security.projection.UserItem;
 import com.orbenox.erp.security.service.UserService;
 import jakarta.validation.Valid;
@@ -35,7 +36,7 @@ public class UserController {
 
     @PreAuthorize("hasPermission('APP_USER', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<UserItem>> create(@Valid @RequestBody UserDto dto) {
+    public ResponseEntity<Response<UserItem>> create(@Valid @RequestBody UserCreateDto dto) {
         return ResponseEntity.ok(Response.successData(userService.create(dto)));
     }
 

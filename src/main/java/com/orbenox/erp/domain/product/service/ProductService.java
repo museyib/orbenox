@@ -1,6 +1,7 @@
 package com.orbenox.erp.domain.product.service;
 
 import com.orbenox.erp.domain.country.Country;
+import com.orbenox.erp.domain.product.dto.ProductCreateDto;
 import com.orbenox.erp.domain.product.dto.ProductDto;
 import com.orbenox.erp.domain.product.entity.*;
 import com.orbenox.erp.domain.product.mapper.ProductMapper;
@@ -12,6 +13,8 @@ import com.orbenox.erp.domain.unit.Unit;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +28,7 @@ public class ProductService {
     private final ProductMapper productMapper;
     private final EntityManager em;
 
+    @Cacheable("products")
     public List<ProductItem> getAllItems() {
         return productRepository.getAllItems();
     }
@@ -33,12 +37,14 @@ public class ProductService {
         return productRepository.getItemById(id);
     }
 
-    public ProductItem create(ProductDto dto) {
+    @CacheEvict(value = {"products", "productBarcodes", "lookups"}, allEntries = true)
+    public ProductItem create(ProductCreateDto dto) {
         Product product = productRepository.save(productMapper.toEntity(dto));
         addToBarcodeList(product);
         return productRepository.getItemById(product.getId());
     }
 
+    @CacheEvict(value = {"products", "productBarcodes", "lookups"}, allEntries = true)
     @Transactional
     public ProductItem update(Long id, ProductDto dto) {
         Product product = productRepository.findByIdAndDeletedFalse(id);
@@ -73,6 +79,7 @@ public class ProductService {
         return productRepository.getItemById(id);
     }
 
+    @CacheEvict(value = {"products", "productBarcodes", "lookups"}, allEntries = true)
     @Transactional
     public void softDelete(Long id) {
         Product entity = productRepository.findByIdAndDeletedFalse(id);

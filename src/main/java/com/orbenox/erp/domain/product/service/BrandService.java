@@ -1,5 +1,6 @@
 package com.orbenox.erp.domain.product.service;
 
+import com.orbenox.erp.domain.product.dto.BrandCreateDto;
 import com.orbenox.erp.domain.product.dto.BrandDto;
 import com.orbenox.erp.domain.product.entity.Brand;
 import com.orbenox.erp.domain.product.mapper.BrandMapper;
@@ -7,6 +8,8 @@ import com.orbenox.erp.domain.product.projection.BrandItem;
 import com.orbenox.erp.domain.product.repository.BrandRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +20,7 @@ public class BrandService {
     private final BrandRepository currencyRepository;
     private final BrandMapper currencyMapper;
 
+    @Cacheable("brands")
     public List<BrandItem> getAllItems() {
         return currencyRepository.getAllItems();
     }
@@ -25,11 +29,13 @@ public class BrandService {
         return currencyRepository.getItemById(id);
     }
 
-    public BrandItem create(BrandDto dto) {
+    @CacheEvict(value = {"brands", "lookups"}, allEntries = true)
+    public BrandItem create(BrandCreateDto dto) {
         Brand brand = currencyRepository.save(currencyMapper.toEntity(dto));
         return currencyRepository.getItemById(brand.getId());
     }
 
+    @CacheEvict(value = {"brands", "lookups"}, allEntries = true)
     @Transactional
     public BrandItem update(Long id, BrandDto dto) {
         Brand entity = currencyRepository.findByIdAndDeletedFalse(id);
@@ -37,6 +43,7 @@ public class BrandService {
         return currencyRepository.getItemById(id);
     }
 
+    @CacheEvict(value = {"brands", "lookups"}, allEntries = true)
     @Transactional
     public void softDelete(Long id) {
         Brand entity = currencyRepository.findByIdAndDeletedFalse(id);

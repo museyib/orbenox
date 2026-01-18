@@ -1,7 +1,6 @@
 package com.orbenox.erp.security.service;
 
 import com.orbenox.erp.security.projection.UserItem;
-import com.orbenox.erp.security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -15,11 +14,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserItem appUser = userRepository.getItemByUsername(username);
+        UserItem appUser = userService.getByUsername(username);
         return new User(
                 appUser.getUsername(),
                 appUser.getPassword(),

@@ -4,6 +4,8 @@ import com.orbenox.erp.domain.unit.unitdimension.UnitDimension;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,10 +17,12 @@ public class UnitService {
     private final UnitRepository unitRepository;
     private final EntityManager em;
 
+    @Cacheable("units.all")
     public List<UnitItem> getAllItems() {
         return unitRepository.getAllItems();
     }
 
+    @Cacheable("units.byDimensionId")
     public List<UnitItem> findAllByDimensionId(Long dimensionId) {
         return unitRepository.getItemsByUnitDimensionId(dimensionId);
     }
@@ -27,11 +31,19 @@ public class UnitService {
         return unitRepository.getItemById(id);
     }
 
-    public UnitItem create(UnitDto unitDto) {
-        Unit unit = unitRepository.save(unitMapper.toEntity(unitDto));
+    @CacheEvict(value = {
+            "units.all",
+            "units.byDimensionId",
+            "lookups"}, allEntries = true)
+    public UnitItem create(UnitCreateDto dto) {
+        Unit unit = unitRepository.save(unitMapper.toEntity(dto));
         return unitRepository.getItemById(unit.getId());
     }
 
+    @CacheEvict(value = {
+            "units.all",
+            "units.byDimensionId",
+            "lookups"}, allEntries = true)
     @Transactional
     public UnitItem update(Long id, UnitDto unitDto) {
         Unit unit = unitRepository.findByIdAndDeletedFalse(id);
@@ -41,6 +53,10 @@ public class UnitService {
         return unitRepository.getItemById(id);
     }
 
+    @CacheEvict(value = {
+            "units.all",
+            "units.byDimensionId",
+            "lookups"}, allEntries = true)
     @Transactional
     public void softDelete(Long id) {
         Unit unit = unitRepository.findByIdAndDeletedFalse(id);

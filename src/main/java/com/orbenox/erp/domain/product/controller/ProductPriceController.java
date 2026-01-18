@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.controller;
 
 import com.orbenox.erp.common.Response;
-import com.orbenox.erp.domain.product.dto.ProductPricingData;
+import com.orbenox.erp.domain.product.projection.ProductPricingData;
 import com.orbenox.erp.domain.product.request.UpdateProductPriceRequest;
 import com.orbenox.erp.domain.product.service.ProductPriceService;
 import jakarta.validation.Valid;

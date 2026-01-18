@@ -1,7 +1,5 @@
-package com.orbenox.erp.security.dto;
+package com.orbenox.erp.security.projection;
 
-import com.orbenox.erp.security.projection.PermissionItem;
-import com.orbenox.erp.security.projection.UserItem;
 import lombok.Data;
 
 import java.util.List;

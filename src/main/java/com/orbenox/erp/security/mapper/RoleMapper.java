@@ -1,5 +1,6 @@
 package com.orbenox.erp.security.mapper;
 
+import com.orbenox.erp.security.dto.RoleCreateDto;
 import com.orbenox.erp.security.dto.RoleDto;
 import com.orbenox.erp.security.entity.AppRole;
 import org.mapstruct.BeanMapping;
@@ -12,7 +13,7 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper(componentModel = "spring")
 public interface RoleMapper {
-    AppRole toEntity(RoleDto dto);
+    AppRole toEntity(RoleCreateDto dto);
 
     Set<AppRole> toEntityList(Set<RoleDto> dtoList);
 

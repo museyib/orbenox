@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.controller;
 
 import com.orbenox.erp.common.Response;
-import com.orbenox.erp.domain.product.dto.ProductBarcodeData;
+import com.orbenox.erp.domain.product.projection.ProductBarcodeData;
 import com.orbenox.erp.domain.product.request.UpdateProductBarcodeRequest;
 import com.orbenox.erp.domain.product.service.ProductBarcodeService;
 import jakarta.validation.Valid;

@@ -1,17 +1,18 @@
 package com.orbenox.erp.domain.product.service;
 
 import com.orbenox.erp.common.entity.BaseEntity;
-import com.orbenox.erp.domain.product.dto.ProductPricingData;
+import com.orbenox.erp.domain.product.dto.ProductPriceDto;
 import com.orbenox.erp.domain.product.entity.ProductPrice;
 import com.orbenox.erp.domain.product.mapper.ProductPriceMapper;
 import com.orbenox.erp.domain.product.projection.ProductPriceItem;
+import com.orbenox.erp.domain.product.projection.ProductPricingData;
 import com.orbenox.erp.domain.product.projection.SimpleProductItem;
 import com.orbenox.erp.domain.product.repository.ProductPriceRepository;
 import com.orbenox.erp.domain.product.repository.ProductRepository;
-import com.orbenox.erp.domain.product.dto.ProductPriceDto;
 import com.orbenox.erp.domain.product.request.UpdateProductPriceRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,8 @@ public class ProductPriceService {
         return pricingData;
     }
 
+
+    @CacheEvict(value = "productPrices", allEntries = true)
     @Transactional
     public ProductPricingData updateProductPrices(UpdateProductPriceRequest request) {
         List<Long> ids = request.getPriceListToUpdate().stream().map(ProductPriceDto::id).toList();

@@ -1,10 +1,11 @@
 package com.orbenox.erp.domain.product.controller;
 
 import com.orbenox.erp.common.Response;
-import com.orbenox.erp.localization.LocalizationService;
+import com.orbenox.erp.domain.product.dto.ProductCategoryCreateDto;
 import com.orbenox.erp.domain.product.dto.ProductCategoryDto;
 import com.orbenox.erp.domain.product.projection.ProductCategoryItem;
 import com.orbenox.erp.domain.product.service.ProductCategoryService;
+import com.orbenox.erp.localization.LocalizationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class ProductCategoryController {
 
     @PreAuthorize("hasPermission('PRODUCT_CATEGORY', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<ProductCategoryItem>> create(@Valid @RequestBody ProductCategoryDto dto) {
+    public ResponseEntity<Response<ProductCategoryItem>> create(@Valid @RequestBody ProductCategoryCreateDto dto) {
         return ResponseEntity.ok(Response.successData(productCategoryService.create(dto)));
     }
 

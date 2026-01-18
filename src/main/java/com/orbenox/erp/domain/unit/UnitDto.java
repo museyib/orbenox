@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * DTO for {@link Unit}
@@ -17,4 +18,15 @@ public record UnitDto(Long id,
                       Boolean base,
                       BigDecimal factorToBase,
                       BigDecimal offsetToBase) {
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        UnitDto unitDto = (UnitDto) o;
+        return Objects.equals(id, unitDto.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

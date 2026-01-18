@@ -3,6 +3,7 @@ package com.orbenox.erp.domain.currency;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,7 @@ public class CurrencyService {
     private final CurrencyRepository currencyRepository;
     private final CurrencyMapper currencyMapper;
 
+    @Cacheable("currencies")
     public List<CurrencyItem> getAllItems() {
         return currencyRepository.getAllItems();
     }
@@ -21,13 +23,13 @@ public class CurrencyService {
         return currencyRepository.getItemById(id);
     }
 
-    @CacheEvict(value = "lookups", allEntries = true)
-    public CurrencyItem create(CurrencyDto dto) {
+    @CacheEvict(value = {"currencies", "lookups"}, allEntries = true)
+    public CurrencyItem create(CurrencyCreateDto dto) {
         Currency currency = currencyRepository.save(currencyMapper.toEntity(dto));
         return currencyRepository.getItemById(currency.getId());
     }
 
-    @CacheEvict(value = "lookups", key = "#id")
+    @CacheEvict(value = {"currencies", "lookups"}, allEntries = true)
     @Transactional
     public CurrencyItem update(Long id, CurrencyDto dto) {
         Currency entity = currencyRepository.findByIdAndDeletedFalse(id);
@@ -35,6 +37,7 @@ public class CurrencyService {
         return currencyRepository.getItemById(id);
     }
 
+    @CacheEvict(value = {"currencies", "lookups"}, allEntries = true)
     @Transactional
     public void softDelete(Long id) {
         Currency entity = currencyRepository.findByIdAndDeletedFalse(id);

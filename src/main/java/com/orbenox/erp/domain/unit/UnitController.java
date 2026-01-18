@@ -38,15 +38,15 @@ public class UnitController {
 
     @PreAuthorize("hasPermission('UNIT', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<UnitItem>> create(@Valid @RequestBody UnitDto uomDto) {
-        return ResponseEntity.ok(Response.successData(unitService.create(uomDto)));
+    public ResponseEntity<Response<UnitItem>> create(@Valid @RequestBody UnitCreateDto dto) {
+        return ResponseEntity.ok(Response.successData(unitService.create(dto)));
     }
 
     @PreAuthorize("hasPermission('UNIT', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<UnitItem>> update(@PathVariable Long id,
-                                                     @Valid @RequestBody UnitDto uomDto) {
-        return ResponseEntity.ok(Response.successData(unitService.update(id, uomDto)));
+                                                     @Valid @RequestBody UnitDto dto) {
+        return ResponseEntity.ok(Response.successData(unitService.update(id, dto)));
     }
 
     @PreAuthorize("hasPermission('UNIT', 'DELETE')")

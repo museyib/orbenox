@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * DTO for {@link ProductWarehouse}
@@ -15,7 +16,17 @@ public record ProductWarehouseDto(Long id,
                                   @NotNull(message = "{warehouse.notNull}") WarehouseDto warehouse,
                                   BigDecimal quantity,
                                   BigDecimal reservedQuantity,
-                                  BigDecimal freeQuantity,
                                   BigDecimal minQuantity,
                                   BigDecimal maxQuantity) implements Serializable {
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductWarehouseDto that = (ProductWarehouseDto) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

@@ -1,16 +1,18 @@
 package com.orbenox.erp.domain.product.service;
 
 import com.orbenox.erp.common.entity.BaseEntity;
-import com.orbenox.erp.domain.product.dto.ProductBarcodeData;
 import com.orbenox.erp.domain.product.dto.ProductBarcodeDto;
 import com.orbenox.erp.domain.product.entity.ProductBarcode;
 import com.orbenox.erp.domain.product.mapper.ProductBarcodeMapper;
+import com.orbenox.erp.domain.product.projection.ProductBarcodeData;
 import com.orbenox.erp.domain.product.projection.ProductBarcodeItem;
 import com.orbenox.erp.domain.product.projection.SimpleProductItem;
 import com.orbenox.erp.domain.product.repository.ProductBarcodeRepository;
 import com.orbenox.erp.domain.product.repository.ProductRepository;
 import com.orbenox.erp.domain.product.request.UpdateProductBarcodeRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ public class ProductBarcodeService {
     private final ProductRepository productRepository;
     private final ProductBarcodeMapper productBarcodeMapper;
 
+    @Cacheable("productBarcodes")
     public ProductBarcodeData getItemsByProductId(Long productId) {
         ProductBarcodeData productBarcodeData = new ProductBarcodeData();
         SimpleProductItem product = productRepository.getSimpleItemById(productId);
@@ -35,6 +38,7 @@ public class ProductBarcodeService {
         return productBarcodeData;
     }
 
+    @CacheEvict(value = "productBarcodes", allEntries = true)
     public ProductBarcodeData updateBarcodes(UpdateProductBarcodeRequest request) {
         List<Long> idsToUpdate = request.getBarcodesToUpdate().stream().map(ProductBarcodeDto::id).toList();
         List<Long> idsToDelete = request.getBarcodesToDelete().stream().map(ProductBarcodeDto::id).toList();
@@ -50,7 +54,8 @@ public class ProductBarcodeService {
             return barcode;
         }).toList();
 
-        List<ProductBarcode> entityListToInsert = request.getBarcodesToInsert().stream().map(productBarcodeMapper::toEntity).toList();
+        List<ProductBarcode> entityListToInsert = request.getBarcodesToInsert().stream()
+                .map(productBarcodeMapper::toEntity).toList();
 
         List<ProductBarcode> toSave = new ArrayList<>(entityListToInsert);
         toSave.addAll(entityListToUpdate);

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * DTO for {@link PriceList}
@@ -18,5 +19,17 @@ public record PriceListDto(Long id,
                            Parent parent,
                            Short roundLength) {
     public record Parent(Long id, Boolean enabled, String code, String name) {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        PriceListDto that = (PriceListDto) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
