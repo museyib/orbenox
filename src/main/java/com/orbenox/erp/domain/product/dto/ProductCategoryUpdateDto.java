@@ -9,15 +9,15 @@ import java.util.Objects;
 /**
  * DTO for {@link ProductCategory}
  */
-public record ProductCategoryDto(Long id,
-                                 Boolean enabled,
-                                 @NotBlank(message = "{code.notBlank}") String code,
-                                 @NotBlank(message = "{name.notBlank}") String name,
-                                 String description) {
+public record ProductCategoryUpdateDto(Long id,
+                                       Boolean enabled,
+                                       @NotBlank(message = "{code.notBlank}") String code,
+                                       @NotBlank(message = "{name.notBlank}") String name,
+                                       String description) {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        ProductCategoryDto that = (ProductCategoryDto) o;
+        ProductCategoryUpdateDto that = (ProductCategoryUpdateDto) o;
         return Objects.equals(id, that.id);
     }
 

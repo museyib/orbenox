@@ -29,7 +29,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         matcherRegistry -> matcherRegistry
-                                .requestMatchers("/ui/**", "/api/auth/login").permitAll()
+                                .requestMatchers(
+                                        "/ui/**",
+                                        "/swagger/**",
+                                        "/swagger-ui.html",
+                                        "/swagger-ui/**",
+                                        "/v3/api-docs*/**",
+                                        "/api/auth/login").permitAll()
                                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                                 .anyRequest().authenticated())
                 .formLogin(form -> form.loginPage("/ui/login").permitAll())

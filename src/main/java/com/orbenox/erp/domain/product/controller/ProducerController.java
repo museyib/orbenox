@@ -2,7 +2,7 @@ package com.orbenox.erp.domain.product.controller;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.domain.product.dto.ProducerCreateDto;
-import com.orbenox.erp.domain.product.dto.ProducerDto;
+import com.orbenox.erp.domain.product.dto.ProducerUpdateDto;
 import com.orbenox.erp.domain.product.projection.ProducerItem;
 import com.orbenox.erp.domain.product.service.ProducerService;
 import com.orbenox.erp.localization.LocalizationService;
@@ -42,7 +42,7 @@ public class ProducerController {
     @PreAuthorize("hasPermission('PRODUCER', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<ProducerItem>> update(@PathVariable Long id,
-                                                         @Valid @RequestBody ProducerDto dto) {
+                                                         @Valid @RequestBody ProducerUpdateDto dto) {
         return ResponseEntity.ok(Response.successData(producerService.update(id, dto)));
     }
 

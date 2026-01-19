@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.mapper;
 
 import com.orbenox.erp.domain.product.dto.ProductCreateDto;
-import com.orbenox.erp.domain.product.dto.ProductDto;
+import com.orbenox.erp.domain.product.dto.ProductUpdateDto;
 import com.orbenox.erp.domain.product.entity.Product;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -24,5 +24,5 @@ public interface ProductMapper {
     @Mapping(target = "producer", ignore = true)
     @Mapping(target = "country", ignore = true)
     @Mapping(target = "defaultUnit", ignore = true)
-    void updateEntityFromDto(ProductDto dto, @MappingTarget Product entity);
+    void updateEntityFromDto(ProductUpdateDto dto, @MappingTarget Product entity);
 }

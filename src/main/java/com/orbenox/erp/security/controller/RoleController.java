@@ -3,7 +3,7 @@ package com.orbenox.erp.security.controller;
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.security.dto.RoleCreateDto;
-import com.orbenox.erp.security.dto.RoleDto;
+import com.orbenox.erp.security.dto.RoleUpdateDto;
 import com.orbenox.erp.security.projection.RoleItem;
 import com.orbenox.erp.security.service.RoleService;
 import jakarta.validation.Valid;
@@ -41,7 +41,7 @@ public class RoleController {
 
     @PreAuthorize("hasPermission('APP_ROLE', 'UPDATE')")
     @PatchMapping("/{id}")
-    public ResponseEntity<Response<RoleItem>> updateRole(@Valid @PathVariable Long id, @RequestBody RoleDto request) {
+    public ResponseEntity<Response<RoleItem>> updateRole(@Valid @PathVariable Long id, @RequestBody RoleUpdateDto request) {
         return ResponseEntity.ok(Response.successData(roleService.update(id, request)));
     }
 

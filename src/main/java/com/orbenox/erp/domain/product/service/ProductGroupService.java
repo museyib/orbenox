@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.service;
 
 import com.orbenox.erp.domain.product.dto.ProductGroupCreateDto;
-import com.orbenox.erp.domain.product.dto.ProductGroupDto;
+import com.orbenox.erp.domain.product.dto.ProductGroupUpdateDto;
 import com.orbenox.erp.domain.product.entity.ProductGroup;
 import com.orbenox.erp.domain.product.mapper.ProductGroupMapper;
 import com.orbenox.erp.domain.product.projection.ProductGroupItem;
@@ -74,7 +74,7 @@ public class ProductGroupService {
             "productGroups.excluded",
             "lookups"}, allEntries = true)
     @Transactional
-    public ProductGroupItem update(Long id, ProductGroupDto dto) {
+    public ProductGroupItem update(Long id, ProductGroupUpdateDto dto) {
         ProductGroup entity = productGroupRepository.findByIdAndDeletedFalse(id);
         productGroupMapper.updateEntityFromDto(dto, entity);
         return productGroupRepository.getItemById(id);

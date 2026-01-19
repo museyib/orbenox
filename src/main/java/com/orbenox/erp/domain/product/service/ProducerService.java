@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.service;
 
 import com.orbenox.erp.domain.product.dto.ProducerCreateDto;
-import com.orbenox.erp.domain.product.dto.ProducerDto;
+import com.orbenox.erp.domain.product.dto.ProducerUpdateDto;
 import com.orbenox.erp.domain.product.entity.Producer;
 import com.orbenox.erp.domain.product.mapper.ProducerMapper;
 import com.orbenox.erp.domain.product.projection.ProducerItem;
@@ -37,7 +37,7 @@ public class ProducerService {
 
     @CacheEvict(value = {"producers", "lookups"}, allEntries = true)
     @Transactional
-    public ProducerItem update(Long id, ProducerDto dto) {
+    public ProducerItem update(Long id, ProducerUpdateDto dto) {
         Producer entity = producerRepository.findByIdAndDeletedFalse(id);
         producerMapper.updateEntityFromDto(dto, entity);
         return producerRepository.getItemById(id);

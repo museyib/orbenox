@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.mapper;
 
 import com.orbenox.erp.domain.product.dto.ProductWarehouseCreateDto;
-import com.orbenox.erp.domain.product.dto.ProductWarehouseDto;
+import com.orbenox.erp.domain.product.dto.ProductWarehouseUpdateDto;
 import com.orbenox.erp.domain.product.entity.ProductWarehouse;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -17,5 +17,5 @@ public interface ProductWarehouseMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "product", ignore = true)
     @Mapping(target = "warehouse", ignore = true)
-    void updateEntityFromDto(ProductWarehouseDto dto, @MappingTarget ProductWarehouse entity);
+    void updateEntityFromDto(ProductWarehouseUpdateDto dto, @MappingTarget ProductWarehouse entity);
 }

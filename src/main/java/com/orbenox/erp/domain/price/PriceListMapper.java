@@ -13,5 +13,5 @@ public interface PriceListMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "currency", ignore = true)
-    void updateEntityFromDto(PriceListDto dto, @MappingTarget PriceList entity);
+    void updateEntityFromDto(PriceListUpdateDto dto, @MappingTarget PriceList entity);
 }

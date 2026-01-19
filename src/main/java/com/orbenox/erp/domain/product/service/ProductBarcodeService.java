@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.service;
 
 import com.orbenox.erp.common.entity.BaseEntity;
-import com.orbenox.erp.domain.product.dto.ProductBarcodeDto;
+import com.orbenox.erp.domain.product.dto.ProductBarcodeUpdateDto;
 import com.orbenox.erp.domain.product.entity.ProductBarcode;
 import com.orbenox.erp.domain.product.mapper.ProductBarcodeMapper;
 import com.orbenox.erp.domain.product.projection.ProductBarcodeData;
@@ -10,6 +10,7 @@ import com.orbenox.erp.domain.product.projection.SimpleProductItem;
 import com.orbenox.erp.domain.product.repository.ProductBarcodeRepository;
 import com.orbenox.erp.domain.product.repository.ProductRepository;
 import com.orbenox.erp.domain.product.request.UpdateProductBarcodeRequest;
+import com.orbenox.erp.localization.LocalizationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,6 +28,7 @@ public class ProductBarcodeService {
     private final ProductBarcodeRepository productBarcodeRepository;
     private final ProductRepository productRepository;
     private final ProductBarcodeMapper productBarcodeMapper;
+    private final LocalizationService i18n;
 
     @Cacheable("productBarcodes")
     public ProductBarcodeData getItemsByProductId(Long productId) {
@@ -40,15 +42,15 @@ public class ProductBarcodeService {
 
     @CacheEvict(value = "productBarcodes", allEntries = true)
     public ProductBarcodeData updateBarcodes(UpdateProductBarcodeRequest request) {
-        List<Long> idsToUpdate = request.getBarcodesToUpdate().stream().map(ProductBarcodeDto::id).toList();
-        List<Long> idsToDelete = request.getBarcodesToDelete().stream().map(ProductBarcodeDto::id).toList();
+        List<Long> idsToUpdate = request.getBarcodesToUpdate().stream().map(ProductBarcodeUpdateDto::id).toList();
+        List<Long> idsToDelete = request.getBarcodesToDelete().stream().map(ProductBarcodeUpdateDto::id).toList();
 
         Map<Long, ProductBarcode> barcodeMap = productBarcodeRepository.findAllById(idsToUpdate).stream().collect(Collectors.toMap(BaseEntity::getId, Function.identity()));
 
         List<ProductBarcode> entityListToUpdate = request.getBarcodesToUpdate().stream().map(item -> {
             ProductBarcode barcode = barcodeMap.get(item.id());
             if (barcode == null) {
-                throw new IllegalArgumentException("Barcode not found: " + item.id());
+                throw new IllegalArgumentException(i18n.msg("barcode.notFound", item.barcode()));
             }
             productBarcodeMapper.updateEntityFromDto(item, barcode);
             return barcode;

@@ -31,7 +31,7 @@ public class WarehouseService {
 
     @CacheEvict(value = {"warehouses", "lookups"}, allEntries = true)
     @Transactional
-    public WarehouseItem update(Long id, WarehouseDto dto) {
+    public WarehouseItem update(Long id, WarehouseUpdateDto dto) {
         Warehouse entity = warehouseRepository.findByIdAndDeletedFalse(id);
         warehouseMapper.updateEntityFromDto(dto, entity);
         return warehouseRepository.getItemById(id);

@@ -8,14 +8,14 @@ import java.util.Objects;
 /**
  * DTO for {@link Currency}
  */
-public record CurrencyDto(Long id,
-                          Boolean enabled,
-                          @NotBlank(message = "{code.notBlank}") String code,
-                          @NotBlank(message = "{name.notBlank}") String name) {
+public record CurrencyUpdateDto(Long id,
+                                Boolean enabled,
+                                @NotBlank(message = "{code.notBlank}") String code,
+                                @NotBlank(message = "{name.notBlank}") String name) {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        CurrencyDto that = (CurrencyDto) o;
+        CurrencyUpdateDto that = (CurrencyUpdateDto) o;
         return Objects.equals(id, that.id);
     }
 

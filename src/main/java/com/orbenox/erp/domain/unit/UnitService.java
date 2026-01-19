@@ -45,10 +45,10 @@ public class UnitService {
             "units.byDimensionId",
             "lookups"}, allEntries = true)
     @Transactional
-    public UnitItem update(Long id, UnitDto unitDto) {
+    public UnitItem update(Long id, UnitUpdateDto dto) {
         Unit unit = unitRepository.findByIdAndDeletedFalse(id);
-        unitMapper.updateEntityFromDto(unitDto, unit);
-        UnitDimension unitDimension = em.getReference(UnitDimension.class, unitDto.unitDimension().id());
+        unitMapper.updateEntityFromDto(dto, unit);
+        UnitDimension unitDimension = em.getReference(UnitDimension.class, dto.unitDimension().id());
         unit.setUnitDimension(unitDimension);
         return unitRepository.getItemById(id);
     }

@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.service;
 
 import com.orbenox.erp.common.entity.BaseEntity;
-import com.orbenox.erp.domain.product.dto.ProductUnitDto;
+import com.orbenox.erp.domain.product.dto.ProductUnitUpdateDto;
 import com.orbenox.erp.domain.product.entity.ProductUnit;
 import com.orbenox.erp.domain.product.mapper.ProductUnitMapper;
 import com.orbenox.erp.domain.product.projection.ProductUnitData;
@@ -10,6 +10,7 @@ import com.orbenox.erp.domain.product.projection.SimpleProductItem;
 import com.orbenox.erp.domain.product.repository.ProductRepository;
 import com.orbenox.erp.domain.product.repository.ProductUnitRepository;
 import com.orbenox.erp.domain.product.request.UpdateProductUnitRequest;
+import com.orbenox.erp.localization.LocalizationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,6 +28,7 @@ public class ProductUnitService {
     private final ProductUnitRepository productUnitRepository;
     private final ProductRepository productRepository;
     private final ProductUnitMapper productUnitMapper;
+    private final LocalizationService i18n;
 
     @Cacheable("productUnits")
     public ProductUnitData getItemsByProductId(Long productId) {
@@ -40,8 +42,8 @@ public class ProductUnitService {
 
     @CacheEvict(value = "productUnits", allEntries = true)
     public ProductUnitData updateProductUnits(UpdateProductUnitRequest request) {
-        List<Long> idsToUpdate = request.getUnitsToUpdate().stream().map(ProductUnitDto::id).toList();
-        List<Long> idsToDelete = request.getUnitsToDelete().stream().map(ProductUnitDto::id).toList();
+        List<Long> idsToUpdate = request.getUnitsToUpdate().stream().map(ProductUnitUpdateDto::id).toList();
+        List<Long> idsToDelete = request.getUnitsToDelete().stream().map(ProductUnitUpdateDto::id).toList();
 
         Map<Long, ProductUnit> unitMap = productUnitRepository.findAllById(idsToUpdate).stream()
                 .collect(Collectors.toMap(BaseEntity::getId, Function.identity()));
@@ -51,7 +53,7 @@ public class ProductUnitService {
                     ProductUnit unit = unitMap.get(item.id());
 
                     if (unit == null) {
-                        throw new IllegalArgumentException("Unit not found: " + item.id());
+                        throw new IllegalArgumentException(i18n.msg("unit.notFound", item.unit().code()));
                     }
                     productUnitMapper.updateEntityFromDto(item, unit);
                     return unit;

@@ -2,7 +2,7 @@ package com.orbenox.erp.domain.product.controller;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.domain.product.dto.ProductCreateDto;
-import com.orbenox.erp.domain.product.dto.ProductDto;
+import com.orbenox.erp.domain.product.dto.ProductUpdateDto;
 import com.orbenox.erp.domain.product.projection.ProductItem;
 import com.orbenox.erp.domain.product.service.ProductService;
 import com.orbenox.erp.localization.LocalizationService;
@@ -42,7 +42,7 @@ public class ProductController {
     @PreAuthorize("hasPermission('PRODUCT', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<ProductItem>> update(@PathVariable Long id,
-                                                        @Valid @RequestBody ProductDto dto) {
+                                                        @Valid @RequestBody ProductUpdateDto dto) {
         return ResponseEntity.ok(Response.successData(productService.update(id, dto)));
     }
 

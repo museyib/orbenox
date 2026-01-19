@@ -9,20 +9,20 @@ import java.util.Objects;
 /**
  * DTO for {@link ProductGroup}
  */
-public record ProductGroupDto(Long id,
-                              Boolean enabled,
-                              @NotBlank(message = "{code.notBlank}") String code,
-                              @NotBlank(message = "{name.notBlank}") String name,
-                              String description,
-                              String slug,
-                              Parent parent) {
+public record ProductGroupUpdateDto(Long id,
+                                    Boolean enabled,
+                                    @NotBlank(message = "{code.notBlank}") String code,
+                                    @NotBlank(message = "{name.notBlank}") String name,
+                                    String description,
+                                    String slug,
+                                    Parent parent) {
     public record Parent(Long id, Boolean enabled, String code, String name) {
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        ProductGroupDto that = (ProductGroupDto) o;
+        ProductGroupUpdateDto that = (ProductGroupUpdateDto) o;
         return Objects.equals(id, that.id);
     }
 

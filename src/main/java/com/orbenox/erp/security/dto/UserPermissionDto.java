@@ -1,7 +1,7 @@
 package com.orbenox.erp.security.dto;
 
 import com.orbenox.erp.domain.action.ActionDto;
-import com.orbenox.erp.domain.resource.ResourceDto;
+import com.orbenox.erp.domain.resource.ResourceUpdateDto;
 import com.orbenox.erp.security.entity.AppPermission;
 
 import java.util.Objects;
@@ -12,8 +12,8 @@ import java.util.Objects;
  */
 public record UserPermissionDto(Long id,
                                 Boolean enabled,
-                                UserDto appUser,
-                                ResourceDto resource,
+                                UserUpdateDto appUser,
+                                ResourceUpdateDto resource,
                                 ActionDto action) {
     @Override
     public boolean equals(Object o) {

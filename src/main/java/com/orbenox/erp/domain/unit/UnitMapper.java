@@ -13,5 +13,5 @@ public interface UnitMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "unitDimension", ignore = true)
-    void updateEntityFromDto(UnitDto dto, @MappingTarget Unit entity);
+    void updateEntityFromDto(UnitUpdateDto dto, @MappingTarget Unit entity);
 }

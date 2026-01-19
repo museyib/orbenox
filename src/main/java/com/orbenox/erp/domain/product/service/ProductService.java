@@ -2,7 +2,7 @@ package com.orbenox.erp.domain.product.service;
 
 import com.orbenox.erp.domain.country.Country;
 import com.orbenox.erp.domain.product.dto.ProductCreateDto;
-import com.orbenox.erp.domain.product.dto.ProductDto;
+import com.orbenox.erp.domain.product.dto.ProductUpdateDto;
 import com.orbenox.erp.domain.product.entity.*;
 import com.orbenox.erp.domain.product.mapper.ProductMapper;
 import com.orbenox.erp.domain.product.projection.ProductBarcodeItem;
@@ -46,7 +46,7 @@ public class ProductService {
 
     @CacheEvict(value = {"products", "productBarcodes", "lookups"}, allEntries = true)
     @Transactional
-    public ProductItem update(Long id, ProductDto dto) {
+    public ProductItem update(Long id, ProductUpdateDto dto) {
         Product product = productRepository.findByIdAndDeletedFalse(id);
         productMapper.updateEntityFromDto(dto, product);
 

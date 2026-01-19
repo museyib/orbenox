@@ -34,7 +34,7 @@ public class PermissionService {
 
     @Cacheable("permissions.user")
     public UserPermissionData getDirectUserPermission(Long userId) {
-        UserItem user = userRepository.getItemById(userId);
+        SimpleUserItem user = userRepository.getItemById(userId);
         List<PermissionItem> permissions = permissionRepository.getPermissionsByUserId(userId);
         UserPermissionData permissionData = new UserPermissionData();
         permissionData.setUser(user);
@@ -49,7 +49,7 @@ public class PermissionService {
                 role -> permissionRepository.getPermissionsByRoleId(role.getId()).stream()).toList();
         List<PermissionItem> permissions = Stream.concat(direct.stream(), viaRoles.stream()).toList();
         UserPermissionData permissionData = new UserPermissionData();
-        UserItem user = userRepository.getItemById(userId);
+        SimpleUserItem user = userRepository.getItemById(userId);
         permissionData.setUser(user);
         permissionData.setPermissions(permissions);
         return permissionData;
@@ -81,6 +81,11 @@ public class PermissionService {
         return allPermissions;
     }
 
+
+    /**
+     * Updates permissions by fully replacing existing ones.
+     * Partial updates are not supported intentionally.
+     */
     @CacheEvict(value = {
             "hasPermission",
             "permissions.user",
@@ -97,6 +102,11 @@ public class PermissionService {
         return getUserPermission(request.getUserId());
     }
 
+
+    /**
+     * Updates permissions by fully replacing existing ones.
+     * Partial updates are not supported intentionally.
+     */
     @CacheEvict(value = {
             "hasPermission",
             "permissions.role",

@@ -31,7 +31,7 @@ public class CountryService {
 
     @CacheEvict(value = {"countries", "lookups"}, allEntries = true)
     @Transactional
-    public CountryItem update(Long id, CountryDto dto) {
+    public CountryItem update(Long id, CountryUpdateDto dto) {
         Country country = countryRepository.findByIdAndDeletedFalse(id);
         countryMapper.updateEntityFromDto(dto, country);
         return countryRepository.getItemById(id);

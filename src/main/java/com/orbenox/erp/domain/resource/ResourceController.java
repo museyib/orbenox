@@ -38,7 +38,7 @@ public class ResourceController {
     @PreAuthorize("hasPermission('RESOURCE', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<ResourceItem>> update(@PathVariable Long id,
-                                                         @Valid @RequestBody ResourceDto dto) {
+                                                         @Valid @RequestBody ResourceUpdateDto dto) {
         return ResponseEntity.ok(Response.successData(resourceService.update(id, dto)));
     }
 

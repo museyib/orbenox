@@ -43,7 +43,7 @@ public class ResourceService {
 
     @CacheEvict(value = {"resources", "lookups"}, allEntries = true)
     @Transactional
-    public ResourceItem update(Long id, ResourceDto dto) {
+    public ResourceItem update(Long id, ResourceUpdateDto dto) {
         Resource resource = resourceRepository.findByIdAndDeletedFalse(id);
         resourceMapper.updateEntityFromDto(dto, resource);
         Set<Action> actions = actionMapper.toEntityList(dto.actions());

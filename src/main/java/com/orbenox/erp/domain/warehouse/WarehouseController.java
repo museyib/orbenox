@@ -38,7 +38,7 @@ public class WarehouseController {
     @PreAuthorize("hasPermission('WAREHOUSE', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<WarehouseItem>> update(@PathVariable Long id,
-                                                         @Valid @RequestBody WarehouseDto dto) {
+                                                         @Valid @RequestBody WarehouseUpdateDto dto) {
         return ResponseEntity.ok(Response.successData(warehouseService.update(id, dto)));
     }
 

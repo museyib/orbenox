@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.service;
 
 import com.orbenox.erp.domain.product.dto.ProductClassCreateDto;
-import com.orbenox.erp.domain.product.dto.ProductClassDto;
+import com.orbenox.erp.domain.product.dto.ProductClassUpdateDto;
 import com.orbenox.erp.domain.product.entity.ProductClass;
 import com.orbenox.erp.domain.product.mapper.ProductClassMapper;
 import com.orbenox.erp.domain.product.projection.ProductClassItem;
@@ -37,7 +37,7 @@ public class ProductClassService {
 
     @CacheEvict(value = {"productClasses", "lookups"}, allEntries = true)
     @Transactional
-    public ProductClassItem update(Long id, ProductClassDto dto) {
+    public ProductClassItem update(Long id, ProductClassUpdateDto dto) {
         ProductClass entity = productClassRepository.findByIdAndDeletedFalse(id);
         productClassMapper.updateEntityFromDto(dto, entity);
         return productClassRepository.getItemById(id);

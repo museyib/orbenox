@@ -11,5 +11,5 @@ public interface WarehouseMapper {
     Warehouse toEntity(WarehouseCreateDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
-    void updateEntityFromDto(WarehouseDto dto, @MappingTarget Warehouse entity);
+    void updateEntityFromDto(WarehouseUpdateDto dto, @MappingTarget Warehouse entity);
 }

@@ -10,17 +10,17 @@ import java.util.Set;
  * DTO for {@link AppUser}
  */
 
-public record UserDto(Long id,
-                      Boolean enabled,
-                      String username,
-                      String password,
-                      String displayName,
-                      @NotNull(message = "{userType.notNull}") UserTypeDto userType,
-                      Set<RoleDto> roles) {
+public record UserUpdateDto(Long id,
+                            Boolean enabled,
+                            String username,
+                            String password,
+                            String displayName,
+                            @NotNull(message = "{userType.notNull}") UserTypeDto userType,
+                            Set<RoleUpdateDto> roles) {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        UserDto userDto = (UserDto) o;
+        UserUpdateDto userDto = (UserUpdateDto) o;
         return Objects.equals(id, userDto.id);
     }
 

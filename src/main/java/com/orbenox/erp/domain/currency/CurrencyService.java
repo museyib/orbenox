@@ -31,7 +31,7 @@ public class CurrencyService {
 
     @CacheEvict(value = {"currencies", "lookups"}, allEntries = true)
     @Transactional
-    public CurrencyItem update(Long id, CurrencyDto dto) {
+    public CurrencyItem update(Long id, CurrencyUpdateDto dto) {
         Currency entity = currencyRepository.findByIdAndDeletedFalse(id);
         currencyMapper.updateEntityFromDto(dto, entity);
         return currencyRepository.getItemById(id);

@@ -14,5 +14,5 @@ public record UserCreateDto(Boolean enabled,
                             String password,
                             String displayName,
                             @NotNull(message = "{userType.notNull}") UserTypeDto userType,
-                            Set<RoleDto> roles) {
+                            Set<RoleUpdateDto> roles) {
 }

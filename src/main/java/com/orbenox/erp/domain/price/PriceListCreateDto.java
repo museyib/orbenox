@@ -1,6 +1,6 @@
 package com.orbenox.erp.domain.price;
 
-import com.orbenox.erp.domain.currency.CurrencyDto;
+import com.orbenox.erp.domain.currency.CurrencyUpdateDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 public record PriceListCreateDto(Boolean enabled,
                                  @NotBlank(message = "{code.notBlank}") String code,
                                  @NotBlank(message = "{name.notBlank}") String name,
-                                 @NotNull(message = "{currency.notNull}") CurrencyDto currency,
+                                 @NotNull(message = "{currency.notNull}") CurrencyUpdateDto currency,
                                  BigDecimal factorToParent,
                                  Parent parent,
                                  Short roundLength) {

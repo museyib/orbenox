@@ -6,6 +6,6 @@ import java.util.List;
 
 @Data
 public class UserData {
-    private UserItem user;
+    private SimpleUserItem user;
     private List<RoleItem> roles;
 }

@@ -6,6 +6,6 @@ import java.util.List;
 
 @Data
 public class UserPermissionData {
-    private UserItem user;
+    private SimpleUserItem user;
     private List<PermissionItem> permissions;
 }

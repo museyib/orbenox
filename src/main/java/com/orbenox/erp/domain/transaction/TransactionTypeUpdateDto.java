@@ -1,0 +1,25 @@
+package com.orbenox.erp.domain.transaction;
+
+import jakarta.validation.constraints.NotBlank;
+
+import java.util.Objects;
+
+/**
+ * DTO for {@link TransactionType}
+ */
+public record TransactionTypeUpdateDto(Long id,
+                                       Boolean enabled,
+                                       @NotBlank(message = "{code.notBlank}") String code,
+                                       @NotBlank(message = "{name.notBlank}") String name) {
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        TransactionTypeUpdateDto that = (TransactionTypeUpdateDto) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+}

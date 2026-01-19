@@ -12,7 +12,7 @@ import java.math.MathContext;
 public class UnitConverterService {
     private final LocalizationService i18n;
 
-    public BigDecimal convert(BigDecimal value, UnitDto from, UnitDto to) {
+    public BigDecimal convert(BigDecimal value, UnitUpdateDto from, UnitUpdateDto to) {
         if (from == to) {
             return value;
         }

@@ -13,5 +13,5 @@ public interface ResourceMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "actions", ignore = true)
-    void updateEntityFromDto(ResourceDto dto, @MappingTarget Resource entity);
+    void updateEntityFromDto(ResourceUpdateDto dto, @MappingTarget Resource entity);
 }

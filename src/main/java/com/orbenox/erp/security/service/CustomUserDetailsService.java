@@ -18,11 +18,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserItem appUser = userService.getByUsername(username);
+        UserItem userItem = userService.getByUsername(username);
         return new User(
-                appUser.getUsername(),
-                appUser.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_" + appUser.getUserType().getCode()))
+                userItem.getUsername(),
+                userItem.getPassword(),
+                List.of(new SimpleGrantedAuthority("ROLE_" + userItem.getUserType().getCode()))
         );
     }
 }

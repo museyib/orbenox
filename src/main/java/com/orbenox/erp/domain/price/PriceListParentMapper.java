@@ -10,7 +10,7 @@ public abstract class PriceListParentMapper {
     @PersistenceContext
     protected EntityManager em;
 
-    PriceList toEntity(PriceListDto.Parent dto) {
+    PriceList toEntity(PriceListUpdateDto.Parent dto) {
         if (dto == null || dto.id() == null) return null;
         return em.getReference(PriceList.class, dto.id());
     }

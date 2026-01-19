@@ -7,14 +7,14 @@ import java.util.Objects;
 /**
  * DTO for {@link Country}
  */
-public record CountryDto(Long id,
-                         Boolean enabled,
-                         @NotBlank(message = "{code.notBlank}") String code,
-                         @NotBlank(message = "{name.notBlank}") String name) {
+public record CountryUpdateDto(Long id,
+                               Boolean enabled,
+                               @NotBlank(message = "{code.notBlank}") String code,
+                               @NotBlank(message = "{name.notBlank}") String name) {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        CountryDto that = (CountryDto) o;
+        CountryUpdateDto that = (CountryUpdateDto) o;
         return Objects.equals(id, that.id);
     }
 

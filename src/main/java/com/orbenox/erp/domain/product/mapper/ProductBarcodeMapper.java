@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.mapper;
 
 import com.orbenox.erp.domain.product.dto.ProductBarcodeCreateDto;
-import com.orbenox.erp.domain.product.dto.ProductBarcodeDto;
+import com.orbenox.erp.domain.product.dto.ProductBarcodeUpdateDto;
 import com.orbenox.erp.domain.product.entity.ProductBarcode;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -17,5 +17,5 @@ public interface ProductBarcodeMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "product", ignore = true)
     @Mapping(target = "unit", ignore = true)
-    void updateEntityFromDto(ProductBarcodeDto dto, @MappingTarget ProductBarcode entity);
+    void updateEntityFromDto(ProductBarcodeUpdateDto dto, @MappingTarget ProductBarcode entity);
 }

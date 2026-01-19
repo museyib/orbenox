@@ -2,7 +2,7 @@ package com.orbenox.erp.domain.product.controller;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.domain.product.dto.BrandCreateDto;
-import com.orbenox.erp.domain.product.dto.BrandDto;
+import com.orbenox.erp.domain.product.dto.BrandUpdateDto;
 import com.orbenox.erp.domain.product.projection.BrandItem;
 import com.orbenox.erp.domain.product.service.BrandService;
 import com.orbenox.erp.localization.LocalizationService;
@@ -42,7 +42,7 @@ public class BrandController {
     @PreAuthorize("hasPermission('BRAND', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<BrandItem>> update(@PathVariable Long id,
-                                                      @Valid @RequestBody BrandDto dto) {
+                                                      @Valid @RequestBody BrandUpdateDto dto) {
         return ResponseEntity.ok(Response.successData(brandService.update(id, dto)));
     }
 

@@ -2,6 +2,7 @@ package com.orbenox.erp.security.repository;
 
 import com.orbenox.erp.security.entity.AppUser;
 import com.orbenox.erp.security.projection.RoleItem;
+import com.orbenox.erp.security.projection.SimpleUserItem;
 import com.orbenox.erp.security.projection.UserItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,7 +25,7 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
             FROM AppUser u
             WHERE u.deleted = false AND u.root = false
             ORDER BY u.id""")
-    List<UserItem> getAllItems();
+    List<SimpleUserItem> getAllItems();
 
     @Query("""
             SELECT u.id as id,
@@ -34,7 +35,7 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
                 u.enabled as enabled
             FROM AppUser u
             WHERE u.id = :id AND u.deleted = false AND u.root = false""")
-    UserItem getItemById(@Param("id") Long id);
+    SimpleUserItem getItemById(@Param("id") Long id);
 
     @Query("""
             SELECT u.id as id,

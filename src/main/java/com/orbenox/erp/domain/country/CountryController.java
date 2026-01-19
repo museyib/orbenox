@@ -38,7 +38,7 @@ public class CountryController {
     @PreAuthorize("hasPermission('COUNTRY', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<CountryItem>> update(@PathVariable Long id,
-                                                        @Valid @RequestBody CountryDto dto) {
+                                                        @Valid @RequestBody CountryUpdateDto dto) {
         return ResponseEntity.ok(Response.successData(countryService.update(id, dto)));
     }
 

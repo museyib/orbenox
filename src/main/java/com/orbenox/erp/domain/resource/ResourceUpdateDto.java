@@ -9,15 +9,15 @@ import java.util.Set;
 /**
  * DTO for {@link Resource}
  */
-public record ResourceDto(Long id,
-                          Boolean enabled,
-                          @NotBlank(message = "{code.notBlank}") String code,
-                          @NotBlank(message = "{name.notBlank}") String name,
-                          Set<ActionDto> actions) {
+public record ResourceUpdateDto(Long id,
+                                Boolean enabled,
+                                @NotBlank(message = "{code.notBlank}") String code,
+                                @NotBlank(message = "{name.notBlank}") String name,
+                                Set<ActionDto> actions) {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        ResourceDto that = (ResourceDto) o;
+        ResourceUpdateDto that = (ResourceUpdateDto) o;
         return Objects.equals(id, that.id);
     }
 

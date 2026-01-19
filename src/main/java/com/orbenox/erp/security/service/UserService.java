@@ -3,12 +3,13 @@ package com.orbenox.erp.security.service;
 import com.orbenox.erp.exception.AlterRootException;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.security.dto.UserCreateDto;
-import com.orbenox.erp.security.dto.UserDto;
+import com.orbenox.erp.security.dto.UserUpdateDto;
 import com.orbenox.erp.security.entity.AppUser;
 import com.orbenox.erp.security.entity.UserType;
 import com.orbenox.erp.security.mapper.RoleMapper;
 import com.orbenox.erp.security.mapper.UserMapper;
 import com.orbenox.erp.security.projection.RoleItem;
+import com.orbenox.erp.security.projection.SimpleUserItem;
 import com.orbenox.erp.security.projection.UserData;
 import com.orbenox.erp.security.projection.UserItem;
 import com.orbenox.erp.security.repository.UserRepository;
@@ -33,12 +34,12 @@ public class UserService {
     private final EntityManager em;
 
     @Cacheable("users")
-    public List<UserItem> getAllItems() {
+    public List<SimpleUserItem> getAllItems() {
         return userRepository.getAllItems();
     }
 
     public UserData getItemById(Long id) {
-        UserItem userItem = userRepository.getItemById(id);
+        SimpleUserItem userItem = userRepository.getItemById(id);
         List<RoleItem> roles = userRepository.getRolesByUserId(id);
         UserData userData = new UserData();
         userData.setUser(userItem);
@@ -52,7 +53,7 @@ public class UserService {
     }
 
     @CacheEvict(value = {"userDetails", "users"}, allEntries = true)
-    public UserItem create(UserCreateDto dto) {
+    public SimpleUserItem create(UserCreateDto dto) {
         AppUser appUser = userMapper.toEntity(dto);
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         appUser.setRoles(roleMapper.toEntityList(dto.roles()));
@@ -62,7 +63,7 @@ public class UserService {
 
     @CacheEvict(value = {"userDetails", "users"}, allEntries = true)
     @Transactional
-    public UserItem update(Long id, UserDto dto) {
+    public SimpleUserItem update(Long id, UserUpdateDto dto) {
         AppUser appUser = userRepository.findByIdAndDeletedFalse(id);
         if (appUser.isRoot()) {
             if (dto.userType().code().equals("ADMIN"))

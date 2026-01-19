@@ -7,14 +7,14 @@ import java.util.Objects;
 /**
  * DTO for {@link Warehouse}
  */
-public record WarehouseDto(Long id,
-                           Boolean enabled,
-                           @NotBlank(message = "{code.notBlank}") String code,
-                           @NotBlank(message = "{name.notBlank}") String name) {
+public record WarehouseUpdateDto(Long id,
+                                 Boolean enabled,
+                                 @NotBlank(message = "{code.notBlank}") String code,
+                                 @NotBlank(message = "{name.notBlank}") String name) {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        WarehouseDto that = (WarehouseDto) o;
+        WarehouseUpdateDto that = (WarehouseUpdateDto) o;
         return Objects.equals(id, that.id);
     }
 

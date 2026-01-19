@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.mapper;
 
 import com.orbenox.erp.domain.product.dto.BrandCreateDto;
-import com.orbenox.erp.domain.product.dto.BrandDto;
+import com.orbenox.erp.domain.product.dto.BrandUpdateDto;
 import com.orbenox.erp.domain.product.entity.Brand;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -14,5 +14,5 @@ public interface BrandMapper {
     Brand toEntity(BrandCreateDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
-    void updateEntityFromDto(BrandDto dto, @MappingTarget Brand entity);
+    void updateEntityFromDto(BrandUpdateDto dto, @MappingTarget Brand entity);
 }

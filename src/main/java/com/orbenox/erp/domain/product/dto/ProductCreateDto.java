@@ -1,8 +1,8 @@
 package com.orbenox.erp.domain.product.dto;
 
-import com.orbenox.erp.domain.country.CountryDto;
+import com.orbenox.erp.domain.country.CountryUpdateDto;
 import com.orbenox.erp.domain.product.entity.Product;
-import com.orbenox.erp.domain.unit.UnitDto;
+import com.orbenox.erp.domain.unit.UnitUpdateDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,13 +14,13 @@ public record ProductCreateDto(Boolean enabled,
                                @NotBlank(message = "{code.notBlank}") String code,
                                @NotBlank(message = "{name.notBlank}") String name,
                                String description,
-                               @NotNull(message = "{brand.notNull}") BrandDto brand,
-                               @NotNull(message = "{productType.notNull}") ProductTypeDto productType,
-                               @NotNull(message = "{productClass.notNull}") ProductClassDto productClass,
-                               @NotNull(message = "{productGroup.notNull}") ProductGroupDto productGroup,
-                               @NotNull(message = "{productCategory.notNull}") ProductCategoryDto productCategory,
-                               @NotNull(message = "{producer.notNull}") ProducerDto producer,
-                               @NotNull(message = "{country.notNull}") CountryDto country,
-                               @NotNull(message = "{unit.notNull}") UnitDto defaultUnit,
+                               @NotNull(message = "{brand.notNull}") BrandUpdateDto brand,
+                               @NotNull(message = "{productType.notNull}") ProductTypeUpdateDto productType,
+                               @NotNull(message = "{productClass.notNull}") ProductClassUpdateDto productClass,
+                               @NotNull(message = "{productGroup.notNull}") ProductGroupUpdateDto productGroup,
+                               @NotNull(message = "{productCategory.notNull}") ProductCategoryUpdateDto productCategory,
+                               @NotNull(message = "{producer.notNull}") ProducerUpdateDto producer,
+                               @NotNull(message = "{country.notNull}") CountryUpdateDto country,
+                               @NotNull(message = "{unit.notNull}") UnitUpdateDto defaultUnit,
                                @NotBlank(message = "{barcode.notNull}") String defaultBarcode) {
 }

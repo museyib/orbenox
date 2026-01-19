@@ -3,12 +3,12 @@ CREATE TABLE user_type
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    created_at TIMESTAMP    NOT NULL DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled    BOOLEAN   NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN   NOT NULL DEFAULT FALSE
+    enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_user_type_code_active
     ON user_type (code)
@@ -23,12 +23,12 @@ CREATE TABLE app_user
     user_type_id BIGINT       NOT NULL REFERENCES user_type (id),
     language     VARCHAR(10),
     root         boolean,
-    created_at TIMESTAMP        DEFAULT now(),
+    created_at   TIMESTAMP             DEFAULT now(),
     updated_at   TIMESTAMP,
     created_by   VARCHAR(100),
     updated_by   VARCHAR(100),
-    enabled    BOOLEAN NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN NOT NULL DEFAULT FALSE
+    enabled      BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted      BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_app_user_username_active
     ON app_user (username)
@@ -39,12 +39,12 @@ CREATE TABLE app_role
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    created_at TIMESTAMP    NOT NULL DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled    BOOLEAN   NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN   NOT NULL DEFAULT FALSE
+    enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_app_role_code_active
     ON app_role (code)
@@ -67,12 +67,12 @@ CREATE TABLE resource
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    created_at TIMESTAMP    NOT NULL DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled    BOOLEAN   NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN   NOT NULL DEFAULT FALSE
+    enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_resource_code_active
     ON resource (code)
@@ -83,12 +83,12 @@ CREATE TABLE action
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    created_at TIMESTAMP    NOT NULL DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled    BOOLEAN   NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN   NOT NULL DEFAULT FALSE
+    enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_action_code_active
     ON action (code)
@@ -101,12 +101,12 @@ CREATE TABLE app_permission
     action_id   BIGINT REFERENCES action (id),
     app_user_id BIGINT REFERENCES app_user (id),
     app_role_id BIGINT REFERENCES app_role (id),
-    created_at TIMESTAMP        DEFAULT now(),
+    created_at  TIMESTAMP        DEFAULT now(),
     updated_at  TIMESTAMP,
     created_by  VARCHAR(100),
     updated_by  VARCHAR(100),
-    enabled    BOOLEAN NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN NOT NULL DEFAULT FALSE
+    enabled     BOOLEAN NOT NULL DEFAULT TRUE,
+    deleted     BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE resource_action
@@ -115,12 +115,12 @@ CREATE TABLE resource_action
     resource_id BIGINT REFERENCES resource (id),
     action_id   BIGINT REFERENCES action (id),
     UNIQUE (resource_id, action_id),
-    created_at TIMESTAMP        DEFAULT now(),
+    created_at  TIMESTAMP        DEFAULT now(),
     updated_at  TIMESTAMP,
     created_by  VARCHAR(100),
     updated_by  VARCHAR(100),
-    enabled    BOOLEAN NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN NOT NULL DEFAULT FALSE
+    enabled     BOOLEAN NOT NULL DEFAULT TRUE,
+    deleted     BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE unit_dimension
@@ -128,12 +128,12 @@ CREATE TABLE unit_dimension
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    created_at TIMESTAMP    NOT NULL DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled    BOOLEAN   NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN   NOT NULL DEFAULT FALSE
+    enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_unit_dimension_code_active
     ON unit_dimension (code)
@@ -152,8 +152,8 @@ CREATE TABLE unit
     updated_at        TIMESTAMP,
     created_by        VARCHAR(100),
     updated_by        VARCHAR(100),
-    enabled BOOLEAN NOT NULL DEFAULT TRUE,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE
+    enabled           BOOLEAN         NOT NULL DEFAULT TRUE,
+    deleted           BOOLEAN         NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_unit_dimension_base
     ON unit (unit_dimension_id)
@@ -167,12 +167,12 @@ CREATE TABLE currency
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    created_at TIMESTAMP    NOT NULL DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled    BOOLEAN   NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN   NOT NULL DEFAULT FALSE
+    enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_currency_code_active
     ON currency (code)
@@ -183,12 +183,12 @@ CREATE TABLE country
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    created_at TIMESTAMP    NOT NULL DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled    BOOLEAN   NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN   NOT NULL DEFAULT FALSE
+    enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_country_code_active
     ON country (code)
@@ -201,12 +201,12 @@ CREATE TABLE brand
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(1000),
     logo_url    VARCHAR(200),
-    created_at TIMESTAMP        DEFAULT now(),
+    created_at  TIMESTAMP             DEFAULT now(),
     updated_at  TIMESTAMP,
     created_by  VARCHAR(100),
     updated_by  VARCHAR(100),
-    enabled    BOOLEAN NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN NOT NULL DEFAULT FALSE
+    enabled     BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted     BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_brand_code_active
     ON brand (code)
@@ -218,12 +218,12 @@ CREATE TABLE producer
     code        VARCHAR(100) NOT NULL,
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(1000),
-    created_at TIMESTAMP        DEFAULT now(),
+    created_at  TIMESTAMP             DEFAULT now(),
     updated_at  TIMESTAMP,
     created_by  VARCHAR(100),
     updated_by  VARCHAR(100),
-    enabled    BOOLEAN NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN NOT NULL DEFAULT FALSE
+    enabled     BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted     BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_producer_code_active
     ON producer (code)
@@ -235,12 +235,12 @@ CREATE TABLE product_type
     code        VARCHAR(100) NOT NULL,
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(1000),
-    created_at TIMESTAMP        DEFAULT now(),
+    created_at  TIMESTAMP             DEFAULT now(),
     updated_at  TIMESTAMP,
     created_by  VARCHAR(100),
     updated_by  VARCHAR(100),
-    enabled    BOOLEAN NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN NOT NULL DEFAULT FALSE
+    enabled     BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted     BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_product_type_code_active
     ON product_type (code)
@@ -254,12 +254,12 @@ CREATE TABLE product_group
     description VARCHAR(1000),
     parent_id   BIGINT REFERENCES product_group (id),
     slug        VARCHAR(100),
-    created_at TIMESTAMP        DEFAULT now(),
+    created_at  TIMESTAMP             DEFAULT now(),
     updated_at  TIMESTAMP,
     created_by  VARCHAR(100),
     updated_by  VARCHAR(100),
-    enabled    BOOLEAN NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN NOT NULL DEFAULT FALSE
+    enabled     BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted     BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_product_group_code_active
     ON product_group (code)
@@ -271,12 +271,12 @@ CREATE TABLE product_category
     code        VARCHAR(100) NOT NULL,
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(1000),
-    created_at TIMESTAMP        DEFAULT now(),
+    created_at  TIMESTAMP             DEFAULT now(),
     updated_at  TIMESTAMP,
     created_by  VARCHAR(100),
     updated_by  VARCHAR(100),
-    enabled    BOOLEAN NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN NOT NULL DEFAULT FALSE
+    enabled     BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted     BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_product_category_code_active
     ON product_category (code)
@@ -288,12 +288,12 @@ CREATE TABLE product_class
     code        VARCHAR(100) NOT NULL,
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(1000),
-    created_at TIMESTAMP        DEFAULT now(),
+    created_at  TIMESTAMP             DEFAULT now(),
     updated_at  TIMESTAMP,
     created_by  VARCHAR(100),
     updated_by  VARCHAR(100),
-    enabled    BOOLEAN NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN NOT NULL DEFAULT FALSE
+    enabled     BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted     BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_product_class_code_active
     ON product_class (code)
@@ -314,12 +314,12 @@ CREATE TABLE product
     country_id          BIGINT REFERENCES country (id),
     default_unit_id     BIGINT REFERENCES unit (id),
     default_barcode     VARCHAR(50) UNIQUE NOT NULL,
-    created_at TIMESTAMP        DEFAULT now(),
+    created_at          TIMESTAMP                   DEFAULT now(),
     updated_at          TIMESTAMP,
     created_by          VARCHAR(100),
     updated_by          VARCHAR(100),
-    enabled    BOOLEAN NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN NOT NULL DEFAULT FALSE
+    enabled             BOOLEAN            NOT NULL DEFAULT TRUE,
+    deleted             BOOLEAN            NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_product_code_active
     ON product (code)
@@ -338,8 +338,8 @@ CREATE TABLE price_list
     updated_at       TIMESTAMP,
     created_by       VARCHAR(100),
     updated_by       VARCHAR(100),
-    enabled BOOLEAN NOT NULL DEFAULT TRUE,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE
+    enabled          BOOLEAN         NOT NULL DEFAULT TRUE,
+    deleted          BOOLEAN         NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_price_list_code_active
     ON price_list (code)
@@ -350,12 +350,12 @@ CREATE TABLE warehouse
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    created_at TIMESTAMP    NOT NULL DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled    BOOLEAN   NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN   NOT NULL DEFAULT FALSE
+    enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_warehouse_code_active
     ON warehouse (code)
@@ -385,7 +385,7 @@ CREATE TABLE product_barcode
     product_id BIGINT             NOT NULL REFERENCES product (id),
     unit_id    BIGINT             NOT NULL REFERENCES unit (id),
     barcode    VARCHAR(50) UNIQUE NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    created_at TIMESTAMP          NOT NULL DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100)
@@ -419,4 +419,53 @@ CREATE TABLE product_warehouse
     created_by        VARCHAR(100),
     updated_by        VARCHAR(100),
     UNIQUE (product_id, warehouse_id)
-)
+);
+
+CREATE TABLE transaction_type
+(
+    id         BIGSERIAL PRIMARY KEY,
+    code       VARCHAR(100) NOT NULL,
+    name       VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP    NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
+    enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
+);
+CREATE UNIQUE INDEX ux_transaction_type_code_active
+    ON transaction_type (code)
+    WHERE deleted = false;
+
+CREATE TABLE product_transaction_root
+(
+    id                  BIGSERIAL PRIMARY KEY,
+    transaction_type_id BIGINT REFERENCES transaction_type (id),
+    transaction_date    DATE         NOT NULL,
+    transaction_number  VARCHAR(100) NOT NULL,
+    warehouse_id        BIGINT REFERENCES warehouse (id),
+    price_list_id       BIGINT REFERENCES price_list (id),
+    status              VARCHAR(100),
+    created_at          TIMESTAMP    NOT NULL DEFAULT now(),
+    updated_at          TIMESTAMP,
+    created_by          VARCHAR(100),
+    updated_by          VARCHAR(100),
+    enabled             BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted             BOOLEAN      NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE product_transaction
+(
+    id         BIGSERIAL PRIMARY KEY,
+    root_id    BIGINT REFERENCES product_transaction_root (id),
+    product_id BIGINT REFERENCES product (id),
+    unit_id    BIGINT REFERENCES unit (id),
+    quantity   NUMERIC(20, 10) NOT NULL,
+    price      NUMERIC(20, 10) NOT NULL,
+    created_at TIMESTAMP       NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
+    enabled    BOOLEAN         NOT NULL DEFAULT TRUE,
+    deleted    BOOLEAN         NOT NULL DEFAULT FALSE
+);

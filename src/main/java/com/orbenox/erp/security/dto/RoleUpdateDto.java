@@ -8,14 +8,14 @@ import java.util.Objects;
 /**
  * DTO for {@link AppRole}
  */
-public record RoleDto(Long id,
-                      Boolean enabled,
-                      @NotBlank(message = "{code.notBlank}") String code,
-                      @NotBlank(message = "{name.notBlank}") String name) {
+public record RoleUpdateDto(Long id,
+                            Boolean enabled,
+                            @NotBlank(message = "{code.notBlank}") String code,
+                            @NotBlank(message = "{name.notBlank}") String name) {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        RoleDto roleDto = (RoleDto) o;
+        RoleUpdateDto roleDto = (RoleUpdateDto) o;
         return Objects.equals(id, roleDto.id);
     }
 

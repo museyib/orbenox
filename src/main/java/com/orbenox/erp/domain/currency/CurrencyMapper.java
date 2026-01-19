@@ -11,5 +11,5 @@ public interface CurrencyMapper {
     Currency toEntity(CurrencyCreateDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
-    void updateEntityFromDto(CurrencyDto dto, @MappingTarget Currency entity);
+    void updateEntityFromDto(CurrencyUpdateDto dto, @MappingTarget Currency entity);
 }

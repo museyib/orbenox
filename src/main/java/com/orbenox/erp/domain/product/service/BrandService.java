@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.service;
 
 import com.orbenox.erp.domain.product.dto.BrandCreateDto;
-import com.orbenox.erp.domain.product.dto.BrandDto;
+import com.orbenox.erp.domain.product.dto.BrandUpdateDto;
 import com.orbenox.erp.domain.product.entity.Brand;
 import com.orbenox.erp.domain.product.mapper.BrandMapper;
 import com.orbenox.erp.domain.product.projection.BrandItem;
@@ -37,7 +37,7 @@ public class BrandService {
 
     @CacheEvict(value = {"brands", "lookups"}, allEntries = true)
     @Transactional
-    public BrandItem update(Long id, BrandDto dto) {
+    public BrandItem update(Long id, BrandUpdateDto dto) {
         Brand entity = currencyRepository.findByIdAndDeletedFalse(id);
         currencyMapper.updateEntityFromDto(dto, entity);
         return currencyRepository.getItemById(id);

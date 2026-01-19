@@ -2,7 +2,7 @@ package com.orbenox.erp.domain.product.controller;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.domain.product.dto.ProductGroupCreateDto;
-import com.orbenox.erp.domain.product.dto.ProductGroupDto;
+import com.orbenox.erp.domain.product.dto.ProductGroupUpdateDto;
 import com.orbenox.erp.domain.product.projection.ProductGroupItem;
 import com.orbenox.erp.domain.product.projection.SimpleProductGroupItem;
 import com.orbenox.erp.domain.product.service.ProductGroupService;
@@ -48,7 +48,7 @@ public class ProductGroupController {
     @PreAuthorize("hasPermission('PRODUCT_GROUP', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<ProductGroupItem>> update(@PathVariable Long id,
-                                                             @Valid @RequestBody ProductGroupDto dto) {
+                                                             @Valid @RequestBody ProductGroupUpdateDto dto) {
         return ResponseEntity.ok(Response.successData(productGroupService.update(id, dto)));
     }
 

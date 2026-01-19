@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.service;
 
 import com.orbenox.erp.common.entity.BaseEntity;
-import com.orbenox.erp.domain.product.dto.ProductPriceDto;
+import com.orbenox.erp.domain.product.dto.ProductPriceUpdateDto;
 import com.orbenox.erp.domain.product.entity.ProductPrice;
 import com.orbenox.erp.domain.product.mapper.ProductPriceMapper;
 import com.orbenox.erp.domain.product.projection.ProductPriceItem;
@@ -10,6 +10,7 @@ import com.orbenox.erp.domain.product.projection.SimpleProductItem;
 import com.orbenox.erp.domain.product.repository.ProductPriceRepository;
 import com.orbenox.erp.domain.product.repository.ProductRepository;
 import com.orbenox.erp.domain.product.request.UpdateProductPriceRequest;
+import com.orbenox.erp.localization.LocalizationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -28,6 +29,7 @@ public class ProductPriceService {
     private final ProductPriceRepository productPriceRepository;
     private final ProductRepository productRepository;
     private final ProductPriceMapper productPriceMapper;
+    private final LocalizationService i18n;
 
     @Cacheable("productPrices")
     public ProductPricingData getPriceDataByProductId(Long productId) {
@@ -43,14 +45,14 @@ public class ProductPriceService {
     @CacheEvict(value = "productPrices", allEntries = true)
     @Transactional
     public ProductPricingData updateProductPrices(UpdateProductPriceRequest request) {
-        List<Long> ids = request.getPriceListToUpdate().stream().map(ProductPriceDto::id).toList();
+        List<Long> ids = request.getPriceListToUpdate().stream().map(ProductPriceUpdateDto::id).toList();
         Map<Long, ProductPrice> priceMap = productPriceRepository.findAllById(ids).stream()
                 .collect(Collectors.toMap(BaseEntity::getId, Function.identity()));
         List<ProductPrice> entityListToUpdate = request.getPriceListToUpdate().stream()
                 .map(item -> {
                     ProductPrice entity = priceMap.get(item.id());
                     if (entity == null)
-                        throw new IllegalArgumentException("Product price not found: " + item.id());
+                        throw new IllegalArgumentException(i18n.msg("priceList.notFound", item.priceList().code()));
                     productPriceMapper.updateEntityFromDto(item, entity);
                     return entity;
                 }).toList();

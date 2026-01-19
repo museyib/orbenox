@@ -1,14 +1,15 @@
 package com.orbenox.erp.domain.product.dto;
 
-import com.orbenox.erp.domain.product.entity.ProductType;
+import com.orbenox.erp.domain.product.entity.Brand;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.Objects;
 
+
 /**
- * DTO for {@link ProductType}
+ * DTO for {@link Brand}
  */
-public record ProductTypeDto(Long id,
+public record BrandUpdateDto(Long id,
                              Boolean enabled,
                              @NotBlank(message = "{code.notBlank}") String code,
                              @NotBlank(message = "{name.notBlank}") String name,
@@ -16,8 +17,8 @@ public record ProductTypeDto(Long id,
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        ProductTypeDto that = (ProductTypeDto) o;
-        return Objects.equals(id, that.id);
+        BrandUpdateDto brandDto = (BrandUpdateDto) o;
+        return Objects.equals(id, brandDto.id);
     }
 
     @Override

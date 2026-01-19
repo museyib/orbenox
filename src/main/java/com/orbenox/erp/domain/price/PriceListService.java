@@ -70,7 +70,7 @@ public class PriceListService {
             "priceLists.excluded",
             "lookups"}, allEntries = true)
     @Transactional
-    public PriceListItem update(Long id, PriceListDto dto) {
+    public PriceListItem update(Long id, PriceListUpdateDto dto) {
         PriceList entity = priceListRepository.findByIdAndDeletedFalse(id);
         priceListMapper.updateEntityFromDto(dto, entity);
         Currency currency = em.getReference(Currency.class, dto.currency().id());

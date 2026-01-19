@@ -1,7 +1,7 @@
 package com.orbenox.erp.security.mapper;
 
 import com.orbenox.erp.security.dto.RoleCreateDto;
-import com.orbenox.erp.security.dto.RoleDto;
+import com.orbenox.erp.security.dto.RoleUpdateDto;
 import com.orbenox.erp.security.entity.AppRole;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -15,8 +15,8 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 public interface RoleMapper {
     AppRole toEntity(RoleCreateDto dto);
 
-    Set<AppRole> toEntityList(Set<RoleDto> dtoList);
+    Set<AppRole> toEntityList(Set<RoleUpdateDto> dtoList);
 
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
-    void updateEntityFromDTO(RoleDto dto, @MappingTarget AppRole role);
+    void updateEntityFromDTO(RoleUpdateDto dto, @MappingTarget AppRole role);
 }

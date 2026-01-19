@@ -1,7 +1,7 @@
 package com.orbenox.erp.security.service;
 
 import com.orbenox.erp.security.dto.RoleCreateDto;
-import com.orbenox.erp.security.dto.RoleDto;
+import com.orbenox.erp.security.dto.RoleUpdateDto;
 import com.orbenox.erp.security.entity.AppRole;
 import com.orbenox.erp.security.mapper.RoleMapper;
 import com.orbenox.erp.security.projection.RoleItem;
@@ -37,7 +37,7 @@ public class RoleService {
 
     @CacheEvict(value = "roles", allEntries = true)
     @Transactional
-    public RoleItem update(Long id, RoleDto request) {
+    public RoleItem update(Long id, RoleUpdateDto request) {
         AppRole appRole = roleRepository.findByIdAndDeletedFalse(id);
         roleMapper.updateEntityFromDTO(request, appRole);
         return roleRepository.getItemById(id);

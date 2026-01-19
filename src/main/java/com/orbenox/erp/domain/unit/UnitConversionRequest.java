@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 @Data
 public class UnitConversionRequest {
-    private UnitDto from;
-    private UnitDto to;
+    private UnitUpdateDto from;
+    private UnitUpdateDto to;
     private BigDecimal value;
 }

@@ -1,7 +1,7 @@
 package com.orbenox.erp.security.mapper;
 
 import com.orbenox.erp.security.dto.UserCreateDto;
-import com.orbenox.erp.security.dto.UserDto;
+import com.orbenox.erp.security.dto.UserUpdateDto;
 import com.orbenox.erp.security.entity.AppUser;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -17,5 +17,5 @@ public interface UserMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "userType", ignore = true)
     @Mapping(target = "roles", ignore = true)
-    void updateEntityFromDto(UserDto dto, @MappingTarget AppUser entity);
+    void updateEntityFromDto(UserUpdateDto dto, @MappingTarget AppUser entity);
 }

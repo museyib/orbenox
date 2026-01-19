@@ -38,7 +38,7 @@ public class CurrencyController {
     @PreAuthorize("hasPermission('CURRENCY', 'UPDATE')")
     @PatchMapping("/{id}")
     public ResponseEntity<Response<CurrencyItem>> update(@PathVariable Long id,
-                                                         @Valid @RequestBody CurrencyDto dto) {
+                                                         @Valid @RequestBody CurrencyUpdateDto dto) {
         return ResponseEntity.ok(Response.successData(currencyService.update(id, dto)));
     }
 
