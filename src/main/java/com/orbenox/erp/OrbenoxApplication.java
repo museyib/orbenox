@@ -9,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
@@ -20,6 +21,7 @@ public class OrbenoxApplication {
     }
 
     @Bean
+    @Profile("!test")
     public CommandLineRunner init(UserRepository userRepository, PasswordEncoder passwordEncoder, EntityManager em) {
         return (args) -> {
             if (userRepository.findByUsername("admin").isEmpty()) {
