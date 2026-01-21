@@ -14,4 +14,8 @@ public class TransactionType extends BaseCardEntity {
   private String code;
   @Column(nullable = false)
   private String name;
+
+  private boolean affectsStock;
+  private boolean affectsAR;
+  private boolean creditLimitCheck;
 }

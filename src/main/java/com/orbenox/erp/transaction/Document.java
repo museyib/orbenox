@@ -1,5 +1,6 @@
-package com.orbenox.erp.common.entity;
+package com.orbenox.erp.transaction;
 
+import com.orbenox.erp.common.entity.BaseEntity;
 import com.orbenox.erp.common.enums.DocumentStatus;
 import com.orbenox.erp.domain.transaction.TransactionType;
 import jakarta.persistence.*;
@@ -8,18 +9,21 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@MappedSuperclass
 @Getter
 @Setter
-public abstract class BaseTransactionEntity extends BaseEntity {
+@Entity
+public class Document extends BaseEntity {
+
+    private String number;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private TransactionType transactionType;
+    private TransactionType type;
 
     @Column(nullable = false)
-    private LocalDate transactionDate;
+    private LocalDate date;
 
     @Enumerated(EnumType.STRING)
     private DocumentStatus status;
 
-    private String transactionNumber;
+    private String description;
 }

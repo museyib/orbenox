@@ -1,7 +1,8 @@
-package com.orbenox.erp.transaction.product;
+package com.orbenox.erp.transaction;
 
 import com.orbenox.erp.domain.product.entity.Product;
 import com.orbenox.erp.domain.unit.Unit;
+import com.orbenox.erp.domain.warehouse.Warehouse;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,13 +12,13 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
-public class ProductTransaction {
+public class TransactionLine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private ProductTransactionRoot root;
+    private Document document;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Product product;
@@ -25,7 +26,8 @@ public class ProductTransaction {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Unit unit;
 
-    private BigDecimal quantity;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private Warehouse warehouse;
 
-    private BigDecimal price;
+    private BigDecimal quantity;
 }
