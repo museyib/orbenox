@@ -1,4 +1,4 @@
-package com.orbenox.erp.domain.transaction;
+package com.orbenox.erp.domain.transactiontype;
 
 import com.orbenox.erp.common.entity.BaseCardEntity;
 import jakarta.persistence.Column;
@@ -17,5 +17,6 @@ public class TransactionType extends BaseCardEntity {
 
   private boolean affectsStock;
   private boolean affectsAR;
-  private boolean creditLimitCheck;
+  private boolean affectsAP;
+  private boolean checkCreditLimit;
 }

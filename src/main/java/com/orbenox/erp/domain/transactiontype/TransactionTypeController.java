@@ -1,4 +1,4 @@
-package com.orbenox.erp.domain.transaction;
+package com.orbenox.erp.domain.transactiontype;
 
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;

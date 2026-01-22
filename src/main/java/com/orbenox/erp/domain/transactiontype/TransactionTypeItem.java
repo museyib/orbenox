@@ -1,4 +1,4 @@
-package com.orbenox.erp.domain.transaction;
+package com.orbenox.erp.domain.transactiontype;
 
 public interface TransactionTypeItem {
     Long getId();

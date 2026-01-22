@@ -1,4 +1,4 @@
-package com.orbenox.erp.transaction;
+package com.orbenox.erp.transaction.entity;
 
 import com.orbenox.erp.domain.product.entity.Product;
 import jakarta.persistence.*;
@@ -16,12 +16,14 @@ public class StockMovement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    private Document document;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Product product;
 
     private BigDecimal quantity;
-
-    private Long documentId;
 
     private LocalDateTime occurredAt;
 }

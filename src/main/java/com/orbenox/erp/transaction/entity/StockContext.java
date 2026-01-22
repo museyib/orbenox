@@ -1,4 +1,4 @@
-package com.orbenox.erp.transaction;
+package com.orbenox.erp.transaction.entity;
 
 import com.orbenox.erp.domain.warehouse.Warehouse;
 import jakarta.persistence.*;
@@ -16,9 +16,9 @@ public class StockContext {
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     private Document document;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Warehouse sourceWarehouse;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Warehouse targetWarehouse;
 }

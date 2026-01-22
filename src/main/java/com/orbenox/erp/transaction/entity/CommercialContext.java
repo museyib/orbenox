@@ -1,6 +1,6 @@
-package com.orbenox.erp.transaction;
+package com.orbenox.erp.transaction.entity;
 
-import com.orbenox.erp.domain.customer.Customer;
+import com.orbenox.erp.domain.businesspartner.BusinessPartner;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +17,7 @@ public class CommercialContext {
     private Document document;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Customer customer;
+    private BusinessPartner partner;
 
     private String paymentMethod;
 }

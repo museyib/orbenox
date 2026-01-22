@@ -1,4 +1,4 @@
-package com.orbenox.erp.domain.transaction;
+package com.orbenox.erp.domain.transactiontype;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
