@@ -17,7 +17,7 @@ public class StockMovement {
     private Long id;
 
     @MapsId
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Document document;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

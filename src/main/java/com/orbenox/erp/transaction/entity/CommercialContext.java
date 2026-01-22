@@ -10,10 +10,12 @@ import lombok.Setter;
 @Entity
 public class CommercialContext {
     @Id
+    @Column(name = "document_id")
     private Long id;
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "document_id")
     private Document document;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

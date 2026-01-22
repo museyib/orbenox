@@ -10,7 +10,7 @@ public class PostingService {
         if (document.getType().isAffectsStock())
             postStock(document);
 
-        if (document.getType().isAffectsAR())
+        if (document.getType().isAffectsAccount())
             postAccounting(document);
     }
 

@@ -16,7 +16,6 @@ public class TransactionType extends BaseCardEntity {
   private String name;
 
   private boolean affectsStock;
-  private boolean affectsAR;
-  private boolean affectsAP;
+    private boolean affectsAccount;
   private boolean checkCreditLimit;
 }

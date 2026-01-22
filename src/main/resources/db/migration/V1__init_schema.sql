@@ -475,8 +475,7 @@ CREATE TABLE transaction_type
     code               VARCHAR(100) NOT NULL,
     name               VARCHAR(255) NOT NULL,
     affects_stock      BOOLEAN      NOT NULL DEFAULT FALSE,
-    affects_ar         BOOLEAN      NOT NULL DEFAULT FALSE,
-    affects_ap         BOOLEAN      NOT NULL DEFAULT FALSE,
+    affects_account BOOLEAN NOT NULL DEFAULT FALSE,
     check_credit_limit BOOLEAN      NOT NULL DEFAULT FALSE,
     created_at         TIMESTAMP    NOT NULL DEFAULT now(),
     updated_at         TIMESTAMP,
@@ -507,8 +506,7 @@ CREATE TABLE document
 
 CREATE TABLE commercial_context
 (
-    id             BIGSERIAL PRIMARY KEY,
-    document_id    BIGINT REFERENCES document (id),
+    document_id BIGINT PRIMARY KEY REFERENCES document (id),
     partner_id     BIGINT NOT NULL REFERENCES business_partner (id),
     payment_method VARCHAR(20)
 );
@@ -518,9 +516,13 @@ CREATE TABLE journal_entry
     id          BIGSERIAL PRIMARY KEY,
     document_id BIGINT REFERENCES document (id),
     account_id  BIGINT REFERENCES account (id),
-    partner_id  BIGINT          NOT NULL REFERENCES business_partner (id),
+    partner_id BIGINT REFERENCES business_partner (id),
     debit       NUMERIC(20, 10) NOT NULL DEFAULT 0,
-    credit      NUMERIC(20, 10) NOT NULL DEFAULT 0
+    credit     NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    CHECK (
+        (debit > 0 AND credit = 0)
+            OR (credit > 0 AND debit = 0)
+        )
 );
 
 CREATE TABLE product_line

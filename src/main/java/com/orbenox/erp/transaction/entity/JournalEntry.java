@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Entity
 public class JournalEntry {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,4 +27,11 @@ public class JournalEntry {
 
     private BigDecimal debit;
     private BigDecimal credit;
+
+    @PrePersist
+    @PreUpdate
+    private void validate() {
+        if (debit.signum() > 0 && credit.signum() > 0)
+            throw new IllegalStateException("Debit and Credit both set");
+    }
 }

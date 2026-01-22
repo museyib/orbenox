@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 public class Document {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDateTime createdAt;
@@ -35,4 +35,7 @@ public class Document {
 
     @Enumerated(EnumType.STRING)
     private DocumentStatus status;
+
+    @OneToOne(mappedBy = "document")
+    private CommercialContext commercialContext;
 }

@@ -169,3 +169,9 @@ VALUES (1, 1, 'system'),
        (24, 3, 'system'),
        (24, 4, 'system');
 
+INSERT INTO account(code, name, account_type, created_by)
+VALUES ('1000', 'Cash', 'ASSET', 'system'),
+       ('1200', 'Inventory', 'ASSET', 'system'),
+       ('2000', 'Accounts Payable', 'EXPENSE', 'system'),
+       ('2100', 'Accounts Receivable', 'INCOME', 'system'),
+       ('3000', 'Sales Revenue', 'INCOME', 'system');
