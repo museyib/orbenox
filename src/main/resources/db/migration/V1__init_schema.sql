@@ -363,15 +363,16 @@ CREATE UNIQUE INDEX ux_warehouse_code_active
 
 CREATE TABLE account
 (
-    id         BIGSERIAL PRIMARY KEY,
-    code       VARCHAR(100) NOT NULL,
-    name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP    NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP,
-    created_by VARCHAR(100),
-    updated_by VARCHAR(100),
-    enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
+    id           BIGSERIAL PRIMARY KEY,
+    code         VARCHAR(100) NOT NULL,
+    name         VARCHAR(255) NOT NULL,
+    account_type VARCHAR(20)  NOT NULL,
+    created_at   TIMESTAMP    NOT NULL DEFAULT now(),
+    updated_at   TIMESTAMP,
+    created_by   VARCHAR(100),
+    updated_by   VARCHAR(100),
+    enabled      BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted      BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_account_code_active
     ON account (code)
@@ -397,15 +398,15 @@ CREATE UNIQUE INDEX ux_business_partner_code_active
 
 CREATE TABLE business_partner_role
 (
-    id                  BIGSERIAL PRIMARY KEY,
-    business_partner_id BIGINT    NOT NULL REFERENCES business_partner (id),
-    role                VARCHAR(20),
-    created_at          TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at          TIMESTAMP,
-    created_by          VARCHAR(100),
-    updated_by          VARCHAR(100),
-    enabled             BOOLEAN   NOT NULL DEFAULT TRUE,
-    deleted             BOOLEAN   NOT NULL DEFAULT FALSE
+    id         BIGSERIAL PRIMARY KEY,
+    partner_id BIGINT    NOT NULL REFERENCES business_partner (id),
+    role       VARCHAR(20),
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
+    enabled    BOOLEAN   NOT NULL DEFAULT TRUE,
+    deleted    BOOLEAN   NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE product_price
@@ -506,20 +507,20 @@ CREATE TABLE document
 
 CREATE TABLE commercial_context
 (
-    id                  BIGSERIAL PRIMARY KEY,
-    document_id         BIGINT REFERENCES document (id),
-    business_partner_id BIGINT NOT NULL REFERENCES business_partner (id),
-    payment_method      VARCHAR(20)
+    id             BIGSERIAL PRIMARY KEY,
+    document_id    BIGINT REFERENCES document (id),
+    partner_id     BIGINT NOT NULL REFERENCES business_partner (id),
+    payment_method VARCHAR(20)
 );
 
 CREATE TABLE journal_entry
 (
-    id                  BIGSERIAL PRIMARY KEY,
-    document_id         BIGINT REFERENCES document (id),
-    account_id          BIGINT REFERENCES account (id),
-    business_partner_id BIGINT          NOT NULL REFERENCES business_partner (id),
-    debit               NUMERIC(20, 10) NOT NULL DEFAULT 0,
-    credit              NUMERIC(20, 10) NOT NULL DEFAULT 0
+    id          BIGSERIAL PRIMARY KEY,
+    document_id BIGINT REFERENCES document (id),
+    account_id  BIGINT REFERENCES account (id),
+    partner_id  BIGINT          NOT NULL REFERENCES business_partner (id),
+    debit       NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    credit      NUMERIC(20, 10) NOT NULL DEFAULT 0
 );
 
 CREATE TABLE product_line
@@ -544,5 +545,5 @@ CREATE TABLE stock_movement
     document_id BIGINT REFERENCES document (id),
     product_id  BIGINT REFERENCES product (id),
     quantity    NUMERIC(20, 10) NOT NULL DEFAULT 0,
-    occurredAt  TIMESTAMP       NOT NULL DEFAULT now()
+    occurred_at TIMESTAMP       NOT NULL DEFAULT now()
 );
