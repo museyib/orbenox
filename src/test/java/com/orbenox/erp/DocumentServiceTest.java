@@ -1,9 +1,9 @@
 package com.orbenox.erp;
 
-import com.orbenox.erp.common.enums.DocumentStatus;
+import com.orbenox.erp.enums.DocumentStatus;
 import com.orbenox.erp.domain.businesspartner.BusinessPartner;
 import com.orbenox.erp.domain.businesspartner.BusinessPartnerRepository;
-import com.orbenox.erp.domain.enums.PartnerType;
+import com.orbenox.erp.enums.PartnerType;
 import com.orbenox.erp.domain.transactiontype.TransactionType;
 import com.orbenox.erp.domain.transactiontype.TransactionTypeRepository;
 import com.orbenox.erp.transaction.command.CreateDocumentCommand;
@@ -22,7 +22,6 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.w3c.dom.DocumentType;
 
 import java.time.LocalDate;
 

@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.account;
 
 import com.orbenox.erp.common.entity.BaseCardEntity;
-import com.orbenox.erp.domain.enums.AccountType;
+import com.orbenox.erp.enums.AccountType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

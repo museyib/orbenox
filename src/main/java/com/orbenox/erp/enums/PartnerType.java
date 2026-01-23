@@ -1,4 +1,4 @@
-package com.orbenox.erp.domain.enums;
+package com.orbenox.erp.enums;
 
 public enum PartnerType {
     PERSON,

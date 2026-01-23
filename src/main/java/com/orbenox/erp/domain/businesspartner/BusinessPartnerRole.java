@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.businesspartner;
 
 import com.orbenox.erp.common.entity.BaseCardEntity;
-import com.orbenox.erp.domain.enums.PartnerRole;
+import com.orbenox.erp.enums.PartnerRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

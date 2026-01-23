@@ -1,7 +1,8 @@
 package com.orbenox.erp.transaction.entity;
 
 import com.orbenox.erp.common.entity.BaseEntity;
-import com.orbenox.erp.common.enums.DocumentStatus;
+import com.orbenox.erp.enums.ApprovalStatus;
+import com.orbenox.erp.enums.DocumentStatus;
 import com.orbenox.erp.domain.transactiontype.TransactionType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -26,6 +27,9 @@ public class Document extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private DocumentStatus status;
+
+    @Enumerated(EnumType.STRING)
+    private ApprovalStatus approvalStatus;
 
     @OneToOne(mappedBy = "document")
     private CommercialContext commercialContext;

@@ -1,6 +1,6 @@
 package com.orbenox.erp.transaction.service;
 
-import com.orbenox.erp.common.enums.DocumentStatus;
+import com.orbenox.erp.enums.DocumentStatus;
 import com.orbenox.erp.domain.businesspartner.BusinessPartner;
 import com.orbenox.erp.domain.businesspartner.BusinessPartnerRepository;
 import com.orbenox.erp.domain.transactiontype.TransactionType;
