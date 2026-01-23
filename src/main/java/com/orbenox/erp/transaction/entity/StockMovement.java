@@ -16,7 +16,6 @@ public class StockMovement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @MapsId
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Document document;
 

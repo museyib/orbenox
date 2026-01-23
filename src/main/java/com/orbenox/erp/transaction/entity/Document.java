@@ -1,5 +1,6 @@
 package com.orbenox.erp.transaction.entity;
 
+import com.orbenox.erp.common.entity.BaseEntity;
 import com.orbenox.erp.common.enums.DocumentStatus;
 import com.orbenox.erp.domain.transactiontype.TransactionType;
 import jakarta.persistence.*;
@@ -7,21 +8,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
-public class Document {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private String createdBy;
-    private String updatedBy;
-
+public class Document extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String number;
 
