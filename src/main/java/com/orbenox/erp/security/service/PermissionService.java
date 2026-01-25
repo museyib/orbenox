@@ -1,6 +1,5 @@
 package com.orbenox.erp.security.service;
 
-import com.orbenox.erp.domain.action.ActionItem;
 import com.orbenox.erp.domain.resource.ResourceRepository;
 import com.orbenox.erp.security.dto.RolePermissionDto;
 import com.orbenox.erp.security.dto.UserPermissionDto;
@@ -66,17 +65,17 @@ public class PermissionService {
     }
 
     @Cacheable("availableResourceActions.user")
-    public List<ActionItem> getAvailableActionsForUser(Long userId, Long resourceId) {
-        List<ActionItem> givenPermissions = permissionRepository.getActionItemsByAppUserIdAndResourceId(userId, resourceId);
-        List<ActionItem> allPermissions = resourceRepository.getActionItemsByResourceId(resourceId);
+    public List<String> getAvailableActionsForUser(Long userId, Long resourceId) {
+        List<String> givenPermissions = permissionRepository.getActionItemsByAppUserIdAndResourceId(userId, resourceId);
+        List<String> allPermissions = resourceRepository.getActionItemsByResourceId(resourceId);
         allPermissions.removeAll(givenPermissions);
         return allPermissions;
     }
 
     @Cacheable("availableResourceActions.role")
-    public List<ActionItem> getAvailableActionsForRole(Long roleId, Long resourceId) {
-        List<ActionItem> givenPermissions = permissionRepository.getActionItemsByAppRoleIdAndResourceId(roleId, resourceId);
-        List<ActionItem> allPermissions = resourceRepository.getActionItemsByResourceId(resourceId);
+    public List<String> getAvailableActionsForRole(Long roleId, Long resourceId) {
+        List<String> givenPermissions = permissionRepository.getActionItemsByAppRoleIdAndResourceId(roleId, resourceId);
+        List<String> allPermissions = resourceRepository.getActionItemsByResourceId(resourceId);
         allPermissions.removeAll(givenPermissions);
         return allPermissions;
     }

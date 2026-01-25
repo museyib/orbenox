@@ -34,7 +34,11 @@ public abstract class BaseEntity {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
-        this.updatedBy = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = "system";
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            username = SecurityContextHolder.getContext().getAuthentication().getName();
+        }
+        this.updatedBy = username;
     }
 
     @Override

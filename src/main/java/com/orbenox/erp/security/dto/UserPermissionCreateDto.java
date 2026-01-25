@@ -1,6 +1,5 @@
 package com.orbenox.erp.security.dto;
 
-import com.orbenox.erp.domain.action.ActionDto;
 import com.orbenox.erp.domain.resource.ResourceUpdateDto;
 import com.orbenox.erp.security.entity.AppPermission;
 
@@ -11,5 +10,5 @@ import com.orbenox.erp.security.entity.AppPermission;
 public record UserPermissionCreateDto(Boolean enabled,
                                       UserUpdateDto appUser,
                                       ResourceUpdateDto resource,
-                                      ActionDto action) {
+                                      String action) {
 }

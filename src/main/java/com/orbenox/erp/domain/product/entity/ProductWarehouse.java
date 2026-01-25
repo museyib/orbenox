@@ -32,4 +32,14 @@ public class ProductWarehouse extends BaseEntity {
   private BigDecimal minQuantity = BigDecimal.valueOf(0);
   @Column(nullable = false, precision = 20, scale = 10)
   private BigDecimal maxQuantity = BigDecimal.valueOf(999999999);
+
+    public ProductWarehouse(Product product, Warehouse warehouse) {
+        this.product = product;
+        this.warehouse = warehouse;
+        this.quantity = BigDecimal.ZERO;
+    }
+
+    public ProductWarehouse() {
+
+    }
 }

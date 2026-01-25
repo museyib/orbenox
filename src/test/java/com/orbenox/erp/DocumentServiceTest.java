@@ -1,11 +1,11 @@
 package com.orbenox.erp;
 
-import com.orbenox.erp.enums.DocumentStatus;
 import com.orbenox.erp.domain.businesspartner.BusinessPartner;
 import com.orbenox.erp.domain.businesspartner.BusinessPartnerRepository;
-import com.orbenox.erp.enums.PartnerType;
 import com.orbenox.erp.domain.transactiontype.TransactionType;
 import com.orbenox.erp.domain.transactiontype.TransactionTypeRepository;
+import com.orbenox.erp.enums.DocumentStatus;
+import com.orbenox.erp.enums.PartnerType;
 import com.orbenox.erp.transaction.command.CreateDocumentCommand;
 import com.orbenox.erp.transaction.entity.CommercialContext;
 import com.orbenox.erp.transaction.entity.Document;
@@ -25,6 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 
+import static com.orbenox.erp.enums.ApprovalStatus.AUTO_APPROVED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -48,6 +49,7 @@ public class DocumentServiceTest {
     @Autowired
     BusinessPartnerRepository businessPartnerRepo;
 
+    @SuppressWarnings("resource")
     @Container
     static PostgreSQLContainer<?> postgres =
             new PostgreSQLContainer<>("postgres:15")
@@ -89,11 +91,12 @@ public class DocumentServiceTest {
                 "CASH"
         );
 
-        Document doc = documentService.create(cmd);
+        Document doc = documentService.createDocumentWithCommercialContext(cmd);
 
         assertNotNull(doc.getId());
-        assertEquals(DocumentStatus.DRAFT, doc.getStatus());
+        assertEquals(DocumentStatus.DRAFT, doc.getDocumentStatus());
         assertEquals("DOC_001", doc.getNumber());
+        assertEquals(AUTO_APPROVED, doc.getApprovalStatus());
 
         Document persisted = documentRepo.findById(doc.getId()).orElseThrow();
         CommercialContext cc = persisted.getCommercialContext();

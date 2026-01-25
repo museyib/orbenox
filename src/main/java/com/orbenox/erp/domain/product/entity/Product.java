@@ -1,7 +1,7 @@
 package com.orbenox.erp.domain.product.entity;
 
-import com.orbenox.erp.domain.country.Country;
 import com.orbenox.erp.common.entity.BaseCardEntity;
+import com.orbenox.erp.domain.country.Country;
 import com.orbenox.erp.domain.unit.Unit;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,5 +47,6 @@ public class Product extends BaseCardEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Unit defaultUnit;
 
+    @Column(nullable = false)
     private String defaultBarcode;
 }

@@ -28,7 +28,9 @@ public class PriceList extends BaseCardEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private PriceList parent;
 
+    @Column(nullable = false)
     private BigDecimal factorToParent;
 
+    @Column(nullable = false)
     private Short roundLength;
 }

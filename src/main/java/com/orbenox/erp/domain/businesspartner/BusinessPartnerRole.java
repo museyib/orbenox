@@ -11,9 +11,10 @@ import lombok.Setter;
 @Entity
 public class BusinessPartnerRole extends BaseCardEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private BusinessPartner partner;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PartnerRole role;
 }

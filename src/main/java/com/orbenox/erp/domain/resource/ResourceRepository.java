@@ -1,6 +1,5 @@
 package com.orbenox.erp.domain.resource;
 
-import com.orbenox.erp.domain.action.ActionItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,16 +29,10 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     ResourceItem getItemById(@Param("id") Long id);
 
     @Query("""
-            SELECT a.id as id,
-                a.code as code,
-                a.name as name,
-                    coalesce(a.enabled, false) as enabled
+            SELECT r.actions
             FROM Resource r
-                JOIN r.actions a
             WHERE r.id = :resourceId""")
-    List<ActionItem> getActionItemsByResourceId(@Param("resourceId") Long resourceId);
+    List<String> getActionItemsByResourceId(@Param("resourceId") Long resourceId);
 
     Resource findByIdAndDeletedFalse(Long id);
-
-    Resource findByCodeAndDeletedTrue(String code);
 }

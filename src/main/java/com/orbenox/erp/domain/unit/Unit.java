@@ -17,6 +17,8 @@ import java.math.BigDecimal;
 public class Unit extends BaseCardEntity {
     @Column(unique = true, nullable = false)
     private String code;
+
+    @Column(nullable = false)
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

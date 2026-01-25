@@ -12,12 +12,14 @@ import java.util.Set;
 @Setter
 @Entity
 public class AppUser extends BaseCardEntity {
+    @Column(unique = true, nullable = false)
     private String username;
+    @Column(nullable = false)
     private String password;
     private String displayName;
     private String language;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private UserType userType;
     private boolean root;
 

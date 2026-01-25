@@ -1,6 +1,5 @@
 package com.orbenox.erp.security.dto;
 
-import com.orbenox.erp.domain.action.ActionDto;
 import com.orbenox.erp.domain.resource.ResourceUpdateDto;
 import com.orbenox.erp.security.entity.AppPermission;
 
@@ -14,7 +13,7 @@ public record UserPermissionDto(Long id,
                                 Boolean enabled,
                                 UserUpdateDto appUser,
                                 ResourceUpdateDto resource,
-                                ActionDto action) {
+                                String action) {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

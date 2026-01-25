@@ -2,7 +2,10 @@ package com.orbenox.erp.domain.account;
 
 import com.orbenox.erp.common.entity.BaseCardEntity;
 import com.orbenox.erp.enums.AccountType;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,5 +20,6 @@ public class Account extends BaseCardEntity {
     private String name;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private AccountType accountType;
 }

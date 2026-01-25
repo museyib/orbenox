@@ -1,15 +1,15 @@
 package com.orbenox.erp.lookup;
 
-import com.orbenox.erp.domain.action.ActionRepository;
+import com.orbenox.erp.domain.action.ActionService;
 import com.orbenox.erp.domain.country.CountryRepository;
 import com.orbenox.erp.domain.currency.CurrencyRepository;
 import com.orbenox.erp.domain.price.PriceListRepository;
 import com.orbenox.erp.domain.product.repository.*;
+import com.orbenox.erp.domain.unit.UnitRepository;
+import com.orbenox.erp.domain.unit.unitdimension.UnitDimensionRepository;
 import com.orbenox.erp.domain.warehouse.WarehouseRepository;
 import com.orbenox.erp.security.repository.RoleRepository;
 import com.orbenox.erp.security.repository.UserTypeRepository;
-import com.orbenox.erp.domain.unit.UnitRepository;
-import com.orbenox.erp.domain.unit.unitdimension.UnitDimensionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class LookupService {
     private final UnitDimensionRepository unitDimensionRepository;
     private final CurrencyRepository currencyRepository;
     private final RoleRepository roleRepository;
-    private final ActionRepository actionRepository;
+    private final ActionService actionRepository;
     private final PriceListRepository priceListRepository;
     private final WarehouseRepository warehouseRepository;
 
@@ -56,7 +56,7 @@ public class LookupService {
                 case "unitDimensions" -> result.put("unitDimensions", unitDimensionRepository.getEnabledItems());
                 case "currencies" -> result.put("currencies", currencyRepository.getEnabledItems());
                 case "roles" -> result.put("roles", roleRepository.getEnabledItems());
-                case "actions" -> result.put("actions", actionRepository.getEnabledItems());
+                case "actions" -> result.put("actions", actionRepository.getAllItems());
                 case "priceLists" -> result.put("priceLists", priceListRepository.getEnabledItems());
                 case "warehouses" -> result.put("warehouses", warehouseRepository.getEnabledItems());
             }

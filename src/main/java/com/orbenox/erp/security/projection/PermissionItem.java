@@ -1,6 +1,5 @@
 package com.orbenox.erp.security.projection;
 
-import com.orbenox.erp.domain.action.ActionItem;
 import com.orbenox.erp.domain.resource.ResourceItem;
 
 public interface PermissionItem {
@@ -8,7 +7,7 @@ public interface PermissionItem {
 
     ResourceItem getResource();
 
-    ActionItem getAction();
+    String getAction();
 
     String getPermissionCode();
 

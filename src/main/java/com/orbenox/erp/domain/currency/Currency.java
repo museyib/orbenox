@@ -11,7 +11,7 @@ import lombok.Setter;
 @Entity
 public class Currency extends BaseCardEntity {
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String code;
 
     @Column(nullable = false)

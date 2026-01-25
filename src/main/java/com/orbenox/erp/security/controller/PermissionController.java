@@ -1,7 +1,6 @@
 package com.orbenox.erp.security.controller;
 
 import com.orbenox.erp.common.Response;
-import com.orbenox.erp.domain.action.ActionItem;
 import com.orbenox.erp.security.projection.RolePermissionData;
 import com.orbenox.erp.security.projection.UserPermissionData;
 import com.orbenox.erp.security.request.UpdateRolePermissionRequest;
@@ -29,7 +28,7 @@ public class PermissionController {
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
     @GetMapping("/user/{userId}/availableResourceActions")
-    public ResponseEntity<Response<List<ActionItem>>> getAvailableActionsForUser(@PathVariable Long userId,
+    public ResponseEntity<Response<List<String>>> getAvailableActionsForUser(@PathVariable Long userId,
                                                                                  @RequestParam Long resourceId) {
         return ResponseEntity.ok(Response.successData(permissionService.getAvailableActionsForUser(userId, resourceId)));
     }
@@ -48,7 +47,7 @@ public class PermissionController {
 
     @PreAuthorize("hasPermission('APP_PERMISSION', 'READ')")
     @GetMapping("/role/{roleId}/availableResourceActions")
-    public ResponseEntity<Response<List<ActionItem>>> getAvailableActionsForRole(@PathVariable Long roleId,
+    public ResponseEntity<Response<List<String>>> getAvailableActionsForRole(@PathVariable Long roleId,
                                                                                  @RequestParam Long resourceId) {
         return ResponseEntity.ok(Response.successData(permissionService.getAvailableActionsForRole(roleId, resourceId)));
     }

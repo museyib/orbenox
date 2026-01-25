@@ -22,5 +22,6 @@ public class BusinessPartner extends BaseCardEntity {
     private String taxId;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PartnerType type;
 }

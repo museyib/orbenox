@@ -12,5 +12,7 @@ import lombok.Setter;
 public class UnitDimension extends BaseCardEntity {
     @Column(unique = true, nullable = false)
     private String code;
+
+    @Column(nullable = false)
     private String name;
 }

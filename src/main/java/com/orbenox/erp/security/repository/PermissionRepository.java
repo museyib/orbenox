@@ -1,6 +1,5 @@
 package com.orbenox.erp.security.repository;
 
-import com.orbenox.erp.domain.action.ActionItem;
 import com.orbenox.erp.security.entity.AppPermission;
 import com.orbenox.erp.security.projection.PermissionItem;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,7 +13,7 @@ public interface PermissionRepository extends JpaRepository<AppPermission, Long>
             SELECT p.id as id,
                    p.resource as resource,
                    p.action as action,
-                   concat(p.resource.code, ':', p.action.code) as permissionCode,
+                   concat(p.resource.code, ':', p.action) as permissionCode,
                    p.enabled as enabled
             FROM AppPermission p
             WHERE p.appUser.id = :userId
@@ -26,7 +25,7 @@ public interface PermissionRepository extends JpaRepository<AppPermission, Long>
             SELECT p.id as id,
                    p.resource as resource,
                    p.action as action,
-                   concat(p.resource.code, ':', p.action.code) as permissionCode,
+                   concat(p.resource.code, ':', p.action) as permissionCode,
                    p.enabled as enabled
             FROM AppPermission p
             WHERE p.appRole.id = :roleId
@@ -41,7 +40,7 @@ public interface PermissionRepository extends JpaRepository<AppPermission, Long>
                     AND p.resource.id = :resourceId
                     AND p.deleted = false
             ORDER BY p.id""")
-    List<ActionItem> getActionItemsByAppUserIdAndResourceId(@Param("appUserId") Long appUserId,
+    List<String> getActionItemsByAppUserIdAndResourceId(@Param("appUserId") Long appUserId,
                                                             @Param("resourceId") Long resourceId);
 
     @Query("""
@@ -51,6 +50,6 @@ public interface PermissionRepository extends JpaRepository<AppPermission, Long>
                     AND p.resource.id = :resourceId
                     AND p.deleted = false
             ORDER BY p.id""")
-    List<ActionItem> getActionItemsByAppRoleIdAndResourceId(@Param("appRoleId") Long appRoleId,
+    List<String> getActionItemsByAppRoleIdAndResourceId(@Param("appRoleId") Long appRoleId,
                                                             @Param("resourceId") Long resourceId);
 }

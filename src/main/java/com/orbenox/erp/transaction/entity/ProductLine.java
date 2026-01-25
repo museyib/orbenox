@@ -21,5 +21,6 @@ public class ProductLine {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Product product;
 
+    @Column(nullable = false)
     private BigDecimal quantity;
 }

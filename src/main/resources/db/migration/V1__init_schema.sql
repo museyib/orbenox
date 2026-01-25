@@ -3,7 +3,7 @@ CREATE TABLE user_type
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP    NOT NULL DEFAULT now(),
+    created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
@@ -39,7 +39,7 @@ CREATE TABLE app_role
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP    NOT NULL DEFAULT now(),
+    created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
@@ -67,7 +67,7 @@ CREATE TABLE resource
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP    NOT NULL DEFAULT now(),
+    created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
@@ -78,49 +78,33 @@ CREATE UNIQUE INDEX ux_resource_code_active
     ON resource (code)
     WHERE deleted = false;
 
-CREATE TABLE action
-(
-    id         BIGSERIAL PRIMARY KEY,
-    code       VARCHAR(100) NOT NULL,
-    name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP    NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP,
-    created_by VARCHAR(100),
-    updated_by VARCHAR(100),
-    enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
-);
-CREATE UNIQUE INDEX ux_action_code_active
-    ON action (code)
-    WHERE deleted = false;
-
 CREATE TABLE app_permission
 (
     id          BIGSERIAL PRIMARY KEY,
     resource_id BIGINT REFERENCES resource (id),
-    action_id   BIGINT REFERENCES action (id),
+    action     VARCHAR(100) NOT NULL,
     app_user_id BIGINT REFERENCES app_user (id),
     app_role_id BIGINT REFERENCES app_role (id),
-    created_at  TIMESTAMP        DEFAULT now(),
+    created_at TIMESTAMP             DEFAULT now(),
     updated_at  TIMESTAMP,
     created_by  VARCHAR(100),
     updated_by  VARCHAR(100),
-    enabled     BOOLEAN NOT NULL DEFAULT TRUE,
-    deleted     BOOLEAN NOT NULL DEFAULT FALSE
+    enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE resource_action
 (
     id          BIGSERIAL PRIMARY KEY,
     resource_id BIGINT REFERENCES resource (id),
-    action_id   BIGINT REFERENCES action (id),
-    UNIQUE (resource_id, action_id),
-    created_at  TIMESTAMP        DEFAULT now(),
+    action     VARCHAR(100) NOT NULL,
+    UNIQUE (resource_id, action),
+    created_at TIMESTAMP             DEFAULT now(),
     updated_at  TIMESTAMP,
     created_by  VARCHAR(100),
     updated_by  VARCHAR(100),
-    enabled     BOOLEAN NOT NULL DEFAULT TRUE,
-    deleted     BOOLEAN NOT NULL DEFAULT FALSE
+    enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE unit_dimension
@@ -128,7 +112,7 @@ CREATE TABLE unit_dimension
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP    NOT NULL DEFAULT now(),
+    created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
@@ -167,7 +151,7 @@ CREATE TABLE currency
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP    NOT NULL DEFAULT now(),
+    created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
@@ -183,7 +167,7 @@ CREATE TABLE country
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP    NOT NULL DEFAULT now(),
+    created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
@@ -350,7 +334,7 @@ CREATE TABLE warehouse
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(100) NOT NULL,
     name       VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP    NOT NULL DEFAULT now(),
+    created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
@@ -367,7 +351,7 @@ CREATE TABLE account
     code         VARCHAR(100) NOT NULL,
     name         VARCHAR(255) NOT NULL,
     account_type VARCHAR(20)  NOT NULL,
-    created_at   TIMESTAMP    NOT NULL DEFAULT now(),
+    created_at TIMESTAMP DEFAULT now(),
     updated_at   TIMESTAMP,
     created_by   VARCHAR(100),
     updated_by   VARCHAR(100),
@@ -385,7 +369,7 @@ CREATE TABLE business_partner
     name       VARCHAR(255) NOT NULL,
     type       VARCHAR(20)  NOT NULL,
     tax_id     VARCHAR(20),
-    created_at TIMESTAMP    NOT NULL DEFAULT now(),
+    created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
@@ -399,14 +383,14 @@ CREATE UNIQUE INDEX ux_business_partner_code_active
 CREATE TABLE business_partner_role
 (
     id         BIGSERIAL PRIMARY KEY,
-    partner_id BIGINT    NOT NULL REFERENCES business_partner (id),
+    partner_id BIGINT  NOT NULL REFERENCES business_partner (id),
     role       VARCHAR(20),
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    created_at TIMESTAMP        DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100),
-    enabled    BOOLEAN   NOT NULL DEFAULT TRUE,
-    deleted    BOOLEAN   NOT NULL DEFAULT FALSE
+    enabled    BOOLEAN NOT NULL DEFAULT TRUE,
+    deleted    BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE product_price
@@ -433,7 +417,7 @@ CREATE TABLE product_barcode
     product_id BIGINT             NOT NULL REFERENCES product (id),
     unit_id    BIGINT             NOT NULL REFERENCES unit (id),
     barcode    VARCHAR(50) UNIQUE NOT NULL,
-    created_at TIMESTAMP          NOT NULL DEFAULT now(),
+    created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP,
     created_by VARCHAR(100),
     updated_by VARCHAR(100)
@@ -477,7 +461,7 @@ CREATE TABLE transaction_type
     affects_stock      BOOLEAN      NOT NULL DEFAULT FALSE,
     affects_account BOOLEAN NOT NULL DEFAULT FALSE,
     check_credit_limit BOOLEAN      NOT NULL DEFAULT FALSE,
-    created_at         TIMESTAMP    NOT NULL DEFAULT now(),
+    created_at      TIMESTAMP        DEFAULT now(),
     updated_at         TIMESTAMP,
     created_by         VARCHAR(100),
     updated_by         VARCHAR(100),
@@ -490,18 +474,19 @@ CREATE UNIQUE INDEX ux_transaction_type_code_active
 
 CREATE TABLE document
 (
-    id          BIGSERIAL PRIMARY KEY,
-    date        DATE         NOT NULL,
-    type_id     BIGINT REFERENCES transaction_type (id),
-    number      VARCHAR(100) NOT NULL,
-    description VARCHAR(1000),
-    status      VARCHAR(100),
-    created_at  TIMESTAMP    NOT NULL DEFAULT now(),
-    updated_at  TIMESTAMP,
-    created_by  VARCHAR(100),
-    updated_by  VARCHAR(100),
-    enabled     BOOLEAN      NOT NULL DEFAULT TRUE,
-    deleted     BOOLEAN      NOT NULL DEFAULT FALSE
+    id              BIGSERIAL PRIMARY KEY,
+    date            DATE         NOT NULL,
+    type_id         BIGINT REFERENCES transaction_type (id),
+    number          VARCHAR(100) NOT NULL,
+    description     VARCHAR(1000),
+    document_status VARCHAR(100),
+    approval_status VARCHAR(100),
+    created_at      TIMESTAMP             DEFAULT now(),
+    updated_at      TIMESTAMP,
+    created_by      VARCHAR(100),
+    updated_by      VARCHAR(100),
+    enabled         BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted         BOOLEAN      NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE commercial_context
@@ -547,5 +532,5 @@ CREATE TABLE stock_movement
     document_id BIGINT REFERENCES document (id),
     product_id  BIGINT REFERENCES product (id),
     quantity    NUMERIC(20, 10) NOT NULL DEFAULT 0,
-    occurred_at TIMESTAMP       NOT NULL DEFAULT now()
+    occurred_at TIMESTAMP DEFAULT now()
 );

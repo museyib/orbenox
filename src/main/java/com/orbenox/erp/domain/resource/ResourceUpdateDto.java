@@ -1,6 +1,5 @@
 package com.orbenox.erp.domain.resource;
 
-import com.orbenox.erp.domain.action.ActionDto;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.Objects;
@@ -13,7 +12,7 @@ public record ResourceUpdateDto(Long id,
                                 Boolean enabled,
                                 @NotBlank(message = "{code.notBlank}") String code,
                                 @NotBlank(message = "{name.notBlank}") String name,
-                                Set<ActionDto> actions) {
+                                Set<String> actions) {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

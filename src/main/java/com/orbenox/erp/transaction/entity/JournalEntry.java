@@ -25,7 +25,10 @@ public class JournalEntry {
     @ManyToOne(fetch = FetchType.LAZY)
     private BusinessPartner partner;
 
+    @Column(nullable = false)
     private BigDecimal debit;
+
+    @Column(nullable = false)
     private BigDecimal credit;
 
     @PrePersist

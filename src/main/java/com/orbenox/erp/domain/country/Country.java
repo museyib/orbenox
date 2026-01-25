@@ -12,5 +12,6 @@ import lombok.Setter;
 public class Country extends BaseCardEntity {
     @Column(unique = true, nullable = false)
     private String code;
+    @Column(nullable = false)
     private String name;
 }
