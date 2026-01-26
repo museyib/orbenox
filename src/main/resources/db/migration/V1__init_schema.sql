@@ -491,8 +491,10 @@ CREATE TABLE document
 
 CREATE TABLE commercial_context
 (
-    document_id BIGINT PRIMARY KEY REFERENCES document (id),
+    document_id   BIGINT PRIMARY KEY REFERENCES document (id),
     partner_id     BIGINT NOT NULL REFERENCES business_partner (id),
+    price_list_id BIGINT REFERENCES price_list (id),
+    currency_id   BIGINT REFERENCES currency (id),
     payment_method VARCHAR(20)
 );
 
@@ -515,15 +517,18 @@ CREATE TABLE product_line
     id          BIGSERIAL PRIMARY KEY,
     document_id BIGINT REFERENCES document (id),
     product_id  BIGINT REFERENCES product (id),
-    quantity    NUMERIC(20, 10) NOT NULL DEFAULT 0
+    unit_id    BIGINT REFERENCES unit (id),
+    quantity   NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    unit_price NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    discount   NUMERIC(20, 10) NOT NULL DEFAULT 0
 );
 
 CREATE TABLE stock_context
 (
     id                  BIGSERIAL PRIMARY KEY,
     document_id         BIGINT REFERENCES document (id),
-    source_warehouse_id BIGINT NOT NULL REFERENCES warehouse (id),
-    target_warehouse_id BIGINT NOT NULL REFERENCES warehouse (id)
+    source_warehouse_id BIGINT REFERENCES warehouse (id),
+    target_warehouse_id BIGINT REFERENCES warehouse (id)
 );
 
 CREATE TABLE stock_movement
@@ -533,4 +538,10 @@ CREATE TABLE stock_movement
     product_id  BIGINT REFERENCES product (id),
     quantity    NUMERIC(20, 10) NOT NULL DEFAULT 0,
     occurred_at TIMESTAMP DEFAULT now()
+);
+
+CREATE TABLE responsibility_context
+(
+    document_id BIGINT REFERENCES document (id),
+    owner_id    BIGINT REFERENCES app_user (id)
 );

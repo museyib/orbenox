@@ -1,6 +1,7 @@
 package com.orbenox.erp.transaction.entity;
 
 import com.orbenox.erp.domain.product.entity.Product;
+import com.orbenox.erp.domain.unit.Unit;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,4 +24,11 @@ public class ProductLine {
 
     @Column(nullable = false)
     private BigDecimal quantity;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private Unit unit;
+
+    private BigDecimal unitPrice;
+
+    private BigDecimal discount;
 }

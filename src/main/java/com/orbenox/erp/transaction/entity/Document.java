@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,4 +34,10 @@ public class Document extends BaseEntity {
 
     @OneToOne(mappedBy = "document")
     private CommercialContext commercialContext;
+
+    @OneToOne(mappedBy = "document")
+    private ResponsibilityContext responsibilityContext;
+
+    @OneToMany
+    private List<ProductLine> productLines;
 }

@@ -1,5 +1,7 @@
 package com.orbenox.erp.domain.product.repository;
 
+import com.orbenox.erp.domain.price.PriceList;
+import com.orbenox.erp.domain.product.entity.Product;
 import com.orbenox.erp.domain.product.entity.ProductPrice;
 import com.orbenox.erp.domain.product.projection.ProductPriceItem;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,4 +27,6 @@ public interface ProductPriceRepository extends JpaRepository<ProductPrice, Long
             WHERE p.product.id = :productId
             ORDER BY p.unit.id, coalesce(pp.id, p.priceList.id) , p.priceList.id""")
     List<ProductPriceItem> getItemsByProductId(@Param("productId") Long productId);
+
+    ProductPrice findByProductAndPriceList(Product product, PriceList priceList);
 }

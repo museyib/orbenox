@@ -39,7 +39,7 @@ public class DocumentService {
     private final ProductLineRepository productLineRepo;
     private final ProductWarehouseRepository productWarehouseRepo;
 
-    public Document createDocumentWithCommercialContext(CreateDocumentCommand command) {
+    public Document createDocument(CreateDocumentCommand command) {
         TransactionType type = transactionTypeRepo.findById(command.typeId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid transaction type"));
 

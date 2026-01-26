@@ -16,9 +16,9 @@ public class StockContext {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Document document;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Warehouse sourceWarehouse;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Warehouse targetWarehouse;
 }

@@ -1,6 +1,8 @@
 package com.orbenox.erp.transaction.entity;
 
 import com.orbenox.erp.domain.businesspartner.BusinessPartner;
+import com.orbenox.erp.domain.currency.Currency;
+import com.orbenox.erp.domain.price.PriceList;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +22,12 @@ public class CommercialContext {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private BusinessPartner partner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private PriceList priceList;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private Currency currency;
 
     private String paymentMethod;
 }

@@ -81,7 +81,7 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void createDocumentWithCommercialContext() {
+    public void createDocument() {
         CreateDocumentCommand cmd = new CreateDocumentCommand(
                 "DOC_001",
                 LocalDate.now(),
@@ -91,7 +91,7 @@ public class DocumentServiceTest {
                 "CASH"
         );
 
-        Document doc = documentService.createDocumentWithCommercialContext(cmd);
+        Document doc = documentService.createDocument(cmd);
 
         assertNotNull(doc.getId());
         assertEquals(DocumentStatus.DRAFT, doc.getDocumentStatus());
