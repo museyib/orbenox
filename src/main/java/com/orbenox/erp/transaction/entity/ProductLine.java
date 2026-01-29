@@ -28,7 +28,9 @@ public class ProductLine {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Unit unit;
 
+    @Column(nullable = false)
     private BigDecimal unitPrice;
 
+    @Column(nullable = false)
     private BigDecimal discount;
 }

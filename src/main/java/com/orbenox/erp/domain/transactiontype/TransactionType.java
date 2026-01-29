@@ -10,14 +10,23 @@ import lombok.Setter;
 @Setter
 @Entity
 public class TransactionType extends BaseCardEntity {
-  @Column(nullable = false, unique = true)
-  private String code;
-  @Column(nullable = false)
-  private String name;
+    @Column(nullable = false, unique = true)
+    private String code;
+    @Column(nullable = false)
+    private String name;
 
+    @Column(nullable = false)
     private boolean affectsCommercial;
-  private boolean affectsStock;
-  private boolean affectsAccount;
-  private boolean checkCreditLimit;
+
+    @Column(nullable = false)
+    private boolean affectsStock;
+
+    @Column(nullable = false)
+    private boolean affectsAccount;
+
+    @Column(nullable = false)
+    private boolean checkCreditLimit;
+
+    @Column(nullable = false)
     private boolean requiresApproval;
 }

@@ -1,6 +1,5 @@
 package com.orbenox.erp.lookup;
 
-import com.orbenox.erp.domain.action.ActionService;
 import com.orbenox.erp.domain.country.CountryRepository;
 import com.orbenox.erp.domain.currency.CurrencyRepository;
 import com.orbenox.erp.domain.price.PriceListRepository;
@@ -8,6 +7,7 @@ import com.orbenox.erp.domain.product.repository.*;
 import com.orbenox.erp.domain.unit.UnitRepository;
 import com.orbenox.erp.domain.unit.unitdimension.UnitDimensionRepository;
 import com.orbenox.erp.domain.warehouse.WarehouseRepository;
+import com.orbenox.erp.enums.EnumService;
 import com.orbenox.erp.security.repository.RoleRepository;
 import com.orbenox.erp.security.repository.UserTypeRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +34,9 @@ public class LookupService {
     private final UnitDimensionRepository unitDimensionRepository;
     private final CurrencyRepository currencyRepository;
     private final RoleRepository roleRepository;
-    private final ActionService actionRepository;
     private final PriceListRepository priceListRepository;
     private final WarehouseRepository warehouseRepository;
+    private final EnumService enumService;
 
     @Cacheable("lookups")
     public Map<String, Object> getLookups(List<String> types) {
@@ -56,9 +56,14 @@ public class LookupService {
                 case "unitDimensions" -> result.put("unitDimensions", unitDimensionRepository.getEnabledItems());
                 case "currencies" -> result.put("currencies", currencyRepository.getEnabledItems());
                 case "roles" -> result.put("roles", roleRepository.getEnabledItems());
-                case "actions" -> result.put("actions", actionRepository.getAllItems());
                 case "priceLists" -> result.put("priceLists", priceListRepository.getEnabledItems());
                 case "warehouses" -> result.put("warehouses", warehouseRepository.getEnabledItems());
+                case "actions" -> result.put("actions", enumService.getActions());
+                case "accountTypes" -> result.put("accountTypes", enumService.getAccountTypes());
+                case "approvalStatuses" -> result.put("approvalStatuses", enumService.getApprovalStatuses());
+                case "documentStatuses" -> result.put("documentStatuses", enumService.getDocumentStatuses());
+                case "partnerRoles" -> result.put("partnerRoles", enumService.getPartnerRoles());
+                case "partnerTypes" -> result.put("partnerTypes", enumService.getPartnerTypes());
             }
         }
         return result;
