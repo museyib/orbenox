@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Entity
@@ -19,6 +21,9 @@ public class CommercialContext {
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "document_id")
     private Document document;
+
+    @Column(nullable = false)
+    private LocalDate dueDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private BusinessPartner partner;

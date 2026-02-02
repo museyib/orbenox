@@ -483,6 +483,7 @@ CREATE TABLE document
     description     VARCHAR(1000),
     document_status VARCHAR(100),
     approval_status VARCHAR(100),
+    owner_id        BIGINT REFERENCES app_user (id),
     created_at      TIMESTAMP             DEFAULT now(),
     updated_at      TIMESTAMP,
     created_by      VARCHAR(100),
@@ -497,7 +498,8 @@ CREATE TABLE commercial_context
     partner_id     BIGINT NOT NULL REFERENCES business_partner (id),
     price_list_id  BIGINT REFERENCES price_list (id),
     currency_id    BIGINT REFERENCES currency (id),
-    payment_method VARCHAR(20)
+    payment_method VARCHAR(20),
+    due_date       date
 );
 
 CREATE TABLE journal_entry
@@ -538,6 +540,7 @@ CREATE TABLE stock_movement
     id          BIGSERIAL PRIMARY KEY,
     document_id BIGINT REFERENCES document (id),
     product_id  BIGINT REFERENCES product (id),
+    warehouse_id BIGINT REFERENCES warehouse (id),
     quantity    NUMERIC(20, 10) NOT NULL DEFAULT 0,
     occurred_at TIMESTAMP                DEFAULT now()
 );

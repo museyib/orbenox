@@ -34,7 +34,8 @@ public class JournalEntry {
     @PrePersist
     @PreUpdate
     private void validate() {
-        if (debit.signum() > 0 && credit.signum() > 0)
+        if ((debit == null && credit == null)
+                || (debit != null && credit != null))
             throw new IllegalStateException("Debit and Credit both set");
     }
 }

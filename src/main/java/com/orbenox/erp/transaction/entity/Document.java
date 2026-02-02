@@ -4,11 +4,13 @@ import com.orbenox.erp.common.entity.BaseEntity;
 import com.orbenox.erp.domain.transactiontype.TransactionType;
 import com.orbenox.erp.enums.ApprovalStatus;
 import com.orbenox.erp.enums.DocumentStatus;
+import com.orbenox.erp.security.entity.AppUser;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,12 +20,10 @@ public class Document extends BaseEntity {
     private String number;
 
     @Column(nullable = false)
-    private LocalDate date;
+    private LocalDate documentDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private TransactionType type;
-
-    private String description;
 
     @Enumerated(EnumType.STRING)
     private DocumentStatus documentStatus;
@@ -31,9 +31,21 @@ public class Document extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ApprovalStatus approvalStatus;
 
-    @OneToOne(mappedBy = "document")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private AppUser owner;
+
+    private String description;
+
+    @OneToOne(mappedBy = "document", cascade = CascadeType.ALL)
     private CommercialContext commercialContext;
 
-    @OneToOne(mappedBy = "document")
-    private ResponsibilityContext responsibilityContext;
+    @OneToOne(mappedBy = "document", cascade = CascadeType.ALL)
+    private StockContext stockContext;
+
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
+    private List<ProductLine> productLines;
+
+    public boolean isPosted() {
+        return documentStatus == DocumentStatus.POSTED;
+    }
 }

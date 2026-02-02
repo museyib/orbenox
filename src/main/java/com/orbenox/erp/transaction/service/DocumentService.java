@@ -45,7 +45,7 @@ public class DocumentService {
 
         Document doc = new Document();
         doc.setNumber(command.number());
-        doc.setDate(command.date());
+        doc.setDocumentDate(command.date());
         doc.setType(type);
         doc.setDescription(command.description());
         doc.setDocumentStatus(DocumentStatus.DRAFT);
@@ -76,7 +76,7 @@ public class DocumentService {
 
         Document doc = new Document();
         doc.setNumber(cmd.number());
-        doc.setDate(cmd.date());
+        doc.setDocumentDate(cmd.date());
         doc.setType(type);
         doc.setDescription(cmd.description());
 

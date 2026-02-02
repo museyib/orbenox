@@ -1,6 +1,7 @@
 package com.orbenox.erp.transaction.entity;
 
 import com.orbenox.erp.domain.product.entity.Product;
+import com.orbenox.erp.domain.warehouse.Warehouse;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,9 @@ public class StockMovement {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private Warehouse warehouse;
 
     @Column(nullable = false)
     private BigDecimal quantity;

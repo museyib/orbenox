@@ -42,6 +42,9 @@ public class DocumentActionServiceImpl implements DocumentActionService {
     public void post(Long documentId) {
         Document doc = documentRepo.findById(documentId).orElseThrow();
 
+        if (doc.isPosted())
+            throw new IllegalStateException("Document is already posted");
+
         if (doc.getDocumentStatus() != DocumentStatus.DRAFT)
             throw new IllegalStateException("Only draft can be posted");
 

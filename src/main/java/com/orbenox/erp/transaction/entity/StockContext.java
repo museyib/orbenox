@@ -13,7 +13,7 @@ public class StockContext {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     private Document document;
 
     @ManyToOne(fetch = FetchType.LAZY)

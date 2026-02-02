@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CommercialService implements ContextService {
     @Override
-    public void post(Document document) {
+    public void post(Document doc) {
 
     }
 }
