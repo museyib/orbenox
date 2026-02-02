@@ -474,6 +474,22 @@ CREATE UNIQUE INDEX ux_transaction_type_code_active
     ON transaction_type (code)
     WHERE deleted = false;
 
+CREATE TABLE posting_rule
+(
+    id                BIGSERIAL PRIMARY KEY,
+    sequence          INT NOT NULL,
+    type_id           BIGINT REFERENCES transaction_type (id),
+    debit_account_id  BIGINT REFERENCES account (id),
+    credit_account_id BIGINT REFERENCES account (id),
+    amount_source     VARCHAR(20),
+    partner_side      VARCHAR(20),
+    created_at        TIMESTAMP DEFAULT now(),
+    updated_at        TIMESTAMP,
+    created_by        VARCHAR(100),
+    updated_by        VARCHAR(100),
+    UNIQUE (type_id, sequence)
+);
+
 CREATE TABLE document
 (
     id              BIGSERIAL PRIMARY KEY,
@@ -499,17 +515,25 @@ CREATE TABLE commercial_context
     price_list_id  BIGINT REFERENCES price_list (id),
     currency_id    BIGINT REFERENCES currency (id),
     payment_method VARCHAR(20),
-    due_date       date
+    due_date DATE NOT NULL
 );
 
 CREATE TABLE journal_entry
 (
-    id          BIGSERIAL PRIMARY KEY,
-    document_id BIGINT REFERENCES document (id),
-    account_id  BIGINT REFERENCES account (id),
-    partner_id  BIGINT REFERENCES business_partner (id),
-    debit       NUMERIC(20, 10) NOT NULL DEFAULT 0,
-    credit      NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    id           BIGSERIAL PRIMARY KEY,
+    document_id  BIGINT REFERENCES document (id),
+    posting_date DATE NOT NULL,
+    status       VARCHAR(20)
+);
+
+CREATE TABLE journal_line
+(
+    id               BIGSERIAL PRIMARY KEY,
+    journal_entry_id BIGINT REFERENCES journal_entry (id),
+    account_id       BIGINT REFERENCES account (id),
+    partner_id       BIGINT REFERENCES business_partner (id),
+    debit            NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    credit           NUMERIC(20, 10) NOT NULL DEFAULT 0,
     CHECK (
         (debit > 0 AND credit = 0)
             OR (credit > 0 AND debit = 0)

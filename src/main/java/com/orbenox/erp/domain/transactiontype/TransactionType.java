@@ -1,10 +1,14 @@
 package com.orbenox.erp.domain.transactiontype;
 
 import com.orbenox.erp.common.entity.BaseCardEntity;
+import com.orbenox.erp.domain.postingrule.PostingRule;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,4 +33,7 @@ public class TransactionType extends BaseCardEntity {
 
     @Column(nullable = false)
     private boolean requiresApproval;
+
+    @OneToMany(mappedBy = "type")
+    private List<PostingRule> rules;
 }

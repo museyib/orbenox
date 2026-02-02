@@ -1,12 +1,12 @@
 package com.orbenox.erp.transaction.entity;
 
-import com.orbenox.erp.domain.account.Account;
-import com.orbenox.erp.domain.businesspartner.BusinessPartner;
+import com.orbenox.erp.enums.JournalStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,23 +19,16 @@ public class JournalEntry {
     @ManyToOne(fetch = FetchType.LAZY)
     private Document document;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Account account;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private BusinessPartner partner;
-
     @Column(nullable = false)
-    private BigDecimal debit;
+    private LocalDateTime postingDate;
 
-    @Column(nullable = false)
-    private BigDecimal credit;
+    @Enumerated(EnumType.STRING)
+    private JournalStatus status;
+    @OneToMany(mappedBy = "journalEntry")
+    private List<JournalLine> journalLines;
 
     @PrePersist
-    @PreUpdate
-    private void validate() {
-        if ((debit == null && credit == null)
-                || (debit != null && credit != null))
-            throw new IllegalStateException("Debit and Credit both set");
+    public void prePersist() {
+        postingDate = LocalDateTime.now();
     }
 }
