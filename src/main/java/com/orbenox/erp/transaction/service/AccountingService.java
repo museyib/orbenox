@@ -36,17 +36,22 @@ public class AccountingService implements ContextService {
 
     private void applyPostingRule(PostingRule rule, Document doc, JournalEntry je) {
         BigDecimal amount = amountResolver.resolve(rule, doc);
+        System.out.println("AMOUNT: " + amount);
 
         JournalLine debit = new JournalLine();
         debit.setJournalEntry(je);
         debit.setAccount(rule.getDebitAccount());
         debit.setDebit(amount);
+        debit.setCredit(BigDecimal.ZERO);
+        System.out.println("DEBIT: " + debit);
         journalLineRepo.save(debit);
 
         JournalLine credit = new JournalLine();
         credit.setJournalEntry(je);
         credit.setAccount(rule.getCreditAccount());
-        credit.setDebit(amount);
+        credit.setDebit(BigDecimal.ZERO);
+        credit.setCredit(amount);
+        System.out.println("CREDIT: " + credit);
         journalLineRepo.save(credit);
     }
 }

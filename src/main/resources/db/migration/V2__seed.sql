@@ -189,6 +189,8 @@ INSERT INTO product (code, name, description, default_barcode, created_by)
 VALUES ('CATEGORY_1', 'product_category 1', 'product_category 1', '123456789', 'system');
 INSERT INTO warehouse (code, name, created_by)
 VALUES ('W001', 'warehouse 1', 'system');
+INSERT INTO product_price (product_id, price_list_id, unit_id, created_by, discount_ratio_limit)
+VALUES (1, 1, 1, 'system', 30);
 
 INSERT INTO transaction_type(code, name, affects_stock, affects_account, check_credit_limit, requires_approval,
                              created_by)

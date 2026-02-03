@@ -8,5 +8,6 @@ public record CreateDocumentCommand(
         Long typeId,
         String description,
         Long partnerId,
-        String paymentMethod
+        String paymentMethod,
+        Long priceListId
 ) { }

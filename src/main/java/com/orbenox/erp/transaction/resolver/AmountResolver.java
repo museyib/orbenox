@@ -6,6 +6,7 @@ import com.orbenox.erp.transaction.entity.ProductLine;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Component
 public class AmountResolver {
@@ -21,7 +22,8 @@ public class AmountResolver {
             case TOTAL -> doc.getProductLines().stream()
                     .map(l -> l.getUnitPrice()
                             .multiply(l.getQuantity())
-                            .subtract(l.getDiscount()))
+                            .subtract(BigDecimal.valueOf(100).subtract(l.getDiscount())
+                                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP)))
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
         };
     }

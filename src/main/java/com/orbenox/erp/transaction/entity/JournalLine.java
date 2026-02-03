@@ -41,4 +41,13 @@ public class JournalLine {
                 || (!debit.equals(ZERO) && !Objects.equals(credit, ZERO)))
             throw new IllegalStateException("Debit and Credit both set");
     }
+
+    @Override
+    public String toString() {
+        return "JournalLine{" +
+                "id=" + id +
+                ", debit=" + debit +
+                ", credit=" + credit +
+                '}';
+    }
 }

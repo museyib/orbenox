@@ -1,7 +1,6 @@
 package com.orbenox.erp;
 
 import com.orbenox.erp.domain.businesspartner.BusinessPartnerRepository;
-import com.orbenox.erp.domain.price.PriceList;
 import com.orbenox.erp.domain.price.PriceListRepository;
 import com.orbenox.erp.domain.product.entity.Product;
 import com.orbenox.erp.domain.product.repository.ProductRepository;
@@ -10,7 +9,10 @@ import com.orbenox.erp.domain.transactiontype.TransactionTypeRepository;
 import com.orbenox.erp.domain.warehouse.Warehouse;
 import com.orbenox.erp.domain.warehouse.WarehouseRepository;
 import com.orbenox.erp.transaction.command.CreateDocumentCommand;
-import com.orbenox.erp.transaction.entity.*;
+import com.orbenox.erp.transaction.entity.Document;
+import com.orbenox.erp.transaction.entity.ProductLine;
+import com.orbenox.erp.transaction.entity.StockContext;
+import com.orbenox.erp.transaction.entity.StockMovement;
 import com.orbenox.erp.transaction.repository.CommercialContextRepository;
 import com.orbenox.erp.transaction.repository.ProductLineRepository;
 import com.orbenox.erp.transaction.repository.StockContextRepository;
@@ -64,12 +66,13 @@ public class CreateAndPostDocumentTest {
     StockMovementRepository stockMovementRepo;
     @Autowired
     StockContextRepository stockContextRepo;
+    @Autowired
     CommercialContextRepository commercialContextRepo;
 
 
     private Product product;
     private Warehouse warehouse;
-    private PriceList priceList;
+    private Long priceListId;
 
     private Long approveTypeId;
     private Long salesOrderTypeId;
@@ -91,10 +94,10 @@ public class CreateAndPostDocumentTest {
         approveTypeId = transactionTypeRepo.findByCode("APPROVE").getId();
         salesOrderTypeId = transactionTypeRepo.findByCode("SALES_ORDER").getId();
         partnerId = businessPartnerRepository.findAll().get(0).getId();
+        priceListId = priceListRepository.findAll().get(0).getId();
 
         product = productRepo.findAll().get(0);
         warehouse = warehouseRepo.findAll().get(0);
-        priceList = priceListRepository.findAll().get(0);
     }
 
     @Test
@@ -105,7 +108,8 @@ public class CreateAndPostDocumentTest {
                 approveTypeId,
                 "Test",
                 null,
-                null
+                null,
+                priceListId
         );
 
         Document document = documentActionService.createDraft(cmd);
@@ -141,32 +145,25 @@ public class CreateAndPostDocumentTest {
                 salesOrderTypeId,
                 "Sales order",
                 partnerId,
-                "CASH"
+                "CASH",
+                priceListId
         );
         Document document = documentActionService.createDraft(cmd);
-
-        ProductLine productLine = new ProductLine();
-        productLine.setDocument(document);
-        productLine.setProduct(product);
-        productLine.setQuantity(BigDecimal.TEN);
-        productLine.setUnitPrice(BigDecimal.ONE);
-        productLine.setDiscount(BigDecimal.ZERO);
-        productLineRepo.save(productLine);
 
         StockContext sc = new StockContext();
         sc.setDocument(document);
         sc.setTargetWarehouse(warehouse);
         stockContextRepo.save(sc);
 
-        CommercialContext cc = new CommercialContext();
-        cc.setDocument(document);
-        cc.setPaymentMethod("CASH");
-        cc.setPriceList(priceList);
-        cc.setDueDate(LocalDate.now());
-        commercialContextRepo.save(cc);
+        ProductLine productLine = new ProductLine();
+        productLine.setDocument(document);
+        productLine.setProduct(product);
+        productLine.setQuantity(BigDecimal.TEN);
+        productLine.setUnitPrice(BigDecimal.ONE);
+        productLine.setDiscount(BigDecimal.valueOf(50));
+        productLineRepo.save(productLine);
 
         document.setStockContext(sc);
-        document.setCommercialContext(cc);
         document.setProductLines(List.of(productLine));
 
         documentActionService.submit(document.getId());
