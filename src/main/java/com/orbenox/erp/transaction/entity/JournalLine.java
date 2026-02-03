@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.Objects;
+
+import static java.math.BigDecimal.ZERO;
 
 @Getter
 @Setter
@@ -16,10 +19,10 @@ public class JournalLine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private JournalEntry journalEntry;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,8 +37,8 @@ public class JournalLine {
     @PrePersist
     @PreUpdate
     private void validate() {
-        if ((debit == null && credit == null)
-                || (debit != null && credit != null))
+        if ((debit.equals(ZERO) && credit.equals(ZERO))
+                || (!debit.equals(ZERO) && !Objects.equals(credit, ZERO)))
             throw new IllegalStateException("Debit and Credit both set");
     }
 }

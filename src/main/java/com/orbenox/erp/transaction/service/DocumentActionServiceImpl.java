@@ -30,12 +30,30 @@ public class DocumentActionServiceImpl implements DocumentActionService {
 
     @Override
     public void submit(Long documentId) {
+        Document doc = documentRepo.findById(documentId).orElseThrow();
 
+        if (doc.getDocumentStatus() != DocumentStatus.DRAFT)
+            throw new IllegalStateException("Only draft can be submitted");
+
+        doc.setDocumentStatus(DocumentStatus.IN_PROGRESS);
+
+        if (approvalPolicy.requiresApproval(doc))
+            doc.setApprovalStatus(ApprovalStatus.PENDING);
+        else
+            doc.setApprovalStatus(ApprovalStatus.AUTO_APPROVED);
     }
 
     @Override
     public void approve(Long documentId) {
+        Document doc = documentRepo.findById(documentId).orElseThrow();
 
+        if (!approvalPolicy.requiresApproval(doc))
+            throw new IllegalStateException("Approval not required");
+
+        if (doc.getApprovalStatus() != ApprovalStatus.PENDING)
+            throw new IllegalStateException("Document not pending approval");
+
+        doc.setApprovalStatus(ApprovalStatus.APPROVED);
     }
 
     @Override
@@ -45,8 +63,8 @@ public class DocumentActionServiceImpl implements DocumentActionService {
         if (doc.isPosted())
             throw new IllegalStateException("Document is already posted");
 
-        if (doc.getDocumentStatus() != DocumentStatus.DRAFT)
-            throw new IllegalStateException("Only draft can be posted");
+        if (doc.getDocumentStatus() != DocumentStatus.IN_PROGRESS)
+            throw new IllegalStateException("Only submitted documents can be posted");
 
         if (approvalPolicy.requiresApproval(doc) &&
                 doc.getApprovalStatus() != ApprovalStatus.APPROVED)
@@ -66,16 +84,32 @@ public class DocumentActionServiceImpl implements DocumentActionService {
 
     @Override
     public void reject(Long documentId) {
+        Document doc = documentRepo.findById(documentId).orElseThrow();
 
+        if (doc.getApprovalStatus() != ApprovalStatus.PENDING)
+            throw new IllegalStateException("Only pending documents can be rejected");
+
+        doc.setApprovalStatus(ApprovalStatus.REJECTED);
+        doc.setDocumentStatus(DocumentStatus.DRAFT);
     }
 
     @Override
     public void close(Long documentId) {
+        Document doc = documentRepo.findById(documentId).orElseThrow();
 
+        if (doc.getDocumentStatus() != DocumentStatus.POSTED)
+            throw new IllegalStateException("Only posted documents can be closed");
+
+        doc.setDocumentStatus(DocumentStatus.CLOSED);
     }
 
     @Override
     public void cancel(Long documentId) {
+        Document doc = documentRepo.findById(documentId).orElseThrow();
 
+        if (doc.getDocumentStatus() == DocumentStatus.POSTED)
+            throw new IllegalStateException("Posted documents can not be cancelled");
+
+        doc.setDocumentStatus(DocumentStatus.CANCELLED);
     }
 }

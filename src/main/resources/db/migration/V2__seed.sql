@@ -167,6 +167,12 @@ VALUES ('1000', 'Cash', 'ASSET', 'system'),
        ('2100', 'Accounts Receivable', 'INCOME', 'system'),
        ('3000', 'Sales Revenue', 'INCOME', 'system');
 
+INSERT INTO business_partner(code, name, type, created_by)
+VALUES ('PARTNER', 'Partner name', 'PERSON', 'system');
+
+INSERT INTO price_list (code, name, currency_id, created_by)
+VALUES ('PRICE_01', 'Price 1', (SELECT id FROM currency WHERE code = 'AZN'), 'system');
+
 INSERT INTO brand (code, name, description, created_by)
 VALUES ('BRAND_1', 'Brand 1', 'Brand 1', 'system');
 INSERT INTO producer (code, name, description, created_by)
@@ -184,5 +190,15 @@ VALUES ('CATEGORY_1', 'product_category 1', 'product_category 1', '123456789', '
 INSERT INTO warehouse (code, name, created_by)
 VALUES ('W001', 'warehouse 1', 'system');
 
-INSERT INTO transaction_type(code, name, affects_stock, affects_account, check_credit_limit, created_by)
-VALUES ('APPROVE', 'Product approve', true, false, false, 'system');
+INSERT INTO transaction_type(code, name, affects_stock, affects_account, check_credit_limit, requires_approval,
+                             created_by)
+VALUES ('APPROVE', 'Product approve', true, false, false, false, 'system'),
+       ('SALES_ORDER', 'Sales order', true, true, true, true, 'system');
+
+INSERT INTO posting_rule(sequence, type_id, debit_account_id, credit_account_id, amount_source, partner_side)
+VALUES (10,
+        (SELECT id FROM transaction_type WHERE code = 'SALES_ORDER'),
+        (SELECT id FROM account WHERE code = '2100'),
+        (SELECT id FROM account WHERE code = '3000'),
+        'TOTAL',
+        'DEBIT');

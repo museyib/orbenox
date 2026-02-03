@@ -17,12 +17,10 @@ public class SalesOrderApprovalPolicy implements ApprovalPolicy {
 
     @Override
     public boolean requiresApproval(@NonNull Document document) {
-        if (!document.getType().getCode().equals("SALES_ORDER")) {
-            return false;
-        }
-
         if (document.getType().isRequiresApproval()) {
-            boolean allDiscountsOK = productLineRepo.findAllByDocumentId((document.getId())).stream()
+            boolean allDiscountsOK = true;
+            if (document.getCommercialContext() != null)
+                allDiscountsOK = productLineRepo.findAllByDocumentId((document.getId())).stream()
                     .allMatch(line -> {
                         BigDecimal discountLimit = productPriceRepo.findByProductAndPriceList(
                                 line.getProduct(),

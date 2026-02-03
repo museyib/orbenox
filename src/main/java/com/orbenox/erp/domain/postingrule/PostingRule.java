@@ -12,7 +12,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class PostingRule extends BaseEntity {
+public class PostingRule {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(nullable = false)
     private Integer sequence;
 

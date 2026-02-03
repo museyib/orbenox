@@ -483,17 +483,13 @@ CREATE TABLE posting_rule
     credit_account_id BIGINT REFERENCES account (id),
     amount_source     VARCHAR(20),
     partner_side      VARCHAR(20),
-    created_at        TIMESTAMP DEFAULT now(),
-    updated_at        TIMESTAMP,
-    created_by        VARCHAR(100),
-    updated_by        VARCHAR(100),
     UNIQUE (type_id, sequence)
 );
 
 CREATE TABLE document
 (
     id              BIGSERIAL PRIMARY KEY,
-    date            DATE         NOT NULL,
+    document_date   DATE         NOT NULL,
     type_id         BIGINT REFERENCES transaction_type (id),
     number          VARCHAR(100) NOT NULL,
     description     VARCHAR(1000),
@@ -515,14 +511,14 @@ CREATE TABLE commercial_context
     price_list_id  BIGINT REFERENCES price_list (id),
     currency_id    BIGINT REFERENCES currency (id),
     payment_method VARCHAR(20),
-    due_date DATE NOT NULL
+    due_date       DATE   NOT NULL
 );
 
 CREATE TABLE journal_entry
 (
     id           BIGSERIAL PRIMARY KEY,
     document_id  BIGINT REFERENCES document (id),
-    posting_date DATE NOT NULL,
+    posting_date TIMESTAMP NOT NULL,
     status       VARCHAR(20)
 );
 
@@ -561,16 +557,10 @@ CREATE TABLE stock_context
 
 CREATE TABLE stock_movement
 (
-    id          BIGSERIAL PRIMARY KEY,
-    document_id BIGINT REFERENCES document (id),
-    product_id  BIGINT REFERENCES product (id),
+    id           BIGSERIAL PRIMARY KEY,
+    document_id  BIGINT REFERENCES document (id),
+    product_id   BIGINT REFERENCES product (id),
     warehouse_id BIGINT REFERENCES warehouse (id),
-    quantity    NUMERIC(20, 10) NOT NULL DEFAULT 0,
-    occurred_at TIMESTAMP                DEFAULT now()
-);
-
-CREATE TABLE responsibility_context
-(
-    document_id BIGINT REFERENCES document (id),
-    owner_id    BIGINT REFERENCES app_user (id)
+    quantity     NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    occurred_at  TIMESTAMP                DEFAULT now()
 );

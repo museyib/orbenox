@@ -24,7 +24,8 @@ public class JournalEntry {
 
     @Enumerated(EnumType.STRING)
     private JournalStatus status;
-    @OneToMany(mappedBy = "journalEntry")
+
+    @OneToMany(mappedBy = "journalEntry", fetch = FetchType.LAZY)
     private List<JournalLine> journalLines;
 
     @PrePersist

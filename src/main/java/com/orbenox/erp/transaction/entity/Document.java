@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -42,8 +43,11 @@ public class Document extends BaseEntity {
     @OneToOne(mappedBy = "document", cascade = CascadeType.ALL)
     private StockContext stockContext;
 
-    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
-    private List<ProductLine> productLines;
+    @OneToMany(
+            mappedBy = "document",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
+    private List<ProductLine> productLines = new ArrayList<>();
 
     public boolean isPosted() {
         return documentStatus == DocumentStatus.POSTED;

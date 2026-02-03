@@ -38,4 +38,6 @@ public interface TransactionTypeRepository extends JpaRepository<TransactionType
     TransactionTypeItem getItemById(@Param("id") Long id);
 
     TransactionType findByIdAndDeletedFalse(Long id);
+
+    TransactionType findByCode(String code);
 }
