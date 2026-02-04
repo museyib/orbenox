@@ -4,7 +4,6 @@ import com.orbenox.erp.domain.businesspartner.BusinessPartnerRepository;
 import com.orbenox.erp.domain.price.PriceListRepository;
 import com.orbenox.erp.domain.product.entity.Product;
 import com.orbenox.erp.domain.product.repository.ProductRepository;
-import com.orbenox.erp.domain.product.repository.ProductWarehouseRepository;
 import com.orbenox.erp.domain.transactiontype.TransactionTypeRepository;
 import com.orbenox.erp.domain.warehouse.Warehouse;
 import com.orbenox.erp.domain.warehouse.WarehouseRepository;
@@ -13,12 +12,10 @@ import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.entity.ProductLine;
 import com.orbenox.erp.transaction.entity.StockContext;
 import com.orbenox.erp.transaction.entity.StockMovement;
-import com.orbenox.erp.transaction.repository.CommercialContextRepository;
 import com.orbenox.erp.transaction.repository.ProductLineRepository;
 import com.orbenox.erp.transaction.repository.StockContextRepository;
 import com.orbenox.erp.transaction.repository.StockMovementRepository;
 import com.orbenox.erp.transaction.service.DocumentActionService;
-import com.orbenox.erp.transaction.service.DocumentService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,23 +48,17 @@ public class CreateAndPostDocumentTest {
     @Autowired
     DocumentActionService documentActionService;
     @Autowired
-    DocumentService documentService;
-    @Autowired
     TransactionTypeRepository transactionTypeRepo;
     @Autowired
     ProductRepository productRepo;
     @Autowired
     WarehouseRepository warehouseRepo;
     @Autowired
-    ProductWarehouseRepository productWarehouseRepo;
-    @Autowired
     ProductLineRepository productLineRepo;
     @Autowired
     StockMovementRepository stockMovementRepo;
     @Autowired
     StockContextRepository stockContextRepo;
-    @Autowired
-    CommercialContextRepository commercialContextRepo;
 
 
     private Product product;
@@ -133,7 +124,7 @@ public class CreateAndPostDocumentTest {
 
         List<StockMovement> stockMovements = stockMovementRepo.findByDocumentId(document.getId());
 
-        assertEquals(1,  stockMovements.size());
+        assertEquals(1, stockMovements.size());
         assertEquals(BigDecimal.TEN, stockMovements.get(0).getQuantity());
     }
 
