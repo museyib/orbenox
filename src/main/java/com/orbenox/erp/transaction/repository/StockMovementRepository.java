@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface StockMovementRepository extends JpaRepository<StockMovement, Long> {
     List<StockMovement> findByDocumentId(Long documentId);
+
+    int countByDocumentId(Long documentId);
 }

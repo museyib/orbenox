@@ -8,13 +8,8 @@ import com.orbenox.erp.domain.transactiontype.TransactionTypeRepository;
 import com.orbenox.erp.domain.warehouse.Warehouse;
 import com.orbenox.erp.domain.warehouse.WarehouseRepository;
 import com.orbenox.erp.transaction.command.CreateDocumentCommand;
-import com.orbenox.erp.transaction.entity.Document;
-import com.orbenox.erp.transaction.entity.ProductLine;
-import com.orbenox.erp.transaction.entity.StockContext;
-import com.orbenox.erp.transaction.entity.StockMovement;
-import com.orbenox.erp.transaction.repository.ProductLineRepository;
-import com.orbenox.erp.transaction.repository.StockContextRepository;
-import com.orbenox.erp.transaction.repository.StockMovementRepository;
+import com.orbenox.erp.transaction.entity.*;
+import com.orbenox.erp.transaction.repository.*;
 import com.orbenox.erp.transaction.service.DocumentActionService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,19 +26,16 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.orbenox.erp.enums.JournalStatus.POSTED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Transactional
 @Testcontainers
 public class CreateAndPostDocumentTest {
-    @SuppressWarnings("resource")
     @Container
-    static PostgreSQLContainer<?> postgres =
-            new PostgreSQLContainer<>("postgres:15")
-                    .withDatabaseName("testdb")
-                    .withUsername("test")
-                    .withPassword("test");
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15");
 
     @Autowired
     DocumentActionService documentActionService;
@@ -60,7 +52,6 @@ public class CreateAndPostDocumentTest {
     @Autowired
     StockContextRepository stockContextRepo;
 
-
     private Product product;
     private Warehouse warehouse;
     private Long priceListId;
@@ -68,10 +59,17 @@ public class CreateAndPostDocumentTest {
     private Long approveTypeId;
     private Long salesOrderTypeId;
     private Long partnerId;
+
     @Autowired
     private BusinessPartnerRepository businessPartnerRepository;
     @Autowired
     private PriceListRepository priceListRepository;
+    @Autowired
+    private JournalEntryRepository journalEntryRepository;
+    @Autowired
+    private JournalLineRepository journalLineRepository;
+    @Autowired
+    private StockBalanceRepository stockBalanceRepo;
 
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {
@@ -93,15 +91,7 @@ public class CreateAndPostDocumentTest {
 
     @Test
     public void productApprove_createStockMovement() {
-        CreateDocumentCommand cmd = new CreateDocumentCommand(
-                "PA_001",
-                LocalDate.now(),
-                approveTypeId,
-                "Test",
-                null,
-                null,
-                priceListId
-        );
+        CreateDocumentCommand cmd = new CreateDocumentCommand("PA_001", LocalDate.now(), approveTypeId, "Test", null, null, priceListId);
 
         Document document = documentActionService.createDraft(cmd);
         ProductLine productLine = new ProductLine();
@@ -126,24 +116,18 @@ public class CreateAndPostDocumentTest {
 
         assertEquals(1, stockMovements.size());
         assertEquals(BigDecimal.TEN, stockMovements.get(0).getQuantity());
+        StockBalance stockBalance = stockBalanceRepo.findByProductAndWarehouse(product, warehouse).orElseGet(StockBalance::new);
+        assertEquals(0, stockBalance.getQuantity().compareTo(BigDecimal.TEN));
     }
 
     @Test
-    public void salesOrder_createsStockAndAccountingEntries() {
-        CreateDocumentCommand cmd = new CreateDocumentCommand(
-                "S0-001",
-                LocalDate.now(),
-                salesOrderTypeId,
-                "Sales order",
-                partnerId,
-                "CASH",
-                priceListId
-        );
+    public void salesOrder_createStockAndAccountingEntries() {
+        CreateDocumentCommand cmd = new CreateDocumentCommand("S0-001", LocalDate.now(), salesOrderTypeId, "Sales order", partnerId, "CASH", priceListId);
         Document document = documentActionService.createDraft(cmd);
 
         StockContext sc = new StockContext();
         sc.setDocument(document);
-        sc.setTargetWarehouse(warehouse);
+        sc.setSourceWarehouse(warehouse);
         stockContextRepo.save(sc);
 
         ProductLine productLine = new ProductLine();
@@ -160,5 +144,18 @@ public class CreateAndPostDocumentTest {
         documentActionService.submit(document.getId());
         documentActionService.approve(document.getId());
         documentActionService.post(document.getId());
+
+        assertEquals(1, stockMovementRepo.countByDocumentId(document.getId()));
+
+        JournalEntry journalEntry = journalEntryRepository.findByDocumentId(document.getId());
+        assertEquals(POSTED, journalEntry.getStatus());
+        List<JournalLine> journalLines = journalLineRepository.findByJournalEntryId(journalEntry.getId());
+        assertEquals(2, journalLines.size());
+
+        assertTrue(journalLines.stream().anyMatch(l -> l.getAccount().getCode().equals("2100") && l.getDebit().compareTo(BigDecimal.ZERO) > 0));
+        assertTrue(journalLines.stream().anyMatch(l -> l.getAccount().getCode().equals("3000") && l.getCredit().compareTo(BigDecimal.ZERO) > 0));
+
+        StockBalance stockBalance = stockBalanceRepo.findByProductAndWarehouse(product, warehouse).orElseGet(StockBalance::new);
+        assertEquals(0, stockBalance.getQuantity().compareTo(BigDecimal.ZERO));
     }
 }

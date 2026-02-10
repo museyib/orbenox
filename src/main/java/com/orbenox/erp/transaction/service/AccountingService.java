@@ -1,6 +1,7 @@
 package com.orbenox.erp.transaction.service;
 
 import com.orbenox.erp.domain.postingrule.PostingRule;
+import com.orbenox.erp.enums.JournalStatus;
 import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.entity.JournalEntry;
 import com.orbenox.erp.transaction.entity.JournalLine;
@@ -26,6 +27,7 @@ public class AccountingService implements ContextService {
     public void post(Document doc) {
         JournalEntry entry = new JournalEntry();
         entry.setDocument(doc);
+        entry.setStatus(JournalStatus.POSTED);
         journalEntryRepo.save(entry);
 
         List<PostingRule> rules = doc.getType().getRules();
@@ -36,14 +38,12 @@ public class AccountingService implements ContextService {
 
     private void applyPostingRule(PostingRule rule, Document doc, JournalEntry je) {
         BigDecimal amount = amountResolver.resolve(rule, doc);
-        System.out.println("AMOUNT: " + amount);
 
         JournalLine debit = new JournalLine();
         debit.setJournalEntry(je);
         debit.setAccount(rule.getDebitAccount());
         debit.setDebit(amount);
         debit.setCredit(BigDecimal.ZERO);
-        System.out.println("DEBIT: " + debit);
         journalLineRepo.save(debit);
 
         JournalLine credit = new JournalLine();
@@ -51,7 +51,6 @@ public class AccountingService implements ContextService {
         credit.setAccount(rule.getCreditAccount());
         credit.setDebit(BigDecimal.ZERO);
         credit.setCredit(amount);
-        System.out.println("CREDIT: " + credit);
         journalLineRepo.save(credit);
     }
 }

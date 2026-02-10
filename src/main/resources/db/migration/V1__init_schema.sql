@@ -564,3 +564,13 @@ CREATE TABLE stock_movement
     quantity     NUMERIC(20, 10) NOT NULL DEFAULT 0,
     occurred_at  TIMESTAMP                DEFAULT now()
 );
+
+CREATE TABLE stock_balance
+(
+    id           BIGSERIAL PRIMARY KEY,
+    product_id   BIGINT REFERENCES product (id),
+    warehouse_id BIGINT REFERENCES warehouse (id),
+    quantity     NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    UNIQUE (product_id, warehouse_id),
+    CHECK ( NOT quantity < 0 )
+)

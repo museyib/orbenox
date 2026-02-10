@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -16,7 +17,7 @@ public class JournalEntry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private Document document;
 
     @Column(nullable = false)
@@ -26,7 +27,7 @@ public class JournalEntry {
     private JournalStatus status;
 
     @OneToMany(mappedBy = "journalEntry", fetch = FetchType.LAZY)
-    private List<JournalLine> journalLines;
+    private List<JournalLine> journalLines = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {

@@ -43,6 +43,9 @@ public class Document extends BaseEntity {
     @OneToOne(mappedBy = "document", cascade = CascadeType.ALL)
     private StockContext stockContext;
 
+    @OneToOne(mappedBy = "document", cascade = CascadeType.ALL)
+    private JournalEntry journalEntry;
+
     @OneToMany(
             mappedBy = "document",
             cascade = CascadeType.ALL,
