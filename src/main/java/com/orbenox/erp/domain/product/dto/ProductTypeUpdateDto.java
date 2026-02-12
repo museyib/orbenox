@@ -9,7 +9,7 @@ import java.util.Objects;
  * DTO for {@link ProductType}
  */
 public record ProductTypeUpdateDto(Long id,
-                                   Boolean enabled,
+                                   boolean enabled,
                                    @NotBlank(message = "{code.notBlank}") String code,
                                    @NotBlank(message = "{name.notBlank}") String name,
                                    String description) {

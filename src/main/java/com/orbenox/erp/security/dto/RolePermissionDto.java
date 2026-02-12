@@ -10,7 +10,7 @@ import java.util.Objects;
  * DTO for {@link AppPermission}
  */
 public record RolePermissionDto(Long id,
-                                Boolean enabled,
+                                boolean enabled,
                                 RoleUpdateDto appRole,
                                 ResourceUpdateDto resource,
                                 String action) {

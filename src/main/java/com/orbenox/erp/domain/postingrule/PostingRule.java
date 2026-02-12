@@ -1,6 +1,5 @@
 package com.orbenox.erp.domain.postingrule;
 
-import com.orbenox.erp.common.entity.BaseEntity;
 import com.orbenox.erp.domain.account.Account;
 import com.orbenox.erp.domain.transactiontype.TransactionType;
 import com.orbenox.erp.enums.AmountSource;

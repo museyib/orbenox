@@ -455,20 +455,20 @@ CREATE TABLE product_warehouse
 
 CREATE TABLE transaction_type
 (
-    id                 BIGSERIAL PRIMARY KEY,
-    code               VARCHAR(100) NOT NULL,
-    name               VARCHAR(255) NOT NULL,
-    affects_commercial BOOLEAN      NOT NULL DEFAULT FALSE,
-    affects_stock      BOOLEAN      NOT NULL DEFAULT FALSE,
-    affects_account    BOOLEAN      NOT NULL DEFAULT FALSE,
-    check_credit_limit BOOLEAN      NOT NULL DEFAULT FALSE,
-    requires_approval  BOOLEAN      NOT NULL DEFAULT FALSE,
-    created_at         TIMESTAMP             DEFAULT now(),
-    updated_at         TIMESTAMP,
-    created_by         VARCHAR(100),
-    updated_by         VARCHAR(100),
-    enabled            BOOLEAN      NOT NULL DEFAULT TRUE,
-    deleted            BOOLEAN      NOT NULL DEFAULT FALSE
+    id                   BIGSERIAL PRIMARY KEY,
+    code                 VARCHAR(100) NOT NULL,
+    name                 VARCHAR(255) NOT NULL,
+    commercial_affected  BOOLEAN      NOT NULL DEFAULT FALSE,
+    stock_affected       BOOLEAN      NOT NULL DEFAULT FALSE,
+    accounting_affected  BOOLEAN      NOT NULL DEFAULT FALSE,
+    credit_limit_checked BOOLEAN      NOT NULL DEFAULT FALSE,
+    approval_required    BOOLEAN      NOT NULL DEFAULT FALSE,
+    created_at           TIMESTAMP             DEFAULT now(),
+    updated_at           TIMESTAMP,
+    created_by           VARCHAR(100),
+    updated_by           VARCHAR(100),
+    enabled              BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted              BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_transaction_type_code_active
     ON transaction_type (code)

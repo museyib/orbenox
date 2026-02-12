@@ -11,7 +11,7 @@ import java.util.Set;
  */
 
 public record UserUpdateDto(Long id,
-                            Boolean enabled,
+                            boolean enabled,
                             String username,
                             String password,
                             String displayName,

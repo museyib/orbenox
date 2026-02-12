@@ -9,7 +9,7 @@ import java.util.Objects;
  * DTO for {@link UnitDimension}
  */
 public record UnitDimensionDto(Long id,
-                               Boolean enabled,
+                               boolean enabled,
                                @NotBlank(message = "{code.notBlank}") String code,
                                @NotBlank(message = "{name.notBlank}") String name) {
     @Override

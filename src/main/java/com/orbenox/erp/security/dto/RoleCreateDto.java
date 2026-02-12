@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 /**
  * DTO for {@link AppRole}
  */
-public record RoleCreateDto(Boolean enabled,
+public record RoleCreateDto(boolean enabled,
                             @NotBlank(message = "{code.notBlank}") String code,
                             @NotBlank(message = "{name.notBlank}") String name) {
 }

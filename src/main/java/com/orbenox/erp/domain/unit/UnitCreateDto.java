@@ -9,11 +9,11 @@ import java.math.BigDecimal;
 /**
  * DTO for {@link Unit}
  */
-public record UnitCreateDto(Boolean enabled,
+public record UnitCreateDto(boolean enabled,
                             @NotBlank(message = "{code.notBlank}") String code,
                             @NotBlank(message = "{name.notBlank}") String name,
                             @NotNull(message = "{unitDimension.notNull}") UnitDimensionDto unitDimension,
-                            Boolean base,
+                            boolean base,
                             BigDecimal factorToBase,
                             BigDecimal offsetToBase) {
 }

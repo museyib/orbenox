@@ -34,6 +34,7 @@ public class CurrencyService {
     public CurrencyItem update(Long id, CurrencyUpdateDto dto) {
         Currency entity = currencyRepository.findByIdAndDeletedFalse(id);
         currencyMapper.updateEntityFromDto(dto, entity);
+        currencyRepository.save(entity);
         return currencyRepository.getItemById(id);
     }
 

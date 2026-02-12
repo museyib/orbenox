@@ -20,19 +20,19 @@ public class TransactionType extends BaseCardEntity {
     private String name;
 
     @Column(nullable = false)
-    private boolean affectsCommercial;
+    private boolean commercialAffected;
 
     @Column(nullable = false)
-    private boolean affectsStock;
+    private boolean stockAffected;
 
     @Column(nullable = false)
-    private boolean affectsAccount;
+    private boolean accountingAffected;
 
     @Column(nullable = false)
-    private boolean checkCreditLimit;
+    private boolean creditLimitChecked;
 
     @Column(nullable = false)
-    private boolean requiresApproval;
+    private boolean approvalRequired;
 
     @OneToMany(mappedBy = "type")
     private List<PostingRule> rules;

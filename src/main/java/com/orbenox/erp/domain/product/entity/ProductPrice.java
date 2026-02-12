@@ -31,7 +31,7 @@ public class ProductPrice extends BaseEntity {
     @Column(nullable = false)
     private BigDecimal factorToParent;
 
-    private Boolean fixedPrice;
+    private boolean fixedPrice;
 
     private Short roundLength;
 

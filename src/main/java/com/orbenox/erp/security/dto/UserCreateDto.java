@@ -9,7 +9,7 @@ import java.util.Set;
  * DTO for {@link AppUser}
  */
 
-public record UserCreateDto(Boolean enabled,
+public record UserCreateDto(boolean enabled,
                             String username,
                             String password,
                             String displayName,

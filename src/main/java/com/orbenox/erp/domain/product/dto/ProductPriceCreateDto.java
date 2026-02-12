@@ -11,7 +11,7 @@ public record ProductPriceCreateDto(@NotNull(message = "{product.notNull}") Prod
                                     @NotNull(message = "{unit.notNull}") UnitUpdateDto unit,
                                     BigDecimal price,
                                     BigDecimal factorToParent,
-                                    Boolean fixedPrice,
+                                    boolean fixedPrice,
                                     Short roundLength,
                                     BigDecimal discountRatioLimit) {
 }

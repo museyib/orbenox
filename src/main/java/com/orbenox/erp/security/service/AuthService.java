@@ -22,6 +22,9 @@ public class AuthService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return jwtUtil.generateToken(userDetails);
+        if (userDetails != null) {
+            return jwtUtil.generateToken(userDetails);
+        }
+        return null;
     }
 }

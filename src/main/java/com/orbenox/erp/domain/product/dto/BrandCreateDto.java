@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 /**
  * DTO for {@link Brand}
  */
-public record BrandCreateDto(Boolean enabled,
+public record BrandCreateDto(boolean enabled,
                              @NotBlank(message = "{code.notBlank}") String code,
                              @NotBlank(message = "{name.notBlank}") String name,
                              String description) {

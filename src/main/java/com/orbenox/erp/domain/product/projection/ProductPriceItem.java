@@ -18,7 +18,7 @@ public interface ProductPriceItem {
 
     BigDecimal getFactorToParent();
 
-    Boolean getFixedPrice();
+    boolean getFixedPrice();
 
     BigDecimal getDiscountRatioLimit();
 

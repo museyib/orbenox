@@ -11,14 +11,14 @@ import java.util.Objects;
  * DTO for {@link PriceList}
  */
 public record PriceListUpdateDto(Long id,
-                                 Boolean enabled,
+                                 boolean enabled,
                                  @NotBlank(message = "{code.notBlank}") String code,
                                  @NotBlank(message = "{name.notBlank}") String name,
                                  @NotNull(message = "{currency.notNull}") CurrencyUpdateDto currency,
                                  BigDecimal factorToParent,
                                  Parent parent,
                                  Short roundLength) {
-    public record Parent(Long id, Boolean enabled, String code, String name) {
+    public record Parent(Long id, boolean enabled, String code, String name) {
     }
 
     @Override

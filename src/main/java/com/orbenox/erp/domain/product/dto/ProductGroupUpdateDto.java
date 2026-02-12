@@ -10,13 +10,13 @@ import java.util.Objects;
  * DTO for {@link ProductGroup}
  */
 public record ProductGroupUpdateDto(Long id,
-                                    Boolean enabled,
+                                    boolean enabled,
                                     @NotBlank(message = "{code.notBlank}") String code,
                                     @NotBlank(message = "{name.notBlank}") String name,
                                     String description,
                                     String slug,
                                     Parent parent) {
-    public record Parent(Long id, Boolean enabled, String code, String name) {
+    public record Parent(Long id, boolean enabled, String code, String name) {
     }
 
     @Override

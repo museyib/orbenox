@@ -7,7 +7,7 @@ import com.orbenox.erp.security.entity.AppPermission;
 /**
  * DTO for {@link AppPermission}
  */
-public record UserPermissionCreateDto(Boolean enabled,
+public record UserPermissionCreateDto(boolean enabled,
                                       UserUpdateDto appUser,
                                       ResourceUpdateDto resource,
                                       String action) {

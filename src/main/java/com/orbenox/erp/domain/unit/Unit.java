@@ -25,7 +25,7 @@ public class Unit extends BaseCardEntity {
     private UnitDimension unitDimension;
 
     @Column(nullable = false)
-    private Boolean base;
+    private boolean base;
 
     @Column(nullable = false, precision = 20, scale = 10)
     private BigDecimal factorToBase;

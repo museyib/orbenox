@@ -63,7 +63,8 @@ VALUES ('LOOKUP', 'Baxış', 'system'),
        ('PRODUCT_PRICE', 'Mal qiymətləri', 'system'),
        ('PRODUCT_BARCODE', 'Mal barkodları', 'system'),
        ('PRODUCT_UNIT', 'Mal üzrə ölçü vahidləri', 'system'),
-       ('PRODUCT_WAREHOUSE', 'Mal-anbar', 'system');
+       ('PRODUCT_WAREHOUSE', 'Mal-anbar', 'system'),
+       ('TRANSACTION_TYPE', 'Mal-anbar', 'system');
 
 INSERT INTO resource_action (resource_id, action, created_by)
 VALUES (1, 'READ', 'system'),
@@ -158,7 +159,11 @@ VALUES (1, 'READ', 'system'),
        (24, 'READ', 'system'),
        (24, 'CREATE', 'system'),
        (24, 'UPDATE', 'system'),
-       (24, 'DELETE', 'system');
+       (24, 'DELETE', 'system'),
+       (25, 'READ', 'system'),
+       (25, 'CREATE', 'system'),
+       (25, 'UPDATE', 'system'),
+       (25, 'DELETE', 'system');
 
 INSERT INTO account(code, name, account_type, created_by)
 VALUES ('1000', 'Cash', 'ASSET', 'system'),
@@ -192,10 +197,10 @@ VALUES ('W001', 'warehouse 1', 'system');
 INSERT INTO product_price (product_id, price_list_id, unit_id, created_by, discount_ratio_limit)
 VALUES (1, 1, 1, 'system', 30);
 
-INSERT INTO transaction_type(code, name, affects_stock, affects_account, check_credit_limit, requires_approval,
+INSERT INTO transaction_type(code, name, commercial_affected, stock_affected, accounting_affected, credit_limit_checked, approval_required,
                              created_by)
-VALUES ('APPROVE', 'Product approve', true, false, false, false, 'system'),
-       ('SALES_ORDER', 'Sales order', true, true, true, true, 'system');
+VALUES ('APPROVE', 'Product approve', false, true, false, false, false, 'system'),
+       ('SALES_ORDER', 'Sales order', true, true, true, true, true, 'system');
 
 INSERT INTO posting_rule(sequence, type_id, debit_account_id, credit_account_id, amount_source, partner_side)
 VALUES (10,

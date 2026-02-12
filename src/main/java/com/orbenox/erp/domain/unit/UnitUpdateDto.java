@@ -11,11 +11,11 @@ import java.util.Objects;
  * DTO for {@link Unit}
  */
 public record UnitUpdateDto(Long id,
-                            Boolean enabled,
+                            boolean enabled,
                             @NotBlank(message = "{code.notBlank}") String code,
                             @NotBlank(message = "{name.notBlank}") String name,
                             @NotNull(message = "{unitDimension.notNull}") UnitDimensionDto unitDimension,
-                            Boolean base,
+                            boolean base,
                             BigDecimal factorToBase,
                             BigDecimal offsetToBase) {
     @Override

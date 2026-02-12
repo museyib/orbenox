@@ -8,7 +8,7 @@ import java.util.Objects;
  * DTO for {@link TransactionType}
  */
 public record TransactionTypeUpdateDto(Long id,
-                                       Boolean enabled,
+                                       boolean enabled,
                                        @NotBlank(message = "{code.notBlank}") String code,
                                        @NotBlank(message = "{name.notBlank}") String name) {
     @Override

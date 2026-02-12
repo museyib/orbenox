@@ -7,12 +7,12 @@ import jakarta.validation.constraints.NotBlank;
 /**
  * DTO for {@link ProductGroup}
  */
-public record ProductGroupCreateDto(Boolean enabled,
+public record ProductGroupCreateDto(boolean enabled,
                                     @NotBlank(message = "{code.notBlank}") String code,
                                     @NotBlank(message = "{name.notBlank}") String name,
                                     String description,
                                     String slug,
                                     Parent parent) {
-    public record Parent(Long id, Boolean enabled, String code, String name) {
+    public record Parent(Long id, boolean enabled, String code, String name) {
     }
 }

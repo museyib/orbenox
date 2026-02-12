@@ -8,8 +8,11 @@ import com.orbenox.erp.domain.transactiontype.TransactionTypeRepository;
 import com.orbenox.erp.domain.warehouse.Warehouse;
 import com.orbenox.erp.domain.warehouse.WarehouseRepository;
 import com.orbenox.erp.transaction.command.CreateDocumentCommand;
+import com.orbenox.erp.transaction.command.ProductLineCommand;
 import com.orbenox.erp.transaction.entity.*;
+import com.orbenox.erp.transaction.policy.ApprovalPolicy;
 import com.orbenox.erp.transaction.repository.*;
+import com.orbenox.erp.transaction.resolver.ApprovalPolicyResolver;
 import com.orbenox.erp.transaction.service.DocumentActionService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,11 +30,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.orbenox.erp.enums.JournalStatus.POSTED;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Transactional
 @Testcontainers
 public class CreateAndPostDocumentTest {
     @Container
@@ -46,11 +47,9 @@ public class CreateAndPostDocumentTest {
     @Autowired
     WarehouseRepository warehouseRepo;
     @Autowired
-    ProductLineRepository productLineRepo;
-    @Autowired
     StockMovementRepository stockMovementRepo;
     @Autowired
-    StockContextRepository stockContextRepo;
+    ApprovalPolicyResolver policyResolver;
 
     private Product product;
     private Warehouse warehouse;
@@ -90,24 +89,26 @@ public class CreateAndPostDocumentTest {
     }
 
     @Test
+    @Transactional
     public void productApprove_createStockMovement() {
-        CreateDocumentCommand cmd = new CreateDocumentCommand("PA_001", LocalDate.now(), approveTypeId, "Test", null, null, priceListId);
+        ProductLineCommand lineCommand = new ProductLineCommand(
+                product.getId(),
+                BigDecimal.TEN,
+                BigDecimal.ONE,
+                BigDecimal.ZERO);
+        CreateDocumentCommand cmd = new CreateDocumentCommand(
+                "PA_001",
+                LocalDate.now(),
+                approveTypeId,
+                "Test",
+                null,
+                null,
+                priceListId,
+                null,
+                warehouse.getId(),
+                List.of(lineCommand));
 
         Document document = documentActionService.createDraft(cmd);
-        ProductLine productLine = new ProductLine();
-        productLine.setDocument(document);
-        productLine.setProduct(product);
-        productLine.setQuantity(BigDecimal.TEN);
-        productLine.setUnitPrice(BigDecimal.ONE);
-        productLine.setDiscount(BigDecimal.ZERO);
-        productLineRepo.save(productLine);
-
-        StockContext sc = new StockContext();
-        sc.setDocument(document);
-        sc.setTargetWarehouse(warehouse);
-        stockContextRepo.save(sc);
-        document.setStockContext(sc);
-        document.setProductLines(List.of(productLine));
 
         documentActionService.submit(document.getId());
         documentActionService.post(document.getId());
@@ -121,25 +122,34 @@ public class CreateAndPostDocumentTest {
     }
 
     @Test
+    @Transactional
     public void salesOrder_createStockAndAccountingEntries() {
-        CreateDocumentCommand cmd = new CreateDocumentCommand("S0-001", LocalDate.now(), salesOrderTypeId, "Sales order", partnerId, "CASH", priceListId);
+        StockBalance stockBalance = stockBalanceRepo.findByProductAndWarehouse(product, warehouse).orElseGet(() -> {
+            StockBalance sb = new StockBalance();
+            sb.setProduct(product);
+            sb.setWarehouse(warehouse);
+            sb.setQuantity(BigDecimal.TEN);
+            return sb;
+        });
+        stockBalanceRepo.save(stockBalance);
+
+        ProductLineCommand lineCommand = new ProductLineCommand(
+                product.getId(),
+                BigDecimal.TEN,
+                BigDecimal.ONE,
+                BigDecimal.valueOf(50));
+        CreateDocumentCommand cmd = new CreateDocumentCommand(
+                "S0-001",
+                LocalDate.now(),
+                salesOrderTypeId,
+                "Sales order",
+                partnerId,
+                "CASH",
+                priceListId,
+                warehouse.getId(),
+                null,
+                List.of(lineCommand));
         Document document = documentActionService.createDraft(cmd);
-
-        StockContext sc = new StockContext();
-        sc.setDocument(document);
-        sc.setSourceWarehouse(warehouse);
-        stockContextRepo.save(sc);
-
-        ProductLine productLine = new ProductLine();
-        productLine.setDocument(document);
-        productLine.setProduct(product);
-        productLine.setQuantity(BigDecimal.TEN);
-        productLine.setUnitPrice(BigDecimal.ONE);
-        productLine.setDiscount(BigDecimal.valueOf(50));
-        productLineRepo.save(productLine);
-
-        document.setStockContext(sc);
-        document.setProductLines(List.of(productLine));
 
         documentActionService.submit(document.getId());
         documentActionService.approve(document.getId());
@@ -155,7 +165,8 @@ public class CreateAndPostDocumentTest {
         assertTrue(journalLines.stream().anyMatch(l -> l.getAccount().getCode().equals("2100") && l.getDebit().compareTo(BigDecimal.ZERO) > 0));
         assertTrue(journalLines.stream().anyMatch(l -> l.getAccount().getCode().equals("3000") && l.getCredit().compareTo(BigDecimal.ZERO) > 0));
 
-        StockBalance stockBalance = stockBalanceRepo.findByProductAndWarehouse(product, warehouse).orElseGet(StockBalance::new);
         assertEquals(0, stockBalance.getQuantity().compareTo(BigDecimal.ZERO));
+        ApprovalPolicy policy = policyResolver.resolve(document.getType());
+        assertTrue(policy.requiresApproval(document));
     }
 }

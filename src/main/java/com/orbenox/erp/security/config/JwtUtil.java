@@ -10,15 +10,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
     private final String SECRET_KEY = "0e1156ac32b34087c0fc3da6b5cc015e1d86f013acdfc1bbbed78940f1d8c81d";
-    private final long EXPIRATION_TIME = 1000 * 60 * 60;
 
     public String generateToken(UserDetails userDetails) {
+        long EXPIRATION_TIME = 1000 * 60 * 60;
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities().stream()
@@ -32,11 +31,6 @@ public class JwtUtil {
 
     public String extractUsername(String token) {
         return getClaims(token).getSubject();
-    }
-
-    public List<String> extractRoles(String token) {
-        //noinspection unchecked
-        return getClaims(token).get("roles", List.class);
     }
 
     public boolean isTokenExpired(String token) {

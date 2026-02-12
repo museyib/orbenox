@@ -10,7 +10,7 @@ import java.util.Objects;
  * DTO for {@link ProductCategory}
  */
 public record ProductCategoryUpdateDto(Long id,
-                                       Boolean enabled,
+                                       boolean enabled,
                                        @NotBlank(message = "{code.notBlank}") String code,
                                        @NotBlank(message = "{name.notBlank}") String name,
                                        String description) {

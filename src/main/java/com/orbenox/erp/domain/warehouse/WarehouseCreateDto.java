@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 /**
  * DTO for {@link Warehouse}
  */
-public record WarehouseCreateDto(Boolean enabled,
+public record WarehouseCreateDto(boolean enabled,
                                  @NotBlank(message = "{code.notBlank}") String code,
                                  @NotBlank(message = "{name.notBlank}") String name) {
 }

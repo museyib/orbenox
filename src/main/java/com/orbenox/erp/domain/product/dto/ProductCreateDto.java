@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotNull;
 /**
  * DTO for {@link Product}
  */
-public record ProductCreateDto(Boolean enabled,
+public record ProductCreateDto(boolean enabled,
                                @NotBlank(message = "{code.notBlank}") String code,
                                @NotBlank(message = "{name.notBlank}") String name,
                                String description,

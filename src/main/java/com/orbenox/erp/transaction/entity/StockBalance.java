@@ -24,4 +24,14 @@ public class StockBalance {
 
     @Column(nullable = false)
     private BigDecimal quantity = BigDecimal.ZERO;
+
+    @Override
+    public String toString() {
+        return "StockBalance{" +
+                "id=" + id +
+                ", product=" + product +
+                ", warehouse=" + warehouse +
+                ", quantity=" + quantity +
+                '}';
+    }
 }

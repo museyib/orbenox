@@ -4,14 +4,14 @@ import com.orbenox.erp.enums.ApprovalStatus;
 import com.orbenox.erp.enums.DocumentStatus;
 import com.orbenox.erp.transaction.command.CreateDocumentCommand;
 import com.orbenox.erp.transaction.entity.Document;
-import com.orbenox.erp.transaction.policy.SalesOrderApprovalPolicy;
+import com.orbenox.erp.transaction.policy.ApprovalPolicy;
 import com.orbenox.erp.transaction.repository.DocumentRepository;
+import com.orbenox.erp.transaction.resolver.ApprovalPolicyResolver;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class DocumentActionServiceImpl implements DocumentActionService {
 
@@ -20,8 +20,7 @@ public class DocumentActionServiceImpl implements DocumentActionService {
     private final AccountingService accountingService;
     private final CommercialService commercialService;
     private final StockService stockService;
-
-    private final SalesOrderApprovalPolicy approvalPolicy;
+    private final ApprovalPolicyResolver policyResolver;
 
     @Override
     public Document createDraft(CreateDocumentCommand command) {
@@ -29,8 +28,10 @@ public class DocumentActionServiceImpl implements DocumentActionService {
     }
 
     @Override
+    @Transactional
     public void submit(Long documentId) {
         Document doc = documentRepo.findById(documentId).orElseThrow();
+        ApprovalPolicy approvalPolicy = policyResolver.resolve(doc.getType());
 
         if (doc.getDocumentStatus() != DocumentStatus.DRAFT)
             throw new IllegalStateException("Only draft can be submitted");
@@ -44,8 +45,10 @@ public class DocumentActionServiceImpl implements DocumentActionService {
     }
 
     @Override
+    @Transactional
     public void approve(Long documentId) {
         Document doc = documentRepo.findById(documentId).orElseThrow();
+        ApprovalPolicy approvalPolicy = policyResolver.resolve(doc.getType());
 
         if (!approvalPolicy.requiresApproval(doc))
             throw new IllegalStateException("Approval not required");
@@ -57,8 +60,10 @@ public class DocumentActionServiceImpl implements DocumentActionService {
     }
 
     @Override
+    @Transactional
     public void post(Long documentId) {
         Document doc = documentRepo.findById(documentId).orElseThrow();
+        ApprovalPolicy approvalPolicy = policyResolver.resolve(doc.getType());
 
         if (doc.isPosted())
             throw new IllegalStateException("Document is already posted");
@@ -70,19 +75,20 @@ public class DocumentActionServiceImpl implements DocumentActionService {
                 doc.getApprovalStatus() != ApprovalStatus.APPROVED)
             throw new IllegalStateException("Document not approved");
 
-        if (doc.getType().isAffectsAccount())
+        if (doc.getType().isAccountingAffected())
             accountingService.post(doc);
 
-        if (doc.getType().isAffectsStock())
+        if (doc.getType().isStockAffected())
             stockService.post(doc);
 
-        if (doc.getType().isAffectsCommercial())
+        if (doc.getType().isCommercialAffected())
             commercialService.post(doc);
 
         doc.setDocumentStatus(DocumentStatus.POSTED);
     }
 
     @Override
+    @Transactional
     public void reject(Long documentId) {
         Document doc = documentRepo.findById(documentId).orElseThrow();
 
@@ -94,6 +100,7 @@ public class DocumentActionServiceImpl implements DocumentActionService {
     }
 
     @Override
+    @Transactional
     public void close(Long documentId) {
         Document doc = documentRepo.findById(documentId).orElseThrow();
 
@@ -104,6 +111,7 @@ public class DocumentActionServiceImpl implements DocumentActionService {
     }
 
     @Override
+    @Transactional
     public void cancel(Long documentId) {
         Document doc = documentRepo.findById(documentId).orElseThrow();
 
