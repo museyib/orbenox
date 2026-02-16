@@ -1,0 +1,47 @@
+package com.orbenox.erp.domain.product.repository;
+
+import com.orbenox.erp.domain.product.entity.Producer;
+import com.orbenox.erp.domain.product.projection.ProducerItem;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface ProducerRepository extends JpaRepository<Producer, Long> {
+
+    Producer findByIdAndDeletedFalse(Long id);
+
+    @Query("""
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled
+                FROM Producer p
+            WHERE p.deleted = false
+            ORDER BY p.id""")
+    List<ProducerItem> getAllItems();
+
+    @Query("""
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled
+                FROM Producer p
+            WHERE p.deleted = false AND p.enabled = true
+            ORDER BY p.id""")
+    List<ProducerItem> getEnabledItems();
+
+    @Query("""
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled
+                FROM Producer p
+            WHERE p.id = :id AND p.deleted = false
+            ORDER BY p.id""")
+    ProducerItem getItemById(@Param("id") Long id);
+}

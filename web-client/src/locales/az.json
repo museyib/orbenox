@@ -1,0 +1,161 @@
+{
+  "user": {
+    "title": "İstifadəçi",
+    "new": "Yeni istifadəçi",
+    "edit": "İstifadəçi düzəlişi",
+    "username": "İstifadəçi adı",
+    "password": "Şifrə",
+    "displayName": "Tam adı",
+    "userType": "İstifadəçi tipi",
+    "updated": "İstifadəçi yeniləndi"
+  },
+  "role": {
+    "title": "Rol",
+    "new": "Yeni rol",
+    "edit": "Rol düzəlişi",
+    "updated": "Rol yeniləndi"
+  },
+  "resource": {
+    "title": "Resurs",
+    "new": "Yeni resurs",
+    "edit": "Resurs düzəlişi",
+    "updated": "Resurs yeniləndi"
+  },
+  "unit": {
+    "title": "Ölçü vahidi",
+    "new": "Yeni ölçü vahidi",
+    "edit": "Ölçü vahidi düzəlişi",
+    "updated": "Ölçü vahidi yeniləndi"
+  },
+  "currency": {
+    "title": "Valyuta",
+    "new": "Yeni valyuta",
+    "edit": "Valyuta düzəlişi",
+    "updated": "Valyuta yeniləndi"
+  },
+  "country": {
+    "title": "Ölkə",
+    "new": "Yeni ölkə",
+    "edit": "Ölkə düzəlişi",
+    "updated": "Ölkə yeniləndi"
+  },
+  "brand": {
+    "title": "Brend",
+    "new": "Yeni brend",
+    "edit": "Brend düzəlişi",
+    "updated": "Brend yeniləndi"
+  },
+  "producer": {
+    "title": "İstehsalçı",
+    "new": "Yeni istehsalçı",
+    "edit": "İstehsalçı düzəlişi",
+    "updated": "İstehsalçı yeniləndi"
+  },
+  "productType": {
+    "title": "Mal tipi",
+    "new": "Yeni mal tipi",
+    "edit": "Mal tipi düzəlişi",
+    "updated": "Mal tipi yeniləndi"
+  },
+  "productClass": {
+    "title": "Mal sinfi",
+    "new": "Yeni mal sinfi",
+    "edit": "Mal sinfi düzəlişi",
+    "updated": "Mal sinfi yeniləndi"
+  },
+  "productGroup": {
+    "title": "Mal qrupu",
+    "new": "Yeni mal qrupu",
+    "edit": "Mal qrupu düzəlişi",
+    "updated": "Mal qrupu yeniləndi"
+  },
+  "productCategory": {
+    "title": "Mal kateqoriyası",
+    "new": "Yeni mal kateqoriyası",
+    "edit": "Mal kateqoriyası düzəlişi",
+    "updated": "Mal kateqoriyası yeniləndi"
+  },
+  "product": {
+    "title": "Mal",
+    "new": "Yeni mal",
+    "edit": "Mal düzəlişi",
+    "updated": "Mal yeniləndi"
+  },
+  "priceList": {
+    "title": "Qiymət",
+    "new": "Yeni qiymət",
+    "edit": "Qiymət düzəlişi",
+    "updated": "Qiymət yeniləndi",
+    "parent": "Üst qiymət"
+  },
+  "warehouse": {
+    "title": "Anbar",
+    "new": "Yeni anbar",
+    "edit": "Anbar düzəlişi",
+    "updated": "Anbar yeniləndi"
+  },
+  "permission" : {
+    "title": "Səlahiyyət",
+    "updated": "Səlahiyyət yeniləndi"
+  },
+  "transactionType": {
+    "title": "Sənəd tipi",
+    "new": "Yeni Sənəd tipi",
+    "edit": "Sənəd tipi düzəlişi",
+    "updated": "Sənəd tipi yeniləndi"
+  },
+  "users": "İstifadəçilər",
+  "roles": "Rollar",
+  "units": "Ölçü vahidləri",
+  "resources": "Resurslar",
+  "actions": "Əməliyyatlar",
+  "id": "ID",
+  "code": "Kod",
+  "name": "Ad",
+  "description": "Açıqlama",
+  "barcode": "Barkod",
+  "unitDimension": "Kəmiyyət",
+  "create": "Yarat",
+  "new": "Yeni",
+  "save": "Saxla",
+  "edit": "Dəyiş",
+  "delete": "Sil",
+  "permissions": "İcazələr",
+  "assignedRoles": "İcazə verilmiş rollar",
+  "assignedActions": "İcazə verilmiş əməliyyatlar",
+  "grantedPermissions": "Verilmiş icazələr",
+  "isBase": "Baza ölçü vahidi",
+  "factorToBase": "Bazaya nəzərən faktor",
+  "offsetToBase": "Bazaya nəzərən fərq",
+  "factorToParent": "Üstə nəzərən faktor",
+  "enabled": "Aktivdir",
+  "currencies": "Valyutalar",
+  "countries": "Ölkələr",
+  "brands": "Brendlər",
+  "producers": "İstehsalçılar",
+  "productTypes": "Mal tipləri",
+  "productClasses": "Mal sinifləri",
+  "productCategories": "Mal kateqoriyaları",
+  "productGroups": "Mal qrupları",
+  "parentGroup": "Üstqrup",
+  "products": "Mallar",
+  "priceLists": "Qiymətlər",
+  "selectAsParent": "Select as parent",
+  "noRecords": "Göstəriləcək məlumat yoxdur",
+  "productPrices": "Mal qiymətləri",
+  "price": "Qiymət",
+  "fixedPrice": "Fix qiymət",
+  "parentPrice": "Üst qiymət",
+  "roundLength": "Yuvarlaqlaşdırma",
+  "discountRatioLimit": "Endirim faizi limiti",
+  "productBarcodes": "Mal barkodları",
+  "productUnits": "Ölçü vahidləri",
+  "warehouses": "Anbarlar",
+  "productWarehouses": "Anbar məlumatı",
+  "quantity": "Miqdar",
+  "reservedQuantity": "Rezerv edilmiş",
+  "freeQuantity": "Sərbəst miqdar",
+  "minQuantity": "Minimum miqdar",
+  "maxQuantity": "Maksimum miqdar",
+  "transactionTypes": "Sənəd tipləri"
+}

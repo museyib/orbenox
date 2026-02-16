@@ -1,0 +1,155 @@
+{
+  "user": {
+    "title": "User",
+    "new": "New user",
+    "edit": "Edit user",
+    "username": "Username",
+    "password": "Password",
+    "displayName": "Display name",
+    "userType": "User type",
+    "updated": "User updated"
+  },
+  "role": {
+    "title": "Role",
+    "new": "New role",
+    "edit": "Edit role",
+    "updated": "Role updated"
+  },
+  "resource": {
+    "title": "Resource",
+    "new": "New resource",
+    "edit": "Edit resource",
+    "updated": "Resource updated"
+  },
+  "unit": {
+    "title": "Unit",
+    "new": "New unit",
+    "edit": "Edit unit",
+    "updated": "Unit updated"
+  },
+  "currency": {
+    "title": "Currency",
+    "new": "New currency",
+    "edit": "Edit currency",
+    "updated": "Currency updated"
+  },
+  "country": {
+    "title": "Country",
+    "new": "New country",
+    "edit": "Edit country",
+    "updated": "Country updated"
+  },
+  "brand": {
+    "title": "Brand",
+    "new": "New brand",
+    "edit": "Edit brand",
+    "updated": "Brand updated"
+  },
+  "producer": {
+    "title": "Producer",
+    "new": "New producer",
+    "edit": "Edit producer",
+    "updated": "Producer updated"
+  },
+  "productType": {
+    "title": "Product type",
+    "new": "New product type",
+    "edit": "Edit product type",
+    "updated": "Product type updated"
+  },
+  "productClass": {
+    "title": "Product class",
+    "new": "New product class",
+    "edit": "Edit product class",
+    "updated": "Product class updated"
+  },
+  "productGroup": {
+    "title": "Product group",
+    "new": "New product group",
+    "edit": "Edit product group",
+    "updated": "Product group updated"
+  },
+  "productCategory": {
+    "title": "Product category",
+    "new": "New product category",
+    "edit": "Edit product category",
+    "updated": "Product category updated"
+  },
+  "product": {
+    "title": "Product",
+    "new": "New product",
+    "edit": "Edit product",
+    "updated": "Product updated"
+  },
+  "priceList": {
+    "title": "Price list",
+    "new": "New price list",
+    "edit": "Edit price list",
+    "updated": "Price list updated",
+    "parent": "Parent price list"
+  },
+  "permission" : {
+    "title": "Permission",
+    "updated": "Permission updated"
+  },
+  "transactionType": {
+    "title": "Transaction type",
+    "new": "New transaction type",
+    "edit": "Edit transaction type",
+    "updated": "Transaction type updated"
+  },
+  "users": "Users",
+  "roles": "Roles",
+  "units": "Units",
+  "resources": "Resources",
+  "actions": "Actions",
+  "id": "ID",
+  "code": "Code",
+  "name": "Name",
+  "description": "Description",
+  "barcode": "Barcode",
+  "unitDimension": "Unit dimension",
+  "create": "Create",
+  "new": "New",
+  "save": "Save",
+  "edit": "Edit",
+  "delete": "Delete",
+  "permissions": "Permissions",
+  "assignedRoles": "Assigned roles",
+  "assignedActions": "Assigned actions",
+  "grantedPermissions": "Granted permissions",
+  "isBase": "Base unit",
+  "factorToBase": "Factor to base unit",
+  "offsetToBase": "Offset to base unit",
+  "factorToParent": "Factor to parent",
+  "enabled": "Enabled",
+  "currencies": "Currencies",
+  "countries": "Countries",
+  "brands": "Brands",
+  "producers": "Producers",
+  "productTypes": "Product Types",
+  "productClasses": "Product Classes",
+  "productCategories": "Product Categories",
+  "productGroups": "Product Groups",
+  "parentGroup": "Parent group",
+  "products": "Products",
+  "priceLists": "Price lists",
+  "selectAsParent": "Select as parent",
+  "noRecords": "No records to display",
+  "productPrices": "Product prices",
+  "price": "Price",
+  "fixedPrice": "Fixed price",
+  "parentPrice": "Parent price",
+  "roundLength": "Round length",
+  "discountRatioLimit": "Discount ratio limit",
+  "productBarcodes": "Product barcodes",
+  "productUnits": "Product units",
+  "warehouses": "Warehouses",
+  "productWarehouses": "Product warehouses",
+  "quantity": "Quantity",
+  "reservedQuantity": "Reserved quantity",
+  "freeQuantity": "Free quantity",
+  "minQuantity": "Minimum quantity",
+  "maxQuantity": "Maximum quantity",
+  "transactionTypes": "Transaction types"
+}
