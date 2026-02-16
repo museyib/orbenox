@@ -75,10 +75,27 @@ function create() {
 }
 
 function updatePrices() {
+  const toPriceDto = (item, includeId = false) => {
+    const dto = {
+      productId: currentProduct.value.id,
+      priceListId: item.priceList?.id ?? item.priceListId,
+      unitId: item.unit?.id ?? item.unitId,
+      price: item.price,
+      factorToParent: item.factorToParent,
+      fixedPrice: item.fixedPrice,
+      roundLength: item.roundLength,
+      discountRatioLimit: item.discountRatioLimit
+    };
+    if (includeId) {
+      dto.id = item.id;
+    }
+    return dto;
+  };
+
   const priceData = {
     productId: currentProduct.value.id,
-    priceListToUpdate: productPrices.value.filter(item => item.id),
-    priceListToInsert: productPrices.value.filter(item => !item.id)
+    priceListToUpdate: productPrices.value.filter(item => item.id).map(item => toPriceDto(item, true)),
+    priceListToInsert: productPrices.value.filter(item => !item.id).map(item => toPriceDto(item))
   }
 
   apiRequest('/api/productPrices', 'POST', priceData).then(response => {

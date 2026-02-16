@@ -60,11 +60,23 @@ function deleteBarcode(barcodeData) {
 }
 
 function updateBarcodes() {
+  const toBarcodeDto = (item, includeId = false) => {
+    const dto = {
+      productId: currentProduct.value.id,
+      unitId: item.unit?.id ?? item.unitId,
+      barcode: item.barcode
+    };
+    if (includeId) {
+      dto.id = item.id;
+    }
+    return dto;
+  };
+
   const barcodeData = {
     productId: currentProduct.value.id,
-    barcodesToUpdate: productBarcodes.value.filter(item => item.id),
-    barcodesToInsert: barcodesToInsert.value,
-    barcodesToDelete: barcodesToDelete.value
+    barcodesToUpdate: productBarcodes.value.filter(item => item.id).map(item => toBarcodeDto(item, true)),
+    barcodesToInsert: barcodesToInsert.value.map(item => toBarcodeDto(item)),
+    barcodesToDelete: barcodesToDelete.value.map(item => toBarcodeDto(item, true))
   };
 
   apiRequest('/api/productBarcodes', 'POST', barcodeData).then(response => {

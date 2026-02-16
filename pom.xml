@@ -11,7 +11,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.orbenox.erp</groupId>
-    <artifactId>orbenox</artifactId>
+    <artifactId>parent</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <packaging>pom</packaging>
@@ -24,6 +24,7 @@
 
     <modules>
         <module>web-api</module>
+        <module>web-client</module>
     </modules>
 
 </project>

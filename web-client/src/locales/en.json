@@ -1,4 +1,4 @@
-{
+﻿{
   "user": {
     "title": "User",
     "new": "New user",
@@ -98,9 +98,45 @@
     "edit": "Edit transaction type",
     "updated": "Transaction type updated"
   },
+  "document": {
+    "title": "Document",
+    "new": "New document",
+    "process": "Document process"
+  },
+  "account": {
+    "title": "Account",
+    "new": "New account",
+    "edit": "Edit account",
+    "updated": "Account updated"
+  },
+  "businessPartner": {
+    "title": "Business partner",
+    "new": "New business partner",
+    "edit": "Edit business partner",
+    "updated": "Business partner updated"
+  },
+  "businessPartnerRole": {
+    "title": "Business partner role",
+    "new": "New business partner role",
+    "edit": "Edit business partner role",
+    "updated": "Business partner role updated"
+  },
+  "unitDimensionEntity": {
+    "title": "Unit dimension",
+    "new": "New unit dimension",
+    "edit": "Edit unit dimension",
+    "updated": "Unit dimension updated"
+  },
+  "postingRule": {
+    "title": "Posting rule",
+    "new": "New posting rule",
+    "edit": "Edit posting rule",
+    "updated": "Posting rule updated"
+  },
   "users": "Users",
   "roles": "Roles",
   "units": "Units",
+  "unitDimensions": "Unit dimensions",
   "resources": "Resources",
   "actions": "Actions",
   "id": "ID",
@@ -145,11 +181,50 @@
   "productBarcodes": "Product barcodes",
   "productUnits": "Product units",
   "warehouses": "Warehouses",
+  "accounts": "Accounts",
+  "businessPartners": "Business Partners",
+  "businessPartnerRoles": "Business Partner Roles",
+  "postingRules": "Posting rules",
   "productWarehouses": "Product warehouses",
   "quantity": "Quantity",
   "reservedQuantity": "Reserved quantity",
   "freeQuantity": "Free quantity",
   "minQuantity": "Minimum quantity",
   "maxQuantity": "Maximum quantity",
-  "transactionTypes": "Transaction types"
+  "transactionTypes": "Transaction types",
+  "documents": "Documents",
+  "documentNumber": "Document number",
+  "documentDate": "Document date",
+  "documentStatus": "Document status",
+  "approvalStatus": "Approval status",
+  "paymentMethod": "Payment method",
+  "sourceWarehouse": "Source warehouse",
+  "targetWarehouse": "Target warehouse",
+  "lines": "Lines",
+  "addLine": "Add line",
+  "removeLine": "Remove line",
+  "discountRatio": "Discount ratio",
+  "total": "Total",
+  "saveDraft": "Save draft",
+  "saveAndSubmit": "Save and submit",
+  "submit": "Submit",
+  "approve": "Approve",
+  "reject": "Reject",
+  "post": "Post",
+  "close": "Close",
+  "cancel": "Cancel",
+  "process": "Process",
+  "processTimeline": "Process timeline",
+  "allowedActions": "Allowed actions",
+  "processScope": "Process scope",
+  "accountType": "Account type",
+  "partnerType": "Partner type",
+  "taxId": "Tax ID"
+  ,"sequence": "Sequence",
+  "debitAccount": "Debit account",
+  "creditAccount": "Credit account",
+  "amountSource": "Amount source",
+  "partnerSide": "Partner side",
+  "partnerRole": "Partner role"
 }
+

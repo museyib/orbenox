@@ -82,6 +82,7 @@ function init() {
 }
 
 function updateUnit() {
+  unit.value.unitDimensionId = unit.value.unitDimension?.id ?? null;
   apiRequest('/api/units/' + route.params.id, 'PATCH', unit.value).then((response) => {
     if (response.code === 200) {
       info.value = t('unit.updated');

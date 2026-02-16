@@ -13,6 +13,7 @@ function isActive(prefix) {
     <router-link :class="{active: isActive('/ui/roles')}" to="/ui/roles">{{ $t('roles') }}</router-link>
     <router-link :class="{active: isActive('/ui/resources')}" to="/ui/resources">{{ $t('resources') }}</router-link>
     <router-link :class="{active: isActive('/ui/units')}" to="/ui/units">{{ $t('units') }}</router-link>
+    <router-link :class="{active: isActive('/ui/unitDimensions')}" to="/ui/unitDimensions">{{ $t('unitDimensions') }}</router-link>
     <router-link :class="{active: isActive('/ui/currencies')}" to="/ui/currencies">{{ $t('currencies') }}</router-link>
     <router-link :class="{active: isActive('/ui/brands')}" to="/ui/brands">{{ $t('brands') }}</router-link>
     <router-link :class="{active: isActive('/ui/producers')}" to="/ui/producers">{{ $t('producers') }}</router-link>
@@ -29,6 +30,11 @@ function isActive(prefix) {
     <router-link :class="{active: isActive('/ui/priceLists')}" to="/ui/priceLists">{{ $t('priceLists') }}</router-link>
     <router-link :class="{active: isActive('/ui/warehouses')}" to="/ui/warehouses">{{ $t('warehouses') }}</router-link>
     <router-link :class="{active: isActive('/ui/transactionTypes')}" to="/ui/transactionTypes">{{ $t('transactionTypes') }}</router-link>
+    <router-link :class="{active: isActive('/ui/accounts')}" to="/ui/accounts">{{ $t('accounts') }}</router-link>
+    <router-link :class="{active: isActive('/ui/businessPartners')}" to="/ui/businessPartners">{{ $t('businessPartners') }}</router-link>
+    <router-link :class="{active: isActive('/ui/businessPartnerRoles')}" to="/ui/businessPartnerRoles">{{ $t('businessPartnerRoles') }}</router-link>
+    <router-link :class="{active: isActive('/ui/postingRules')}" to="/ui/postingRules">{{ $t('postingRules') }}</router-link>
+    <router-link :class="{active: isActive('/ui/documents')}" to="/ui/documents">{{ $t('documents') }}</router-link>
   </nav>
 </template>
 

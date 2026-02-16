@@ -35,8 +35,8 @@ function createUser(event) {
   const formData = new FormData(event.target);
   const data = Object.fromEntries(formData.entries());
   data.enabled = enabled.value;
-  data.userType = selectedUserType.value;
-  data.roles = assignedRoles.value;
+  data.userTypeId = selectedUserType.value?.id ?? null;
+  data.roleIds = assignedRoles.value.map(role => role.id);
   apiRequest('/api/users', 'POST', data).then(response => {
     if (response.code === 200) {
       router.push('/ui/users');

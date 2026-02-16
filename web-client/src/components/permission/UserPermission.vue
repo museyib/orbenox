@@ -51,10 +51,23 @@ function init() {
 }
 
 function updatePermission() {
+  const toPermissionDto = (permission, includeId = false) => {
+    const dto = {
+      enabled: permission.enabled ?? true,
+      userId: currentUser.value.id,
+      resourceId: permission.resourceId ?? permission.resource?.id,
+      action: permission.actionCode ?? permission.action?.code ?? permission.action
+    };
+    if (includeId && permission.id) {
+      dto.id = permission.id;
+    }
+    return dto;
+  };
+
   const data = {
-    id: route.params.id,
-    permissionsToInsert: permissionsToInsert.value,
-    permissionsToDelete: permissionsToDelete.value
+    userId: Number(route.params.id),
+    permissionsToInsert: permissionsToInsert.value.map(item => toPermissionDto(item)),
+    permissionsToDelete: permissionsToDelete.value.map(item => toPermissionDto(item, true))
   }
 
   apiRequest('/api/permissions/user', 'PATCH', data).then((response) => {
@@ -71,21 +84,26 @@ function updatePermission() {
 }
 
 function addToPermissions(action) {
+  const actionCode = action.code ?? action;
   const permission = {
-    appUser: currentUser.value,
+    enabled: true,
+    userId: currentUser.value.id,
+    resourceId: currentResource.value.id,
     resource: currentResource.value,
-    action: action,
+    actionCode: actionCode,
+    action: {code: actionCode},
   };
-  actions.value = actions.value.filter(a => a.id !== action.id);
+  actions.value = actions.value.filter(a => (a.code ?? a) !== actionCode);
   userPermissions.value.push(permission);
   permissionsToInsert.value.push(permission);
 }
 
 function removeFromPermissions(permission) {
-  const action = permission.action;
-  userPermissions.value = userPermissions.value.filter(p => p.id !== permission.id);
+  const actionCode = permission.actionCode ?? permission.action?.code ?? permission.action;
+  userPermissions.value = userPermissions.value.filter(p => p !== permission);
+  permissionsToInsert.value = permissionsToInsert.value.filter(p => p !== permission);
   if (permission.resource.id === currentResource.value.id)
-    actions.value.push(action);
+    actions.value.push({code: actionCode});
   permissionsToDelete.value.push(permission);
 }
 
@@ -101,8 +119,12 @@ const changeResource = (event) => {
 function getResourceActions(resourceId) {
   apiRequest('/api/permissions/user/' + route.params.id + '/availableResourceActions?resourceId=' + resourceId, 'GET').then((response) => {
     if (response.code === 200) {
-      const givenPermissionIDs = new Set(userPermissions.value.map((p) => p.resource.id + p.action.code));
-      actions.value = response.data.filter(a => !givenPermissionIDs.has(resourceId + a.code));
+      const givenPermissionIDs = new Set(
+          userPermissions.value.map((p) => p.resource.id + (p.actionCode ?? p.action?.code ?? p.action))
+      );
+      actions.value = response.data
+          .map(action => ({code: action.code ?? action}))
+          .filter(a => !givenPermissionIDs.has(resourceId + a.code));
     } else {
       info.value = response.message;
     }
@@ -152,8 +174,8 @@ onMounted(() => init());
         <label>{{ $t('actions') }}:
           <select id='availableActions' multiple>
             <option v-for="action in actions"
-                    :key="action.id"
-                    :value="action.id"
+                    :key="action.code"
+                    :value="action.code"
                     v-on:dblclick="addToPermissions(action)">
               {{ action.code }}
             </option>

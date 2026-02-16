@@ -36,19 +36,26 @@ public class CacheConfig {
                 CacheNames.PRODUCT_GROUPS_EXCLUDED,
                 CacheNames.UNITS_ALL,
                 CacheNames.UNITS_BY_DIMENSION_ID,
+                CacheNames.UNIT_DIMENSIONS,
                 CacheNames.CURRENCIES,
                 CacheNames.COUNTRIES,
                 CacheNames.WAREHOUSES,
+                CacheNames.ACCOUNTS,
+                CacheNames.BUSINESS_PARTNERS,
+                CacheNames.BUSINESS_PARTNER_ROLES,
                 CacheNames.PRICE_LISTS_ALL,
                 CacheNames.PRICE_LISTS_EXCLUDED,
                 CacheNames.LOOKUPS,
                 CacheNames.PERMISSIONS,
                 CacheNames.TRANSACTION_TYPES,
                 CacheNames.ACCOUNT_TYPES,
+                CacheNames.AMOUNT_SOURCES,
                 CacheNames.APPROVAL_STATUSES,
                 CacheNames.DOCUMENT_STATUSES,
+                CacheNames.PARTNER_SIDES,
                 CacheNames.PARTNER_ROLES,
                 CacheNames.PARTNER_TYPES,
+                CacheNames.POSTING_RULES,
                 CacheNames.PERMISSIONS_USER,
                 CacheNames.PERMISSIONS_ROLE,
                 CacheNames.AVAILABLE_RESOURCE_ACTIONS_USER,
@@ -81,8 +88,10 @@ public class CacheConfig {
         public static final String RESOURCES = "resources";
         public static final String ACTIONS = "actions";
         public static final String ACCOUNT_TYPES = "accountTypes";
+        public static final String AMOUNT_SOURCES = "amountSources";
         public static final String APPROVAL_STATUSES = "approvalStatuses";
         public static final String DOCUMENT_STATUSES = "documentStatuses";
+        public static final String PARTNER_SIDES = "partnerSides";
         public static final String PARTNER_ROLES = "partnerRoles";
         public static final String PARTNER_TYPES = "partnerTypes";
         public static final String PRODUCTS = "products";
@@ -99,9 +108,14 @@ public class CacheConfig {
         public static final String PRODUCT_GROUPS_EXCLUDED = "productGroups.excluded";
         public static final String UNITS_ALL = "units.all";
         public static final String UNITS_BY_DIMENSION_ID = "units.byDimensionId";
+        public static final String UNIT_DIMENSIONS = "unitDimensions";
         public static final String CURRENCIES = "currencies";
         public static final String COUNTRIES = "countries";
         public static final String WAREHOUSES = "warehouses";
+        public static final String ACCOUNTS = "accounts";
+        public static final String BUSINESS_PARTNERS = "businessPartners";
+        public static final String BUSINESS_PARTNER_ROLES = "businessPartnerRoles";
+        public static final String POSTING_RULES = "postingRules";
         public static final String PRICE_LISTS_ALL = "priceLists.all";
         public static final String PRICE_LISTS_EXCLUDED = "priceLists.excluded";
         public static final String LOOKUPS = "lookups";

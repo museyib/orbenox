@@ -60,11 +60,23 @@ function deleteUnit(unitData) {
 }
 
 function updateUnits() {
+  const toUnitDto = (item, includeId = false) => {
+    const dto = {
+      productId: currentProduct.value.id,
+      unitId: item.unit?.id ?? item.unitId,
+      factorToBase: item.factorToBase
+    };
+    if (includeId) {
+      dto.id = item.id;
+    }
+    return dto;
+  };
+
   const unitData = {
     productId: currentProduct.value.id,
-    unitsToUpdate: productUnits.value.filter(item => item.id),
-    unitsToInsert: unitsToInsert.value,
-    unitsToDelete: unitsToDelete.value
+    unitsToUpdate: productUnits.value.filter(item => item.id).map(item => toUnitDto(item, true)),
+    unitsToInsert: unitsToInsert.value.map(item => toUnitDto(item)),
+    unitsToDelete: unitsToDelete.value.map(item => toUnitDto(item, true))
   };
 
   apiRequest('/api/productUnits', 'POST', unitData).then(response => {

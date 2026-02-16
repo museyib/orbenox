@@ -20,6 +20,11 @@ public class EnumService {
         return Arrays.stream(AccountType.values()).map(Enum::name).toList();
     }
 
+    @Cacheable(AMOUNT_SOURCES)
+    public List<String> getAmountSources() {
+        return Arrays.stream(AmountSource.values()).map(Enum::name).toList();
+    }
+
     @Cacheable(APPROVAL_STATUSES)
     public List<String> getApprovalStatuses() {
         return Arrays.stream(ApprovalStatus.values()).map(Enum::name).toList();
@@ -33,6 +38,11 @@ public class EnumService {
     @Cacheable(PARTNER_ROLES)
     public List<String> getPartnerRoles() {
         return Arrays.stream(PartnerRole.values()).map(Enum::name).toList();
+    }
+
+    @Cacheable(PARTNER_SIDES)
+    public List<String> getPartnerSides() {
+        return Arrays.stream(PartnerSide.values()).map(Enum::name).toList();
     }
 
     @Cacheable(PARTNER_TYPES)

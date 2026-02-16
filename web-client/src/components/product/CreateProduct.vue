@@ -83,14 +83,14 @@ function createProduct(event) {
   const formData = new FormData(event.target);
   const data = Object.fromEntries(formData.entries());
   data.enabled = enabled.value;
-  data.brand = selectedBrand.value;
-  data.productType = selectedProductType.value;
-  data.productClass = selectedProductClass.value;
-  data.productGroup = selectedProductGroup.value;
-  data.productCategory = selectedProductCategory.value;
-  data.producer = selectedProducer.value;
-  data.country = selectedCountry.value;
-  data.defaultUnit = selectedUnit.value;
+  data.brandId = selectedBrand.value?.id ?? null;
+  data.productTypeId = selectedProductType.value?.id ?? null;
+  data.productClassId = selectedProductClass.value?.id ?? null;
+  data.productGroupId = selectedProductGroup.value?.id ?? null;
+  data.productCategoryId = selectedProductCategory.value?.id ?? null;
+  data.producerId = selectedProducer.value?.id ?? null;
+  data.countryId = selectedCountry.value?.id ?? null;
+  data.defaultUnitId = selectedUnit.value?.id ?? null;
   apiRequest('/api/products', 'POST', data).then(response => {
     if (response.code === 200) {
       router.push('/ui/products');

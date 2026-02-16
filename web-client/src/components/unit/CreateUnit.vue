@@ -35,7 +35,7 @@ function createUnit(event) {
   const data = Object.fromEntries(formData.entries());
   data.base = isBase.value;
   data.enabled = enabled.value;
-  data.unitDimension = selectedUnitDimension.value;
+  data.unitDimensionId = selectedUnitDimension.value?.id ?? null;
   apiRequest('/api/units', 'POST', data).then(response => {
     if (response.code === 200) {
       router.push('/ui/units');

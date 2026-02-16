@@ -55,6 +55,24 @@ import ProductWarehouses from "@/components/productWarehouse/ProductWarehouses.v
 import TransactionTypes from "@/components/transactionType/TransactionTypes.vue";
 import CreateTransactionType from "@/components/transactionType/CreateTransactionType.vue";
 import EditTransactionType from "@/components/transactionType/EditTransactionType.vue";
+import Accounts from "@/components/account/Accounts.vue";
+import CreateAccount from "@/components/account/CreateAccount.vue";
+import EditAccount from "@/components/account/EditAccount.vue";
+import BusinessPartners from "@/components/businessPartner/BusinessPartners.vue";
+import CreateBusinessPartner from "@/components/businessPartner/CreateBusinessPartner.vue";
+import EditBusinessPartner from "@/components/businessPartner/EditBusinessPartner.vue";
+import UnitDimensions from "@/components/unitDimension/UnitDimensions.vue";
+import CreateUnitDimension from "@/components/unitDimension/CreateUnitDimension.vue";
+import EditUnitDimension from "@/components/unitDimension/EditUnitDimension.vue";
+import PostingRules from "@/components/postingRule/PostingRules.vue";
+import CreatePostingRule from "@/components/postingRule/CreatePostingRule.vue";
+import EditPostingRule from "@/components/postingRule/EditPostingRule.vue";
+import BusinessPartnerRoles from "@/components/businessPartnerRole/BusinessPartnerRoles.vue";
+import CreateBusinessPartnerRole from "@/components/businessPartnerRole/CreateBusinessPartnerRole.vue";
+import EditBusinessPartnerRole from "@/components/businessPartnerRole/EditBusinessPartnerRole.vue";
+import Documents from "@/components/document/Documents.vue";
+import CreateDocument from "@/components/document/CreateDocument.vue";
+import ProcessDocument from "@/components/document/ProcessDocument.vue";
 
 const routes = [
     {path: '/', component: Home, meta: {title: 'Home'}},
@@ -113,6 +131,24 @@ const routes = [
     {path: '/ui/transactionTypes', component: TransactionTypes, meta: {title: 'TransactionTypes'}},
     {path: '/ui/transactionTypes/create', component: CreateTransactionType, meta: {title: 'Create TransactionType'}},
     {path: '/ui/transactionTypes/edit/:id', component: EditTransactionType, meta: {title: 'Edit TransactionType'}},
+    {path: '/ui/accounts', component: Accounts, meta: {title: 'Accounts'}},
+    {path: '/ui/accounts/create', component: CreateAccount, meta: {title: 'Create Account'}},
+    {path: '/ui/accounts/edit/:id', component: EditAccount, meta: {title: 'Edit Account'}},
+    {path: '/ui/businessPartners', component: BusinessPartners, meta: {title: 'Business Partners'}},
+    {path: '/ui/businessPartners/create', component: CreateBusinessPartner, meta: {title: 'Create Business Partner'}},
+    {path: '/ui/businessPartners/edit/:id', component: EditBusinessPartner, meta: {title: 'Edit Business Partner'}},
+    {path: '/ui/unitDimensions', component: UnitDimensions, meta: {title: 'Unit Dimensions'}},
+    {path: '/ui/unitDimensions/create', component: CreateUnitDimension, meta: {title: 'Create Unit Dimension'}},
+    {path: '/ui/unitDimensions/edit/:id', component: EditUnitDimension, meta: {title: 'Edit Unit Dimension'}},
+    {path: '/ui/postingRules', component: PostingRules, meta: {title: 'Posting Rules'}},
+    {path: '/ui/postingRules/create', component: CreatePostingRule, meta: {title: 'Create Posting Rule'}},
+    {path: '/ui/postingRules/edit/:id', component: EditPostingRule, meta: {title: 'Edit Posting Rule'}},
+    {path: '/ui/documents', component: Documents, meta: {title: 'Documents'}},
+    {path: '/ui/documents/create', component: CreateDocument, meta: {title: 'Create Document'}},
+    {path: '/ui/documents/process/:id', component: ProcessDocument, meta: {title: 'Document Process'}},
+    {path: '/ui/businessPartnerRoles', component: BusinessPartnerRoles, meta: {title: 'Business Partner Roles'}},
+    {path: '/ui/businessPartnerRoles/create', component: CreateBusinessPartnerRole, meta: {title: 'Create Business Partner Role'}},
+    {path: '/ui/businessPartnerRoles/edit/:id', component: EditBusinessPartnerRole, meta: {title: 'Edit Business Partner Role'}},
 ]
 
 const appRouter = createRouter({

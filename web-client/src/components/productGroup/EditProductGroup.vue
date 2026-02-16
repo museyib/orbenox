@@ -41,7 +41,7 @@ function init() {
 }
 
 function updateProductGroup() {
-  productGroup.value.parent = parentGroup.value;
+  productGroup.value.parentId = parentGroup.value?.id ?? null;
   apiRequest('/api/productGroups/' + route.params.id, 'PATCH', productGroup.value).then((response) => {
     if (response.code === 200) {
       info.value = t('productGroup.updated');

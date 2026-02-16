@@ -1,4 +1,3 @@
-c
 <script setup>
 import {apiRequest, refreshToken} from "@/api.js";
 import {useRouter} from "vue-router";
@@ -34,8 +33,7 @@ function createProductGroup(event) {
   const formData = new FormData(event.target);
   const data = Object.fromEntries(formData.entries());
   data.enabled = enabled.value;
-  if (selectedProductGroup.value)
-    data.parent = selectedProductGroup.value;
+  data.parentId = selectedProductGroup.value ? selectedProductGroup.value.id : null;
   apiRequest('/api/productGroups', 'POST', data).then(response => {
     if (response.code === 200) {
       router.push('/ui/productGroups');

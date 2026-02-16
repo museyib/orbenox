@@ -63,11 +63,26 @@ function deleteWarehouse(warehouseData) {
 }
 
 function updateWarehouses() {
+  const toWarehouseDto = (item, includeId = false) => {
+    const dto = {
+      productId: currentProduct.value.id,
+      warehouseId: item.warehouse?.id ?? item.warehouseId,
+      quantity: item.quantity,
+      reservedQuantity: item.reservedQuantity,
+      minQuantity: item.minQuantity,
+      maxQuantity: item.maxQuantity
+    };
+    if (includeId) {
+      dto.id = item.id;
+    }
+    return dto;
+  };
+
   const warehouseData = {
     productId: currentProduct.value.id,
-    warehousesToUpdate: productWarehouses.value.filter(item => item.id),
-    warehousesToInsert: warehousesToInsert.value,
-    warehousesToDelete: warehousesToDelete.value
+    warehousesToUpdate: productWarehouses.value.filter(item => item.id).map(item => toWarehouseDto(item, true)),
+    warehousesToInsert: warehousesToInsert.value.map(item => toWarehouseDto(item)),
+    warehousesToDelete: warehousesToDelete.value.map(item => toWarehouseDto(item, true))
   };
 
   apiRequest('/api/productWarehouses', 'POST', warehouseData).then(response => {

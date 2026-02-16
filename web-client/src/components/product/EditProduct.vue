@@ -68,6 +68,14 @@ function init() {
 }
 
 function updateProduct() {
+  product.value.brandId = product.value.brand?.id ?? null;
+  product.value.productTypeId = product.value.productType?.id ?? null;
+  product.value.productClassId = product.value.productClass?.id ?? null;
+  product.value.productGroupId = product.value.productGroup?.id ?? null;
+  product.value.productCategoryId = product.value.productCategory?.id ?? null;
+  product.value.producerId = product.value.producer?.id ?? null;
+  product.value.countryId = product.value.country?.id ?? null;
+  product.value.defaultUnitId = product.value.defaultUnit?.id ?? null;
   apiRequest('/api/products/' + route.params.id, 'PATCH', product.value).then((response) => {
     if (response.code === 200) {
       info.value = t('product.updated');

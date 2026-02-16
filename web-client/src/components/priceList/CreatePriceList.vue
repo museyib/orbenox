@@ -50,7 +50,7 @@ function createPrice(event) {
   const data = Object.fromEntries(formData.entries());
   data.enabled = enabled.value;
   data.currencyId = selectedCurrency.value.id;
-  data.parent = parentPrice.value;
+  data.parentId = parentPrice.value ? parentPrice.value.id : null;
   data.factorToParent = factorToParent.value;
   data.roundLength = roundLength.value;
   apiRequest('/api/priceLists', 'POST', data).then(response => {

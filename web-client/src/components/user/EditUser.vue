@@ -46,7 +46,8 @@ function init() {
 }
 
 function updateUser() {
-  user.value.roles = assignedRoles;
+  user.value.userTypeId = user.value.userType?.id ?? null;
+  user.value.roleIds = assignedRoles.value.map(role => role.id);
   apiRequest('/api/users/' + route.params.id, 'PATCH', user.value).then((response) => {
     if (response.code === 200) {
       info.value = t('user.updated');

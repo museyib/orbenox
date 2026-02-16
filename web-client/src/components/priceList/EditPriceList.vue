@@ -52,10 +52,8 @@ function init() {
 }
 
 function updatePrice() {
-  priceList.value.currencyId = priceList.value.currency.id;
-  priceList.value.parentId = 0;
-  if (priceList.value.parent)
-    priceList.value.parentId = priceList.value.parent.id;
+  priceList.value.currencyId = priceList.value.currency?.id ?? null;
+  priceList.value.parentId = priceList.value.parent?.id ?? null;
   apiRequest('/api/priceLists/' + route.params.id, 'PATCH', priceList.value).then((response) => {
     if (response.code === 200) {
       info.value = t('priceList.updated');
