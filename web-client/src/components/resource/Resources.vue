@@ -12,7 +12,8 @@ const resources = ref([]);
 const searchQuery = ref('');
 const page = ref(0);
 const pageSize = ref(10);
-const hasNextPage = ref(false);
+const hasNext = ref(false);
+const hasPrev = ref(false);
 const router = useRouter();
 
 function buildUrl() {
@@ -29,9 +30,8 @@ async function init() {
     const response = await apiRequest(buildUrl(), 'GET');
     if (response.code === 200) {
       resources.value = response.data;
-      console.log(response);
-      hasNextPage.value = response.headers.hasNextPage;
-      console.log(hasNextPage.value)
+      hasNext.value = response.headers.hasNext;
+      hasPrev.value = response.headers.hasPrev;
     } else if (response.code === 401) {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
@@ -84,7 +84,7 @@ async function previousPage() {
 }
 
 async function nextPage() {
-  if (!hasNextPage.value) {
+  if (!hasNext.value) {
     return;
   }
   page.value += 1;
@@ -140,9 +140,9 @@ onMounted(() => init());
 
       <div class="pagination">
         <div class="page-controls">
-          <button :disabled="page === 0" class="btn btn-sm" type="button" @click="previousPage">Prev</button>
+          <button :disabled="!hasPrev" class="btn btn-sm" type="button" @click="previousPage">Prev</button>
           <span class="page-number">Page {{ page + 1 }}</span>
-          <button :disabled="!hasNextPage" class="btn btn-sm" type="button" @click="nextPage">Next</button>
+          <button :disabled="!hasNext" class="btn btn-sm" type="button" @click="nextPage">Next</button>
         </div>
 
         <label class="page-size">

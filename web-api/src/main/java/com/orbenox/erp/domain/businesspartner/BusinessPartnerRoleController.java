@@ -4,11 +4,13 @@ import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/businessPartnerRoles")
@@ -19,8 +21,12 @@ public class BusinessPartnerRoleController {
 
     @PreAuthorize("hasPermission('BUSINESS_PARTNER_ROLE', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<BusinessPartnerRoleItem>>> getAll() {
-        return ResponseEntity.ok(Response.successData(businessPartnerRoleService.getAllItems()));
+    public ResponseEntity<Response<List<BusinessPartnerRoleItem>>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @RequestParam(defaultValue = "") String search) {
+        Slice<BusinessPartnerRoleItem> items = businessPartnerRoleService.getAllItems(page, size, search);
+        Map<String, Object> headers = Map.of("hasNext", items.hasNext(), "hasPrev", items.hasPrevious());
+        return ResponseEntity.ok(Response.successDataWithHeaders(items.getContent(), headers));
     }
 
     @PreAuthorize("hasPermission('BUSINESS_PARTNER_ROLE', 'READ')")
@@ -50,3 +56,5 @@ public class BusinessPartnerRoleController {
         return ResponseEntity.ok(Response.successMessage(text, "businessPartnerRole.deleted"));
     }
 }
+
+

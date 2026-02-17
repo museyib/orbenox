@@ -6,11 +6,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
-import static com.orbenox.erp.config.CacheConfig.CacheNames.POSTING_RULES;
+import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +23,10 @@ public class PostingRuleService {
     private final AccountRepository accountRepository;
 
     @Cacheable(POSTING_RULES)
-    public List<PostingRuleItem> getAllItems() {
-        return postingRuleRepository.getAllItems();
+    public Slice<PostingRuleItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return postingRuleRepository.getAllItems(PageRequest.of(page, size));
+        return postingRuleRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     public PostingRuleItem getItemById(Long id) {
@@ -57,3 +61,6 @@ public class PostingRuleService {
         postingRule.setCreditAccount(accountRepository.getReferenceById(dto.creditAccountId()));
     }
 }
+
+
+

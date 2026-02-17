@@ -4,12 +4,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
-import static com.orbenox.erp.config.CacheConfig.CacheNames.CURRENCIES;
-import static com.orbenox.erp.config.CacheConfig.CacheNames.LOOKUPS;
+import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -18,8 +19,10 @@ public class CurrencyService {
     private final CurrencyMapper currencyMapper;
 
     @Cacheable(CURRENCIES)
-    public List<CurrencyItem> getAllItems() {
-        return currencyRepository.getAllItems();
+    public Slice<CurrencyItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return currencyRepository.getAllItems(PageRequest.of(page, size));
+        return currencyRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     public CurrencyItem getItemById(Long id) {
@@ -48,4 +51,7 @@ public class CurrencyService {
         entity.setDeleted(true);
     }
 }
+
+
+
 

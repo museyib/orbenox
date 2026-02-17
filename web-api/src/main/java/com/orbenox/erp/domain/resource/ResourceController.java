@@ -4,6 +4,7 @@ import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +24,9 @@ public class ResourceController {
     public ResponseEntity<Response<List<ResourceItem>>> getActions(@RequestParam(defaultValue = "0") int page,
                                                                    @RequestParam(defaultValue = "10") int size,
                                                                    @RequestParam(defaultValue = "") String search) {
-        boolean hasNextPage = !resourceService.getAllItems(page + 1, 1, search).isEmpty();
-        Map<String, Object> headers = Map.of( "hasNextPage", hasNextPage);
-        return ResponseEntity.ok(Response.successDataWithHeaders(resourceService.getAllItems(page, size, search), headers));
+        Slice<ResourceItem> items = resourceService.getAllItems(page, size, search);
+        Map<String, Object> headers = Map.of("hasNext", items.hasNext(), "hasPrev", items.hasPrevious());
+        return ResponseEntity.ok(Response.successDataWithHeaders(items.getContent(), headers));
     }
 
     @PreAuthorize("hasPermission('RESOURCE', 'READ')")

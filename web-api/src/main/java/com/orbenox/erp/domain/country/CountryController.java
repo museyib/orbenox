@@ -4,11 +4,13 @@ import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/countries")
@@ -19,8 +21,12 @@ public class CountryController {
 
     @PreAuthorize("hasPermission('COUNTRY', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<CountryItem>>> getActions() {
-        return ResponseEntity.ok(Response.successData(countryService.getAllItems()));
+    public ResponseEntity<Response<List<CountryItem>>> getActions(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @RequestParam(defaultValue = "") String search) {
+        Slice<CountryItem> items = countryService.getAllItems(page, size, search);
+        Map<String, Object> headers = Map.of("hasNext", items.hasNext(), "hasPrev", items.hasPrevious());
+        return ResponseEntity.ok(Response.successDataWithHeaders(items.getContent(), headers));
     }
 
     @PreAuthorize("hasPermission('COUNTRY', 'READ')")
@@ -50,3 +56,5 @@ public class CountryController {
         return ResponseEntity.ok(Response.successMessage(text, "country.deleted"));
     }
 }
+
+

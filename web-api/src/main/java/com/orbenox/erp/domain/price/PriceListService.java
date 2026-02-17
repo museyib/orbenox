@@ -4,12 +4,15 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -18,13 +21,15 @@ public class PriceListService {
     private final PriceListMapper priceListMapper;
 
     @Cacheable(PRICE_LISTS_ALL)
-    public List<PriceListItem> getAllItems() {
-        return priceListRepository.getAllItems();
+    public Slice<PriceListItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return priceListRepository.getAllItems(PageRequest.of(page, size));
+        return priceListRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     @Cacheable(PRICE_LISTS_EXCLUDED)
     public List<PriceListItem.PriceListParent> findAllExcluded(Long idToExclude) {
-        List<PriceListItem> items = priceListRepository.getAllItems();
+        List<PriceListItem> items = priceListRepository.getAllItems(PageRequest.of(0, Integer.MAX_VALUE)).getContent();
         Map<Long, List<PriceListItem>> childrenMap = items.stream()
                 .collect(Collectors.groupingBy(
                         priceListItem -> priceListItem.getParent() == null
@@ -85,4 +90,7 @@ public class PriceListService {
         entity.setDeleted(true);
     }
 }
+
+
+
 

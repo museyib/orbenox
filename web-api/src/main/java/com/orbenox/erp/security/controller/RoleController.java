@@ -8,11 +8,13 @@ import com.orbenox.erp.security.projection.RoleItem;
 import com.orbenox.erp.security.service.RoleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/roles")
@@ -23,8 +25,12 @@ public class RoleController {
 
     @PreAuthorize("hasPermission('APP_ROLE', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<RoleItem>>> getAll() {
-        return ResponseEntity.ok(Response.successData(roleService.getAllItems()));
+    public ResponseEntity<Response<List<RoleItem>>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @RequestParam(defaultValue = "") String search) {
+        Slice<RoleItem> items = roleService.getAllItems(page, size, search);
+        Map<String, Object> headers = Map.of("hasNext", items.hasNext(), "hasPrev", items.hasPrevious());
+        return ResponseEntity.ok(Response.successDataWithHeaders(items.getContent(), headers));
     }
 
     @PreAuthorize("hasPermission('APP_ROLE', 'READ')")
@@ -53,3 +59,5 @@ public class RoleController {
         return ResponseEntity.ok().body(Response.successMessage(text, "role.deleted"));
     }
 }
+
+

@@ -1,5 +1,7 @@
 package com.orbenox.erp.domain.account;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,7 +18,19 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             FROM Account a
             WHERE a.deleted = false
             ORDER BY a.id""")
-    List<AccountItem> getAllItems();
+    Slice<AccountItem> getAllItems(Pageable pageable);
+
+@Query("""
+            SELECT a.id as id,
+                   a.code as code,
+                   a.name as name,
+                   a.accountType as accountType,
+                   a.enabled as enabled
+            FROM Account a
+            WHERE  a.deleted = false
+                    AND (LOWER(a.code) LIKE %:search% OR LOWER(a.name) LIKE %:search%)
+            ORDER BY a.id""")
+    Slice<AccountItem> getItemsSearched(Pageable pageable, @Param("search") String search);
 
     @Query("""
             SELECT a.id as id,
@@ -42,3 +56,4 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Account findByIdAndDeletedFalse(Long id);
 }
+

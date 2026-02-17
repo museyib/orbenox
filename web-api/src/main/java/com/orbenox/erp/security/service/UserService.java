@@ -16,12 +16,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.orbenox.erp.config.CacheConfig.CacheNames.USERS;
-import static com.orbenox.erp.config.CacheConfig.CacheNames.USER_DETAILS;
+
+import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +35,10 @@ public class UserService {
     private final LocalizationService i18n;
 
     @Cacheable(USERS)
-    public List<SimpleUserItem> getAllItems() {
-        return userRepository.getAllItems();
+    public Slice<SimpleUserItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return userRepository.getAllItems(PageRequest.of(page, size));
+        return userRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     public UserData getItemById(Long id) {
@@ -79,3 +84,6 @@ public class UserService {
         appUser.setDeleted(true);
     }
 }
+
+
+

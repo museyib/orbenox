@@ -13,12 +13,14 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
 
 import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +30,10 @@ public class ProductService {
     private final ProductMapper productMapper;
 
     @Cacheable(PRODUCTS)
-    public List<ProductItem> getAllItems() {
-        return productRepository.getAllItems();
+    public Slice<ProductItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return productRepository.getAllItems(PageRequest.of(page, size));
+        return productRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     public ProductItem getItemById(Long id) {
@@ -75,4 +79,7 @@ public class ProductService {
         productBarcodeRepository.save(productBarcode);
     }
 }
+
+
+
 

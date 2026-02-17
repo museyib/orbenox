@@ -10,12 +10,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
-import static com.orbenox.erp.config.CacheConfig.CacheNames.LOOKUPS;
-import static com.orbenox.erp.config.CacheConfig.CacheNames.PRODUCT_CLASSES;
+import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +25,10 @@ public class ProductClassService {
     private final ProductClassMapper productClassMapper;
 
     @Cacheable(PRODUCT_CLASSES)
-    public List<ProductClassItem> getAllItems() {
-        return productClassRepository.getAllItems();
+    public Slice<ProductClassItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return productClassRepository.getAllItems(PageRequest.of(page, size));
+        return productClassRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     public ProductClassItem getItemById(Long id) {
@@ -53,4 +56,7 @@ public class ProductClassService {
         entity.setDeleted(true);
     }
 }
+
+
+
 

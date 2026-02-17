@@ -1,5 +1,7 @@
 package com.orbenox.erp.domain.price;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,7 +25,24 @@ public interface PriceListRepository extends JpaRepository<PriceList, Long> {
             LEFT JOIN p.currency c
             WHERE p.deleted = false
             ORDER BY p.id""")
-    List<PriceListItem> getAllItems();
+    Slice<PriceListItem> getAllItems(Pageable pageable);
+
+@Query("""
+            SELECT p.id as id,
+                p.code as code,
+                p.name as name,
+                p.factorToParent as factorToParent,
+                p.enabled as enabled,
+                p.roundLength as roundLength,
+                c as currency,
+                pp as parent
+            FROM PriceList p
+            LEFT JOIN p.parent pp
+            LEFT JOIN p.currency c
+            WHERE  p.deleted = false
+                    AND (LOWER(p.code) LIKE %:search% OR LOWER(p.name) LIKE %:search%)
+            ORDER BY p.id""")
+    Slice<PriceListItem> getItemsSearched(Pageable pageable, @Param("search") String search);
 
     @Query("""
             SELECT p.id as id,
@@ -67,3 +86,4 @@ public interface PriceListRepository extends JpaRepository<PriceList, Long> {
             WHERE p.id IN(:ids) AND p.deleted = false""")
     List<PriceListItem.PriceListParent> getParentPriceListItems(@Param("ids") List<Long> idsToExclude);
 }
+

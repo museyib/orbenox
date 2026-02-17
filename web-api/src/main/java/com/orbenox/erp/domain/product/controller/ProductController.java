@@ -15,11 +15,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,8 +40,12 @@ public class ProductController {
     })
     @PreAuthorize("hasPermission('PRODUCT', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<ProductItem>>> getAll() {
-        return ResponseEntity.ok(Response.successData(productService.getAllItems()));
+    public ResponseEntity<Response<List<ProductItem>>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @RequestParam(defaultValue = "") String search) {
+        Slice<ProductItem> items = productService.getAllItems(page, size, search);
+        Map<String, Object> headers = Map.of("hasNext", items.hasNext(), "hasPrev", items.hasPrevious());
+        return ResponseEntity.ok(Response.successDataWithHeaders(items.getContent(), headers));
     }
 
     @Operation(summary = "Get product by ID", description = "Retrieves a specific product by its ID")
@@ -97,3 +103,5 @@ public class ProductController {
         return ResponseEntity.ok(Response.successMessage(text, "product.deleted"));
     }
 }
+
+

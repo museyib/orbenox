@@ -1,5 +1,7 @@
 package com.orbenox.erp.domain.warehouse;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +17,18 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, Long> {
         FROM Warehouse w
         WHERE w.deleted = false
         ORDER BY w.id""")
-    List<WarehouseItem> getAllItems();
+    Slice<WarehouseItem> getAllItems(Pageable pageable);
+
+@Query("""
+        SELECT w.id AS id,
+            w.code AS code,
+            w.name AS name,
+            w.enabled AS enabled
+        FROM Warehouse w
+        WHERE  w.deleted = false
+                    AND (LOWER(w.code) LIKE %:search% OR LOWER(w.name) LIKE %:search%)
+            ORDER BY w.id""")
+    Slice<WarehouseItem> getItemsSearched(Pageable pageable, @Param("search") String search);
 
     @Query("""
         SELECT w.id AS id,
@@ -39,3 +52,4 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, Long> {
 
     Warehouse findByIdAndDeletedFalse(Long id);
 }
+

@@ -4,12 +4,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
-import static com.orbenox.erp.config.CacheConfig.CacheNames.LOOKUPS;
-import static com.orbenox.erp.config.CacheConfig.CacheNames.UNIT_DIMENSIONS;
+import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -18,8 +19,10 @@ public class UnitDimensionService {
     private final UnitDimensionMapper unitDimensionMapper;
 
     @Cacheable(UNIT_DIMENSIONS)
-    public List<UnitDimensionItem> getAllItems() {
-        return unitDimensionRepository.getAllItems();
+    public Slice<UnitDimensionItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return unitDimensionRepository.getAllItems(PageRequest.of(page, size));
+        return unitDimensionRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     public UnitDimensionItem getItemById(Long id) {
@@ -47,3 +50,6 @@ public class UnitDimensionService {
         entity.setDeleted(true);
     }
 }
+
+
+

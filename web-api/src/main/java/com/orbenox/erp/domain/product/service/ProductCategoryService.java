@@ -10,12 +10,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
-import static com.orbenox.erp.config.CacheConfig.CacheNames.LOOKUPS;
-import static com.orbenox.erp.config.CacheConfig.CacheNames.PRODUCT_CATEGORIES;
+import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +25,10 @@ public class ProductCategoryService {
     private final ProductCategoryMapper productCategoryMapper;
 
     @Cacheable(PRODUCT_CATEGORIES)
-    public List<ProductCategoryItem> getAllItems() {
-        return productCategoryRepository.getAllItems();
+    public Slice<ProductCategoryItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return productCategoryRepository.getAllItems(PageRequest.of(page, size));
+        return productCategoryRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     public ProductCategoryItem getItemById(Long id) {
@@ -53,4 +56,7 @@ public class ProductCategoryService {
         entity.setDeleted(true);
     }
 }
+
+
+
 

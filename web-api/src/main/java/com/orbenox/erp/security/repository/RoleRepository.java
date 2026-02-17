@@ -2,6 +2,8 @@ package com.orbenox.erp.security.repository;
 
 import com.orbenox.erp.security.entity.AppRole;
 import com.orbenox.erp.security.projection.RoleItem;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,7 +22,18 @@ public interface RoleRepository extends JpaRepository<AppRole, Long> {
             FROM AppRole r
             WHERE r.deleted = false
             ORDER BY r.id""")
-    List<RoleItem> getAllItems();
+    Slice<RoleItem> getAllItems(Pageable pageable);
+
+@Query("""
+            SELECT r.id as id,
+                r.code as code,
+                r.name as name,
+                r.enabled as enabled
+            FROM AppRole r
+            WHERE  r.deleted = false
+                    AND (LOWER(r.code) LIKE %:search% OR LOWER(r.name) LIKE %:search%)
+            ORDER BY r.id""")
+    Slice<RoleItem> getItemsSearched(Pageable pageable, @Param("search") String search);
 
     @Query("""
             SELECT r.id as id,
@@ -43,3 +56,4 @@ public interface RoleRepository extends JpaRepository<AppRole, Long> {
             ORDER BY r.id""")
     RoleItem getItemById(@Param("id") Long id);
 }
+

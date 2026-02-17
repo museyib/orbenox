@@ -4,6 +4,8 @@ import com.orbenox.erp.security.entity.AppUser;
 import com.orbenox.erp.security.projection.RoleItem;
 import com.orbenox.erp.security.projection.SimpleUserItem;
 import com.orbenox.erp.security.projection.UserItem;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,7 +27,19 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
             FROM AppUser u
             WHERE u.deleted = false AND u.root = false
             ORDER BY u.id""")
-    List<SimpleUserItem> getAllItems();
+    Slice<SimpleUserItem> getAllItems(Pageable pageable);
+
+@Query("""
+            SELECT u.id as id,
+                u.username as username,
+                u.displayName as displayName,
+                u.userType as userType,
+                u.enabled as enabled
+            FROM AppUser u
+            WHERE  u.deleted = false AND u.root = false
+                    AND (LOWER(u.username) LIKE %:search% OR LOWER(u.displayName) LIKE %:search% OR LOWER(u.userType.code) LIKE %:search%)
+            ORDER BY u.id""")
+    Slice<SimpleUserItem> getItemsSearched(Pageable pageable, @Param("search") String search);
 
     @Query("""
             SELECT u.id as id,
@@ -59,3 +73,4 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
             ORDER BY r.id""")
     List<RoleItem> getRolesByUserId(@Param("userId") Long userId);
 }
+

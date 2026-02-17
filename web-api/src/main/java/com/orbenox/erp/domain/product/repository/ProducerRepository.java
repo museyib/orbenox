@@ -2,6 +2,8 @@ package com.orbenox.erp.domain.product.repository;
 
 import com.orbenox.erp.domain.product.entity.Producer;
 import com.orbenox.erp.domain.product.projection.ProducerItem;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,7 +23,19 @@ public interface ProducerRepository extends JpaRepository<Producer, Long> {
                 FROM Producer p
             WHERE p.deleted = false
             ORDER BY p.id""")
-    List<ProducerItem> getAllItems();
+    Slice<ProducerItem> getAllItems(Pageable pageable);
+
+@Query("""
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled
+                FROM Producer p
+            WHERE  p.deleted = false
+                    AND (LOWER(p.code) LIKE %:search% OR LOWER(p.name) LIKE %:search% OR LOWER(p.description) LIKE %:search%)
+            ORDER BY p.id""")
+    Slice<ProducerItem> getItemsSearched(Pageable pageable, @Param("search") String search);
 
     @Query("""
             SELECT p.id as id,
@@ -45,3 +59,4 @@ public interface ProducerRepository extends JpaRepository<Producer, Long> {
             ORDER BY p.id""")
     ProducerItem getItemById(@Param("id") Long id);
 }
+

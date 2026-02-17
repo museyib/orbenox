@@ -4,11 +4,15 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -17,8 +21,10 @@ public class UnitService {
     private final UnitRepository unitRepository;
 
     @Cacheable(UNITS_ALL)
-    public List<UnitItem> getAllItems() {
-        return unitRepository.getAllItems();
+    public Slice<UnitItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return unitRepository.getAllItems(PageRequest.of(page, size));
+        return unitRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     @Cacheable(UNITS_BY_DIMENSION_ID)
@@ -60,4 +66,7 @@ public class UnitService {
         unit.setDeleted(true);
     }
 }
+
+
+
 

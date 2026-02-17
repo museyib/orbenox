@@ -10,47 +10,53 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
-import static com.orbenox.erp.config.CacheConfig.CacheNames.BRANDS;
-import static com.orbenox.erp.config.CacheConfig.CacheNames.LOOKUPS;
+import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
 public class BrandService {
-    private final BrandRepository currencyRepository;
-    private final BrandMapper currencyMapper;
+    private final BrandRepository brandRepository;
+    private final BrandMapper brandMapper;
 
     @Cacheable(BRANDS)
-    public List<BrandItem> getAllItems() {
-        return currencyRepository.getAllItems();
+    public Slice<BrandItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return brandRepository.getAllItems(PageRequest.of(page, size));
+        return brandRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     public BrandItem getItemById(Long id) {
-        return currencyRepository.getItemById(id);
+        return brandRepository.getItemById(id);
     }
 
     @CacheEvict(value = {BRANDS, LOOKUPS}, allEntries = true)
     public BrandItem create(BrandCreateDto dto) {
-        Brand brand = currencyRepository.save(currencyMapper.toEntity(dto));
-        return currencyRepository.getItemById(brand.getId());
+        Brand brand = brandRepository.save(brandMapper.toEntity(dto));
+        return brandRepository.getItemById(brand.getId());
     }
 
     @CacheEvict(value = {BRANDS, LOOKUPS}, allEntries = true)
     @Transactional
     public BrandItem update(Long id, BrandUpdateDto dto) {
-        Brand entity = currencyRepository.findByIdAndDeletedFalse(id);
-        currencyMapper.updateEntityFromDto(dto, entity);
-        return currencyRepository.getItemById(id);
+        Brand entity = brandRepository.findByIdAndDeletedFalse(id);
+        brandMapper.updateEntityFromDto(dto, entity);
+        return brandRepository.getItemById(id);
     }
 
     @CacheEvict(value = {BRANDS, LOOKUPS}, allEntries = true)
     @Transactional
     public void softDelete(Long id) {
-        Brand entity = currencyRepository.findByIdAndDeletedFalse(id);
+        Brand entity = brandRepository.findByIdAndDeletedFalse(id);
         entity.setDeleted(true);
     }
 }
+
+
+
 

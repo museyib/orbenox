@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,10 +24,10 @@ public class ResourceService {
     private final ResourceMapper resourceMapper;
 
     @Cacheable(RESOURCES)
-    public List<ResourceItem> getAllItems(int page, int size, String search) {
+    public Slice<ResourceItem> getAllItems(int page, int size, String search) {
         if (isEmpty(search))
             return resourceRepository.getAllItems(PageRequest.of(page, size));
-        return resourceRepository.getItemsSearched(search, PageRequest.of(page, size));
+        return resourceRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     public ResourceData getItemById(Long id) {

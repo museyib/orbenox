@@ -4,12 +4,14 @@ import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,8 +23,12 @@ public class UnitController {
 
     @PreAuthorize("hasPermission('UNIT', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<UnitItem>>> getAll() {
-        return ResponseEntity.ok(Response.successData(unitService.getAllItems()));
+    public ResponseEntity<Response<List<UnitItem>>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @RequestParam(defaultValue = "") String search) {
+        Slice<UnitItem> items = unitService.getAllItems(page, size, search);
+        Map<String, Object> headers = Map.of("hasNext", items.hasNext(), "hasPrev", items.hasPrevious());
+        return ResponseEntity.ok(Response.successDataWithHeaders(items.getContent(), headers));
     }
 
     @PreAuthorize("hasPermission('UNIT', 'READ')")
@@ -66,3 +72,5 @@ public class UnitController {
         )));
     }
 }
+
+

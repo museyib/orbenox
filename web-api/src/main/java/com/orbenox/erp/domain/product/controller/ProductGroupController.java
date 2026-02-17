@@ -9,11 +9,13 @@ import com.orbenox.erp.domain.product.service.ProductGroupService;
 import com.orbenox.erp.localization.LocalizationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,8 +26,12 @@ public class ProductGroupController {
 
     @PreAuthorize("hasPermission('PRODUCT_GROUP', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<ProductGroupItem>>> getAll() {
-        return ResponseEntity.ok(Response.successData(productGroupService.getAllItems()));
+    public ResponseEntity<Response<List<ProductGroupItem>>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @RequestParam(defaultValue = "") String search) {
+        Slice<ProductGroupItem> items = productGroupService.getAllItems(page, size, search);
+        Map<String, Object> headers = Map.of("hasNext", items.hasNext(), "hasPrev", items.hasPrevious());
+        return ResponseEntity.ok(Response.successDataWithHeaders(items.getContent(), headers));
     }
 
     @GetMapping("/getExcluded/{id}")
@@ -60,3 +66,5 @@ public class ProductGroupController {
         return ResponseEntity.ok(Response.successMessage(text, "productGroup.deleted"));
     }
 }
+
+

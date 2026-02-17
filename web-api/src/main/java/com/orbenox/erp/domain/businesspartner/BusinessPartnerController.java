@@ -4,11 +4,13 @@ import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/businessPartners")
@@ -19,8 +21,12 @@ public class BusinessPartnerController {
 
     @PreAuthorize("hasPermission('BUSINESS_PARTNER', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<BusinessPartnerItem>>> getAll() {
-        return ResponseEntity.ok(Response.successData(businessPartnerService.getAllItems()));
+    public ResponseEntity<Response<List<BusinessPartnerItem>>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @RequestParam(defaultValue = "") String search) {
+        Slice<BusinessPartnerItem> items = businessPartnerService.getAllItems(page, size, search);
+        Map<String, Object> headers = Map.of("hasNext", items.hasNext(), "hasPrev", items.hasPrevious());
+        return ResponseEntity.ok(Response.successDataWithHeaders(items.getContent(), headers));
     }
 
     @PreAuthorize("hasPermission('BUSINESS_PARTNER', 'READ')")
@@ -50,3 +56,5 @@ public class BusinessPartnerController {
         return ResponseEntity.ok(Response.successMessage(text, "businessPartner.deleted"));
     }
 }
+
+

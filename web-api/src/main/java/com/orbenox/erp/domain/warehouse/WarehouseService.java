@@ -4,12 +4,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
-import static com.orbenox.erp.config.CacheConfig.CacheNames.LOOKUPS;
-import static com.orbenox.erp.config.CacheConfig.CacheNames.WAREHOUSES;
+import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -18,8 +19,10 @@ public class WarehouseService {
     private final WarehouseMapper warehouseMapper;
 
     @Cacheable(WAREHOUSES)
-    public List<WarehouseItem> getAllItems() {
-        return warehouseRepository.getAllItems();
+    public Slice<WarehouseItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return warehouseRepository.getAllItems(PageRequest.of(page, size));
+        return warehouseRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     public WarehouseItem getItemById(Long id) {
@@ -47,4 +50,7 @@ public class WarehouseService {
         entity.setDeleted(true);
     }
 }
+
+
+
 

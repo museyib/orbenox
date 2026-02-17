@@ -4,12 +4,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
-import static com.orbenox.erp.config.CacheConfig.CacheNames.ACCOUNTS;
-import static com.orbenox.erp.config.CacheConfig.CacheNames.LOOKUPS;
+import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -18,8 +19,10 @@ public class AccountService {
     private final AccountMapper accountMapper;
 
     @Cacheable(ACCOUNTS)
-    public List<AccountItem> getAllItems() {
-        return accountRepository.getAllItems();
+    public Slice<AccountItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return accountRepository.getAllItems(PageRequest.of(page, size));
+        return accountRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     public AccountItem getItemById(Long id) {
@@ -47,3 +50,6 @@ public class AccountService {
         account.setDeleted(true);
     }
 }
+
+
+

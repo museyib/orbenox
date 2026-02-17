@@ -9,11 +9,13 @@ import com.orbenox.erp.security.projection.UserData;
 import com.orbenox.erp.security.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,8 +26,12 @@ public class UserController {
 
     @PreAuthorize("hasPermission('APP_USER', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<SimpleUserItem>>> getAllUsers() {
-        return ResponseEntity.ok(Response.successData(userService.getAllItems()));
+    public ResponseEntity<Response<List<SimpleUserItem>>> getAllUsers(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @RequestParam(defaultValue = "") String search) {
+        Slice<SimpleUserItem> items = userService.getAllItems(page, size, search);
+        Map<String, Object> headers = Map.of("hasNext", items.hasNext(), "hasPrev", items.hasPrevious());
+        return ResponseEntity.ok(Response.successDataWithHeaders(items.getContent(), headers));
     }
 
     @PreAuthorize("hasPermission('APP_USER', 'READ')")
@@ -55,3 +61,5 @@ public class UserController {
         return Response.successMessage(text, "user.deleted");
     }
 }
+
+

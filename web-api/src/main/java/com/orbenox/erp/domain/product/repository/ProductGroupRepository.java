@@ -3,6 +3,8 @@ package com.orbenox.erp.domain.product.repository;
 import com.orbenox.erp.domain.product.entity.ProductGroup;
 import com.orbenox.erp.domain.product.projection.ProductGroupItem;
 import com.orbenox.erp.domain.product.projection.SimpleProductGroupItem;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,7 +25,21 @@ public interface ProductGroupRepository extends JpaRepository<ProductGroup, Long
                 LEFT JOIN p.parent as pp
             WHERE p.deleted = false
             ORDER BY p.id""")
-    List<ProductGroupItem> getAllItems();
+    Slice<ProductGroupItem> getAllItems(Pageable pageable);
+
+@Query("""
+            SELECT p.id as id,
+                    p.code as code,
+                    p.name as name,
+                    p.description as description,
+                    p.enabled as enabled,
+                    pp as parent
+                FROM ProductGroup p
+                LEFT JOIN p.parent as pp
+            WHERE  p.deleted = false
+                    AND (LOWER(p.code) LIKE %:search% OR LOWER(p.name) LIKE %:search% OR LOWER(p.description) LIKE %:search% OR LOWER(pp.code) LIKE %:search%)
+            ORDER BY p.id""")
+    Slice<ProductGroupItem> getItemsSearched(Pageable pageable, @Param("search") String search);
 
     @Query("""
             SELECT p.id as id,
@@ -57,3 +73,4 @@ public interface ProductGroupRepository extends JpaRepository<ProductGroup, Long
             ORDER BY p.id""")
     List<SimpleProductGroupItem> getItemsExcluded(@Param("ids") List<Long> idsToExclude);
 }
+

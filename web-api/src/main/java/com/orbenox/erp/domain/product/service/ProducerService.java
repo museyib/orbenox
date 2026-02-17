@@ -10,12 +10,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
-import static com.orbenox.erp.config.CacheConfig.CacheNames.LOOKUPS;
-import static com.orbenox.erp.config.CacheConfig.CacheNames.PRODUCERS;
+import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +25,10 @@ public class ProducerService {
     private final ProducerMapper producerMapper;
 
     @Cacheable(PRODUCERS)
-    public List<ProducerItem> getAllItems() {
-        return producerRepository.getAllItems();
+    public Slice<ProducerItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return producerRepository.getAllItems(PageRequest.of(page, size));
+        return producerRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     public ProducerItem getItemById(Long id) {
@@ -53,4 +56,7 @@ public class ProducerService {
         entity.setDeleted(true);
     }
 }
+
+
+
 

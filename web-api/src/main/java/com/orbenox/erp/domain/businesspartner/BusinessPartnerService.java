@@ -4,12 +4,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
-import static com.orbenox.erp.config.CacheConfig.CacheNames.BUSINESS_PARTNERS;
-import static com.orbenox.erp.config.CacheConfig.CacheNames.LOOKUPS;
+import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -18,8 +19,10 @@ public class BusinessPartnerService {
     private final BusinessPartnerMapper businessPartnerMapper;
 
     @Cacheable(BUSINESS_PARTNERS)
-    public List<BusinessPartnerItem> getAllItems() {
-        return businessPartnerRepository.getAllItems();
+    public Slice<BusinessPartnerItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return businessPartnerRepository.getAllItems(PageRequest.of(page, size));
+        return businessPartnerRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     public BusinessPartnerItem getItemById(Long id) {
@@ -47,3 +50,6 @@ public class BusinessPartnerService {
         entity.setDeleted(true);
     }
 }
+
+
+

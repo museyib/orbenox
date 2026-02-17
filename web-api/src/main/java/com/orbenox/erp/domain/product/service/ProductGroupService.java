@@ -11,12 +11,15 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -25,13 +28,15 @@ public class ProductGroupService {
     private final ProductGroupMapper productGroupMapper;
 
     @Cacheable(PRODUCT_GROUPS_ALL)
-    public List<ProductGroupItem> getAllItems() {
-        return productGroupRepository.getAllItems();
+    public Slice<ProductGroupItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return productGroupRepository.getAllItems(PageRequest.of(page, size));
+        return productGroupRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     @Cacheable(PRODUCT_GROUPS_EXCLUDED)
     public List<SimpleProductGroupItem> findAllExcluded(Long idToExclude) {
-        List<ProductGroupItem> items = productGroupRepository.getAllItems();
+        List<ProductGroupItem> items = productGroupRepository.getAllItems(PageRequest.of(0, Integer.MAX_VALUE)).getContent();
         Map<Long, List<ProductGroupItem>> childrenMap = items.stream()
                 .collect(Collectors.groupingBy(
                         groupItem -> groupItem.getParent() == null
@@ -92,4 +97,7 @@ public class ProductGroupService {
         entity.setDeleted(true);
     }
 }
+
+
+
 

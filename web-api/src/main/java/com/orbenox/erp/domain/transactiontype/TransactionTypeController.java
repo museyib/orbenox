@@ -4,11 +4,13 @@ import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,8 +21,12 @@ public class TransactionTypeController {
 
     @PreAuthorize("hasPermission('TRANSACTION_TYPE', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<TransactionTypeItem>>> getAll() {
-        return ResponseEntity.ok(Response.successData(transactionTypeService.getAllItems()));
+    public ResponseEntity<Response<List<TransactionTypeItem>>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @RequestParam(defaultValue = "") String search) {
+        Slice<TransactionTypeItem> items = transactionTypeService.getAllItems(page, size, search);
+        Map<String, Object> headers = Map.of("hasNext", items.hasNext(), "hasPrev", items.hasPrevious());
+        return ResponseEntity.ok(Response.successDataWithHeaders(items.getContent(), headers));
     }
 
     @PreAuthorize("hasPermission('TRANSACTION_TYPE', 'READ')")
@@ -50,3 +56,5 @@ public class TransactionTypeController {
         return ResponseEntity.ok(Response.successMessage(text, "transactionType.deleted"));
     }
 }
+
+

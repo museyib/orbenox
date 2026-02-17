@@ -4,12 +4,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
-import static com.orbenox.erp.config.CacheConfig.CacheNames.COUNTRIES;
-import static com.orbenox.erp.config.CacheConfig.CacheNames.LOOKUPS;
+import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -18,8 +19,10 @@ public class CountryService {
     private final CountryMapper countryMapper;
 
     @Cacheable(COUNTRIES)
-    public List<CountryItem> getAllItems() {
-        return countryRepository.getAllItems();
+    public Slice<CountryItem> getAllItems(int page, int size, String search) {
+        if (isEmpty(search))
+            return countryRepository.getAllItems(PageRequest.of(page, size));
+        return countryRepository.getItemsSearched(PageRequest.of(page, size), search);
     }
 
     public CountryItem getItemById(Long id) {
@@ -47,4 +50,7 @@ public class CountryService {
         entity.setDeleted(true);
     }
 }
+
+
+
 
