@@ -1,5 +1,6 @@
 package com.orbenox.erp.domain.resource;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,7 +17,19 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
             FROM Resource r
             WHERE r.deleted = false
             ORDER BY r.id""")
-    List<ResourceItem> getAllItems();
+    List<ResourceItem> getAllItems(Pageable pageable);
+
+    @Query("""
+            SELECT r.id as id,
+                r.code as code,
+                r.name as name,
+                r.enabled as enabled
+            FROM Resource r
+            WHERE (LOWER(r.code) LIKE %:search% OR LOWER(r.name) LIKE %:search%)
+                    AND r.deleted = false
+            ORDER BY r.id""")
+    List<ResourceItem> getItemsSearched(@Param("search") String search, Pageable pageable);
+
 
     @Query("""
             SELECT r.id as id,

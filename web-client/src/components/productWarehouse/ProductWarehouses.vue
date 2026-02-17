@@ -48,8 +48,6 @@ function newWarehouse() {
   const newWarehouse = {
     product: currentProduct.value,
     warehouse: warehouses.value[0],
-    quantity: 0,
-    reservedQuantity: 0,
     minQuantity: 0,
     maxQuantity: 999999999
   }
@@ -67,8 +65,6 @@ function updateWarehouses() {
     const dto = {
       productId: currentProduct.value.id,
       warehouseId: item.warehouse?.id ?? item.warehouseId,
-      quantity: item.quantity,
-      reservedQuantity: item.reservedQuantity,
       minQuantity: item.minQuantity,
       maxQuantity: item.maxQuantity
     };
@@ -111,7 +107,7 @@ onMounted(() => init());
       <New :on-create="newWarehouse"/>
     </PageHeader>
 
-    <section class="card">
+    <section class="card list-card">
       <div v-if="productWarehouses.length > 0" class="table-wrap">
         <div>
           <table class="data-table" role="table">
@@ -119,9 +115,6 @@ onMounted(() => init());
             <tr>
               <th>#</th>
               <th>{{ $t('warehouse.title') }}</th>
-              <th>{{ $t('quantity') }}</th>
-              <th>{{ $t('reservedQuantity') }}</th>
-              <th>{{ $t('freeQuantity') }}</th>
               <th>{{ $t('minQuantity') }}</th>
               <th>{{ $t('maxQuantity') }}</th>
               <th aria-hidden="true" class="actions-col"></th>
@@ -139,9 +132,6 @@ onMounted(() => init());
                   </option>
                 </select>
               </td>
-              <td>{{ warehouseData.quantity }}</td>
-              <td>{{ warehouseData.reservedQuantity }}</td>
-              <td>{{ warehouseData.freeQuantity }}</td>
               <td><input type="text" name="minQuantity" v-model="warehouseData.minQuantity" /></td>
               <td><input type="text" name="maxQuantity" v-model="warehouseData.maxQuantity" /></td>
                 <td class="actions-col">

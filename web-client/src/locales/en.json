@@ -81,6 +81,12 @@
     "edit": "Edit product",
     "updated": "Product updated"
   },
+  "warehouse": {
+    "title": "Warehouse",
+    "new": "New warehouse",
+    "edit": "Edit warehouse",
+    "updated": "Warehouse updated"
+  },
   "priceList": {
     "title": "Price list",
     "new": "New price list",
@@ -219,12 +225,17 @@
   "processScope": "Process scope",
   "accountType": "Account type",
   "partnerType": "Partner type",
-  "taxId": "Tax ID"
-  ,"sequence": "Sequence",
+  "taxId": "Tax ID",
+  "security": "Security",
+  "masterData": "Master data",
+  "productSetup": "Product setup",
+  "operations": "Operations",
+  "sequence": "Sequence",
   "debitAccount": "Debit account",
   "creditAccount": "Credit account",
   "amountSource": "Amount source",
   "partnerSide": "Partner side",
-  "partnerRole": "Partner role"
+  "partnerRole": "Partner role",
+  "transactions": "Transactions",
+  "stockBalance": "Stock"
 }
-

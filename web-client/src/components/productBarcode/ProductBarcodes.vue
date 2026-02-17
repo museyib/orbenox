@@ -105,7 +105,7 @@ onMounted(() => init());
       <New :on-create="newBarcode"/>
     </PageHeader>
 
-    <section class="card">
+    <section class="card list-card">
       <div v-if="productBarcodes.length > 0" class="table-wrap">
         <div>
           <table class="data-table" role="table">

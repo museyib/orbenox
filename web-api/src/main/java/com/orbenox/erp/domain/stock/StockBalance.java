@@ -1,10 +1,12 @@
-package com.orbenox.erp.transaction.entity;
+package com.orbenox.erp.domain.stock;
 
 import com.orbenox.erp.domain.product.entity.Product;
 import com.orbenox.erp.domain.warehouse.Warehouse;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.EventType;
 
 import java.math.BigDecimal;
 
@@ -25,13 +27,10 @@ public class StockBalance {
     @Column(nullable = false)
     private BigDecimal quantity = BigDecimal.ZERO;
 
-    @Override
-    public String toString() {
-        return "StockBalance{" +
-                "id=" + id +
-                ", product=" + product +
-                ", warehouse=" + warehouse +
-                ", quantity=" + quantity +
-                '}';
-    }
+    @Column(nullable = false, precision = 20, scale = 10)
+    private BigDecimal reservedQuantity = BigDecimal.valueOf(0);
+
+    @Column(nullable = false, precision = 20, scale = 10)
+    @Generated(event = {EventType.INSERT, EventType.UPDATE})
+    private BigDecimal freeQuantity;
 }

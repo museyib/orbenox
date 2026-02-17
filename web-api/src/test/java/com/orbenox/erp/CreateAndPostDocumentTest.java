@@ -4,6 +4,8 @@ import com.orbenox.erp.domain.businesspartner.BusinessPartnerRepository;
 import com.orbenox.erp.domain.price.PriceListRepository;
 import com.orbenox.erp.domain.product.entity.Product;
 import com.orbenox.erp.domain.product.repository.ProductRepository;
+import com.orbenox.erp.domain.stock.StockBalance;
+import com.orbenox.erp.domain.stock.StockBalanceRepository;
 import com.orbenox.erp.domain.transactiontype.TransactionTypeRepository;
 import com.orbenox.erp.domain.warehouse.Warehouse;
 import com.orbenox.erp.domain.warehouse.WarehouseRepository;

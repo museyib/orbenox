@@ -73,6 +73,7 @@ import EditBusinessPartnerRole from "@/components/businessPartnerRole/EditBusine
 import Documents from "@/components/document/Documents.vue";
 import CreateDocument from "@/components/document/CreateDocument.vue";
 import ProcessDocument from "@/components/document/ProcessDocument.vue";
+import Stock from "@/components/stock/Stock.vue";
 
 const routes = [
     {path: '/', component: Home, meta: {title: 'Home'}},
@@ -149,6 +150,7 @@ const routes = [
     {path: '/ui/businessPartnerRoles', component: BusinessPartnerRoles, meta: {title: 'Business Partner Roles'}},
     {path: '/ui/businessPartnerRoles/create', component: CreateBusinessPartnerRole, meta: {title: 'Create Business Partner Role'}},
     {path: '/ui/businessPartnerRoles/edit/:id', component: EditBusinessPartnerRole, meta: {title: 'Edit Business Partner Role'}},
+    {path: '/ui/products/:id/stock', component: Stock, meta: {title: 'Stock'}},
 ]
 
 const appRouter = createRouter({

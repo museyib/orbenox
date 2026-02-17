@@ -8,9 +8,6 @@ public interface ProductWarehouseItem {
     Long getId();
     SimpleProductItem getProduct();
     WarehouseItem getWarehouse();
-    BigDecimal getQuantity();
-    BigDecimal getReservedQuantity();
-    BigDecimal getFreeQuantity();
     BigDecimal getMinQuantity();
     BigDecimal getMaxQuantity();
 }

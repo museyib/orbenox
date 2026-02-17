@@ -59,7 +59,7 @@ onMounted(() => init());
       <Toolbar :on-create="create" :on-refresh="init" :on-search="onSearch" :search-query="searchQuery"/>
     </PageHeader>
 
-    <section class="card">
+    <section class="card list-card">
       <div v-if="currencies.length > 0" class="table-wrap">
         <table class="data-table" role="table">
           <thead>

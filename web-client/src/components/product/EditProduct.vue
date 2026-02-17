@@ -105,6 +105,10 @@ function productWarehouses(productId) {
   router.push('/ui/products/' + productId + '/warehouses');
 }
 
+function stockBalance(productId) {
+  router.push('/ui/products/' + productId + '/stock');
+}
+
 onMounted(() => init());
 </script>
 
@@ -227,6 +231,7 @@ onMounted(() => init());
       <button class="btn btn-sm" @click='productBarcodes(product.id)'>{{ $t('productBarcodes') }}</button>
       <button class="btn btn-sm" @click='productUnits(product.id)'>{{ $t('productUnits') }}</button>
       <button class="btn btn-sm" @click='productWarehouses(product.id)'>{{ $t('productWarehouses') }}</button>
+      <button class="btn btn-sm" @click='stockBalance(product.id)'>{{ $t('stockBalance') }}</button>
     </section>
     <InfoBar :info="info"/>
   </MainLayout>

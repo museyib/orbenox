@@ -13,8 +13,6 @@ import java.util.Objects;
 public record ProductWarehouseUpdateDto(Long id,
                                         @NotNull(message = "{product.notNull}") Long productId,
                                         @NotNull(message = "{warehouse.notNull}") Long warehouseId,
-                                        BigDecimal quantity,
-                                        BigDecimal reservedQuantity,
                                         BigDecimal minQuantity,
                                         BigDecimal maxQuantity) implements Serializable {
     @Override

@@ -158,7 +158,7 @@ onMounted(() => init());
       <New :on-create="create"/>
     </PageHeader>
 
-    <section class="card">
+    <section class="card list-card">
       <select id="selectedPriceList" v-model="selectedPriceList">
         <option v-for="priceList in priceLists"
                 :key="priceList.id"

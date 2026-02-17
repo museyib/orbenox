@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/resources")
@@ -19,8 +20,12 @@ public class ResourceController {
 
     @PreAuthorize("hasPermission('RESOURCE', 'READ')")
     @GetMapping
-    public ResponseEntity<Response<List<ResourceItem>>> getActions() {
-        return ResponseEntity.ok(Response.successData(resourceService.getAllItems()));
+    public ResponseEntity<Response<List<ResourceItem>>> getActions(@RequestParam(defaultValue = "0") int page,
+                                                                   @RequestParam(defaultValue = "10") int size,
+                                                                   @RequestParam(defaultValue = "") String search) {
+        boolean hasNextPage = !resourceService.getAllItems(page + 1, 1, search).isEmpty();
+        Map<String, Object> headers = Map.of( "hasNextPage", hasNextPage);
+        return ResponseEntity.ok(Response.successDataWithHeaders(resourceService.getAllItems(page, size, search), headers));
     }
 
     @PreAuthorize("hasPermission('RESOURCE', 'READ')")

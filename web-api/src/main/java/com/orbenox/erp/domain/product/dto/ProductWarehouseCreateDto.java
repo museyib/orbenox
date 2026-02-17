@@ -11,8 +11,6 @@ import java.math.BigDecimal;
  */
 public record ProductWarehouseCreateDto(@NotNull(message = "{product.notNull}") Long productId,
                                         @NotNull(message = "{warehouse.notNull}") Long warehouseId,
-                                        BigDecimal quantity,
-                                        BigDecimal reservedQuantity,
                                         BigDecimal minQuantity,
                                         BigDecimal maxQuantity) implements Serializable {
 }

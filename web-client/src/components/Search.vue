@@ -18,7 +18,7 @@ defineProps({
       name="search"
       placeholder="Search…"
       type="search"
-      v-bind="searchQuery"
+      :value="searchQuery"
       @input="onSearch"
   />
 </template>

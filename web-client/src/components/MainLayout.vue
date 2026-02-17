@@ -43,6 +43,8 @@ const home = () => {
   border-right: 1px solid #e3e6eb;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
   padding: 1rem 0;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
@@ -67,7 +69,10 @@ const home = () => {
 
 .content {
   padding: 1.2rem 1.5rem;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .language-switcher select {

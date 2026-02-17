@@ -1,9 +1,10 @@
 package com.orbenox.erp.transaction.service;
 
 import com.orbenox.erp.domain.product.entity.Product;
+import com.orbenox.erp.domain.stock.StockBalance;
 import com.orbenox.erp.domain.warehouse.Warehouse;
 import com.orbenox.erp.transaction.entity.*;
-import com.orbenox.erp.transaction.repository.StockBalanceRepository;
+import com.orbenox.erp.domain.stock.StockBalanceRepository;
 import com.orbenox.erp.transaction.repository.StockMovementRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

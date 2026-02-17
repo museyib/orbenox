@@ -64,7 +64,12 @@ VALUES ('LOOKUP', 'Baxış', 'system'),
        ('PRODUCT_BARCODE', 'Mal barkodları', 'system'),
        ('PRODUCT_UNIT', 'Mal üzrə ölçü vahidləri', 'system'),
        ('PRODUCT_WAREHOUSE', 'Mal-anbar', 'system'),
-       ('TRANSACTION_TYPE', 'Mal-anbar', 'system');
+       ('TRANSACTION_TYPE', 'Mal-anbar', 'system'),
+       ('ACCOUNT', 'Hesablar', 'system'),
+       ('BUSINESS_PARTNER', 'Biznes partnyorlar', 'system'),
+       ('POSTING_RULE', 'Hesab uçot qaydaları', 'system'),
+       ('BUSINESS_PARTNER_ROLE', 'Biznes partnyor rolları', 'system'),
+       ('STOCK_BALANCE', 'Anbar qalıqları', 'system');
 
 INSERT INTO resource_action (resource_id, action, created_by)
 VALUES (1, 'READ', 'system'),
@@ -163,7 +168,24 @@ VALUES (1, 'READ', 'system'),
        (25, 'READ', 'system'),
        (25, 'CREATE', 'system'),
        (25, 'UPDATE', 'system'),
-       (25, 'DELETE', 'system');
+       (25, 'DELETE', 'system'),
+       (26, 'READ', 'system'),
+       (26, 'CREATE', 'system'),
+       (26, 'UPDATE', 'system'),
+       (26, 'DELETE', 'system'),
+       (27, 'READ', 'system'),
+       (27, 'CREATE', 'system'),
+       (27, 'UPDATE', 'system'),
+       (27, 'DELETE', 'system'),
+       (28, 'READ', 'system'),
+       (28, 'CREATE', 'system'),
+       (28, 'UPDATE', 'system'),
+       (28, 'DELETE', 'system'),
+       (29, 'READ', 'system'),
+       (29, 'CREATE', 'system'),
+       (29, 'UPDATE', 'system'),
+       (29, 'DELETE', 'system'),
+       (30, 'READ', 'system');
 
 INSERT INTO account(code, name, account_type, created_by)
 VALUES ('1000', 'Cash', 'ASSET', 'system'),

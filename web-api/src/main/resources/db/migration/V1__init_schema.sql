@@ -438,18 +438,15 @@ CREATE TABLE product_unit
 
 CREATE TABLE product_warehouse
 (
-    id                BIGSERIAL PRIMARY KEY,
-    product_id        BIGINT          NOT NULL REFERENCES product (id),
-    warehouse_id      BIGINT          NOT NULL REFERENCES warehouse (id),
-    quantity          NUMERIC(20, 10) NOT NULL DEFAULT 0,
-    reserved_quantity NUMERIC(20, 10) NOT NULL DEFAULT 0,
-    free_quantity     NUMERIC(20, 10) GENERATED ALWAYS AS ( quantity - reserved_quantity ) STORED,
-    min_quantity      NUMERIC(20, 10) NOT NULL DEFAULT 0,
-    max_quantity      NUMERIC(20, 10) NOT NULL DEFAULT 999999999,
-    created_at        TIMESTAMP                DEFAULT now(),
-    updated_at        TIMESTAMP,
-    created_by        VARCHAR(100),
-    updated_by        VARCHAR(100),
+    id           BIGSERIAL PRIMARY KEY,
+    product_id   BIGINT          NOT NULL REFERENCES product (id),
+    warehouse_id BIGINT          NOT NULL REFERENCES warehouse (id),
+    min_quantity NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    max_quantity NUMERIC(20, 10) NOT NULL DEFAULT 999999999,
+    created_at   TIMESTAMP                DEFAULT now(),
+    updated_at   TIMESTAMP,
+    created_by   VARCHAR(100),
+    updated_by   VARCHAR(100),
     UNIQUE (product_id, warehouse_id)
 );
 
@@ -567,10 +564,12 @@ CREATE TABLE stock_movement
 
 CREATE TABLE stock_balance
 (
-    id           BIGSERIAL PRIMARY KEY,
-    product_id   BIGINT REFERENCES product (id),
-    warehouse_id BIGINT REFERENCES warehouse (id),
-    quantity     NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    id                BIGSERIAL PRIMARY KEY,
+    product_id        BIGINT REFERENCES product (id),
+    warehouse_id      BIGINT REFERENCES warehouse (id),
+    quantity          NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    reserved_quantity NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    free_quantity     NUMERIC(20, 10) GENERATED ALWAYS AS ( quantity - reserved_quantity ) STORED,
     UNIQUE (product_id, warehouse_id),
     CHECK ( NOT quantity < 0 )
 )

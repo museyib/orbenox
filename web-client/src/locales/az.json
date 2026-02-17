@@ -81,6 +81,12 @@
     "edit": "Mal düzəlişi",
     "updated": "Mal yeniləndi"
   },
+  "warehouse": {
+    "title": "Anbar",
+    "new": "Yeni anbar",
+    "edit": "Anbar düzəlişi",
+    "updated": "Anbar yeniləndi"
+  },
   "priceList": {
     "title": "Qiymət",
     "new": "Yeni qiymət",
@@ -198,8 +204,8 @@
   "documentStatus": "Sənəd statusu",
   "approvalStatus": "Təsdiq statusu",
   "paymentMethod": "Ödəniş üsulu",
-  "sourceWarehouse": "Mənbə anbar",
-  "targetWarehouse": "Təyinat anbar",
+  "sourceWarehouse": "Mənbə anbarı",
+  "targetWarehouse": "Təyinat anbarı",
   "lines": "Sətirlər",
   "addLine": "Sətr əlavə et",
   "removeLine": "Sətri sil",
@@ -225,5 +231,10 @@
   "creditAccount": "Kredit hesab",
   "amountSource": "Məbləğ mənbəyi",
   "partnerSide": "Partnyor tərəfi",
-  "partnerRole": "Partnyor rolu"
+  "security": "Təhlükəsizlik",
+  "masterData": "Master data",
+  "productSetup": "Mallar üzrə sazlamalar",
+  "operations": "Əməliyyatlar",
+  "partnerRole": "Partnyor rolu",
+  "stockBalance": "Anbar qalığı"
 }
