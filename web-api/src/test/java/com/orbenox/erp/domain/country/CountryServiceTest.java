@@ -8,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 import java.util.List;
 
@@ -43,8 +45,10 @@ class CountryServiceTest {
     @DisplayName("Should return all country items")
     void getAllItems_ShouldReturnAllCountries() {
         // Given
+        PageRequest pageRequest = PageRequest.of(0, 10);
         List<CountryItem> expected = List.of(countryItem);
-        when(countryRepository.getAllItems(PageRequest.of(0, 10)).getContent()).thenReturn(expected);
+        Slice<CountryItem> slice = new SliceImpl<>(expected, pageRequest, false);
+        when(countryRepository.getAllItems(pageRequest)).thenReturn(slice);
 
         // When
         List<CountryItem> actual = countryService.getAllItems(0, 10, "").getContent();

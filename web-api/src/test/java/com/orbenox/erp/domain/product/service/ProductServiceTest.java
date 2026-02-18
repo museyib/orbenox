@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 import java.util.List;
 
@@ -53,8 +55,10 @@ class ProductServiceTest {
     @DisplayName("Should return all product items")
     void getAllItems_ShouldReturnAllProducts() {
         // Given
+        PageRequest pageRequest = PageRequest.of(0, 10);
         List<ProductItem> expected = List.of(productItem);
-        when(productRepository.getAllItems(PageRequest.of(0, 10)).getContent()).thenReturn(expected);
+        Slice<ProductItem> slice = new SliceImpl<>(expected, pageRequest, false);
+        when(productRepository.getAllItems(pageRequest)).thenReturn(slice);
 
         // When
         List<ProductItem> actual = productService.getAllItems(0, 10, "").getContent();
