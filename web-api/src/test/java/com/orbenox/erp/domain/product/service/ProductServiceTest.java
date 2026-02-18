@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -53,15 +54,15 @@ class ProductServiceTest {
     void getAllItems_ShouldReturnAllProducts() {
         // Given
         List<ProductItem> expected = List.of(productItem);
-        when(productRepository.getAllItems()).thenReturn(expected);
+        when(productRepository.getAllItems(PageRequest.of(0, 10)).getContent()).thenReturn(expected);
 
         // When
-        List<ProductItem> actual = productService.getAllItems();
+        List<ProductItem> actual = productService.getAllItems(0, 10, "").getContent();
 
         // Then
         assertThat(actual).isNotNull();
         assertThat(actual).hasSize(1);
-        verify(productRepository, times(1)).getAllItems();
+        verify(productRepository, times(1)).getAllItems(PageRequest.of(0, 10));
     }
 
     @Test

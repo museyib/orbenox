@@ -19,9 +19,11 @@ import com.orbenox.erp.transaction.entity.CommercialContext;
 import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.entity.ProductLine;
 import com.orbenox.erp.transaction.entity.StockContext;
+import com.orbenox.erp.transaction.policy.context.ContextPolicy;
 import com.orbenox.erp.transaction.repository.CommercialContextRepository;
 import com.orbenox.erp.transaction.repository.DocumentRepository;
 import com.orbenox.erp.transaction.repository.StockContextRepository;
+import com.orbenox.erp.transaction.resolver.PolicyResolver;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,6 +43,7 @@ public class DocumentService {
     private final WarehouseRepository warehouseRepository;
     private final StockContextRepository stockContextRepository;
     private final LocalizationService i18n;
+    private final PolicyResolver<ContextPolicy> contextPolicyResolver;
 
     @Transactional
     public Document createDocument(CreateDocumentCommand command) {
@@ -99,8 +102,11 @@ public class DocumentService {
                 sc.setTargetWarehouse(warehouse);
             }
 
-            stockContextRepository.save(sc);
             doc.setStockContext(sc);
+
+            ContextPolicy contextPolicy = contextPolicyResolver.resolve(doc.getType());
+            contextPolicy.validate(doc);
+            stockContextRepository.save(sc);
         }
 
         return doc;

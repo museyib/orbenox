@@ -24,11 +24,13 @@ public class StockService implements ContextService {
     public void post(Document doc) {
         StockContext sc = doc.getStockContext();
 
-        for (ProductLine line: doc.getProductLines()) {
-            if (sc.getSourceWarehouse() != null)
-                createMovement(doc, line.getProduct(), sc.getSourceWarehouse(), line.getQuantity().negate());
-            if (sc.getTargetWarehouse() != null)
-                createMovement(doc, line.getProduct(), sc.getTargetWarehouse(), line.getQuantity());
+        if (sc != null) {
+            for (ProductLine line : doc.getProductLines()) {
+                if (sc.getSourceWarehouse() != null)
+                    createMovement(doc, line.getProduct(), sc.getSourceWarehouse(), line.getQuantity().negate());
+                if (sc.getTargetWarehouse() != null)
+                    createMovement(doc, line.getProduct(), sc.getTargetWarehouse(), line.getQuantity());
+            }
         }
     }
 

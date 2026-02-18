@@ -12,10 +12,10 @@ import com.orbenox.erp.domain.warehouse.WarehouseRepository;
 import com.orbenox.erp.transaction.command.CreateDocumentCommand;
 import com.orbenox.erp.transaction.command.ProductLineCommand;
 import com.orbenox.erp.transaction.entity.*;
-import com.orbenox.erp.transaction.policy.ApprovalPolicy;
-import com.orbenox.erp.transaction.policy.SalesOrderApprovalPolicy;
+import com.orbenox.erp.transaction.policy.approval.ApprovalPolicy;
+import com.orbenox.erp.transaction.policy.approval.SalesOrderApprovalPolicy;
 import com.orbenox.erp.transaction.repository.*;
-import com.orbenox.erp.transaction.resolver.ApprovalPolicyResolver;
+import com.orbenox.erp.transaction.resolver.PolicyResolver;
 import com.orbenox.erp.transaction.service.DocumentActionService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +52,7 @@ public class CreateAndPostDocumentTest {
     @Autowired
     StockMovementRepository stockMovementRepo;
     @Autowired
-    ApprovalPolicyResolver policyResolver;
+    PolicyResolver<ApprovalPolicy> approvalPolicyResolver;
 
     private Product product;
     private Warehouse warehouse;
@@ -169,7 +169,7 @@ public class CreateAndPostDocumentTest {
         assertTrue(journalLines.stream().anyMatch(l -> l.getAccount().getCode().equals("3000") && l.getCredit().compareTo(BigDecimal.ZERO) > 0));
 
         assertEquals(0, stockBalance.getQuantity().compareTo(BigDecimal.ZERO));
-        ApprovalPolicy policy = policyResolver.resolve(document.getType());
+        ApprovalPolicy policy = approvalPolicyResolver.resolve(document.getType());
         assertInstanceOf(SalesOrderApprovalPolicy.class, policy);
         assertTrue(document.getType().isApprovalRequired());
         assertTrue(policy.supports(document.getType()));

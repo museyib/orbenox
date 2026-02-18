@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -43,15 +44,15 @@ class CountryServiceTest {
     void getAllItems_ShouldReturnAllCountries() {
         // Given
         List<CountryItem> expected = List.of(countryItem);
-        when(countryRepository.getAllItems()).thenReturn(expected);
+        when(countryRepository.getAllItems(PageRequest.of(0, 10)).getContent()).thenReturn(expected);
 
         // When
-        List<CountryItem> actual = countryService.getAllItems();
+        List<CountryItem> actual = countryService.getAllItems(0, 10, "").getContent();
 
         // Then
         assertThat(actual).isNotNull();
         assertThat(actual).hasSize(1);
-        verify(countryRepository, times(1)).getAllItems();
+        verify(countryRepository, times(1)).getAllItems(PageRequest.of(0, 10));
     }
 
     @Test

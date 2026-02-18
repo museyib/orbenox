@@ -1,4 +1,4 @@
-package com.orbenox.erp.transaction.policy;
+package com.orbenox.erp.transaction.policy.approval;
 
 import com.orbenox.erp.domain.transactiontype.TransactionType;
 import com.orbenox.erp.transaction.entity.Document;

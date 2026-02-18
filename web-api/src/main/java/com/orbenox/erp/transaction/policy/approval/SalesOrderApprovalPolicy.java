@@ -1,4 +1,4 @@
-package com.orbenox.erp.transaction.policy;
+package com.orbenox.erp.transaction.policy.approval;
 
 import com.orbenox.erp.domain.product.repository.ProductPriceRepository;
 import com.orbenox.erp.domain.transactiontype.TransactionType;
