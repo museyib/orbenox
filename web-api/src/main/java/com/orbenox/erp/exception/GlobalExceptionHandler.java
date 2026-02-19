@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.orbenox.erp.common.Utilities.getMessage;
-import static io.micrometer.common.util.StringUtils.isEmpty;
+import static com.orbenox.erp.common.Utilities.isBlank;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
                 .getFieldErrors()
                 .stream()
                 .collect(Collectors.toMap(FieldError::getField,
-                        fe -> isEmpty(fe.getDefaultMessage()) ? "" : fe.getDefaultMessage(),
+                        fe -> isBlank(fe.getDefaultMessage()) ? "" : fe.getDefaultMessage(),
                         (a, b) -> a));
         int code = HttpStatus.BAD_REQUEST.value();
         String message = MessageFormat.format("{0}: {1}", i18n.msg("error.validation"), errors);
@@ -75,6 +75,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Response<String>> handleException(DataIntegrityViolationException e) {
+        int code = HttpStatus.BAD_REQUEST.value();
+        String message = MessageFormat.format("{0}: {1}", i18n.msg("error.validation"), getMessage(e));
+        log.error(message);
+        return ResponseEntity.status(code).body(Response.errorMessage(code, message, "error.validation"));
+    }
+
+    @ExceptionHandler(BusinessRuleException.class)
+    public ResponseEntity<Response<String>> handleException(BusinessRuleException e) {
         int code = HttpStatus.BAD_REQUEST.value();
         String message = MessageFormat.format("{0}: {1}", i18n.msg("error.validation"), getMessage(e));
         log.error(message);

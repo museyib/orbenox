@@ -1,6 +1,7 @@
 package com.orbenox.erp.domain.transactiontype;
 
 import com.orbenox.erp.domain.postingrule.PostingRuleDto;
+import com.orbenox.erp.enums.StockAffectDirection;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.Objects;
@@ -13,6 +14,12 @@ public record TransactionTypeUpdateDto(Long id,
                                        boolean enabled,
                                        @NotBlank(message = "{code.notBlank}") String code,
                                        @NotBlank(message = "{name.notBlank}") String name,
+                                       @NotBlank(message = "{documentNoPrefix.notBlank}") String documentNoPrefix,
+                                       StockAffectDirection stockAffectDirection,
+                                       boolean commercialAffected,
+                                       boolean accountingAffected,
+                                       boolean creditLimitChecked,
+                                       boolean approvalRequired,
                                        Set<PostingRuleDto> rules) {
     @Override
     public boolean equals(Object o) {

@@ -18,7 +18,7 @@ import java.util.List;
 @Entity
 public class Document extends BaseEntity {
     @Column(nullable = false, unique = true)
-    private String number;
+    private String documentNo;
 
     @Column(nullable = false)
     private LocalDate documentDate;

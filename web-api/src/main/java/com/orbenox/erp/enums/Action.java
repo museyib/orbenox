@@ -5,7 +5,10 @@ public enum Action {
     CREATE,
     UPDATE,
     DELETE,
+    SUBMIT,
     APPROVE,
+    POST,
     REJECT,
-    CLOSE
+    CLOSE,
+    CANCEL
 }

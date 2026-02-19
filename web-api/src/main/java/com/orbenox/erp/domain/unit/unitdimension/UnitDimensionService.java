@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 
 import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
-import static org.springframework.util.ObjectUtils.isEmpty;
+import static com.orbenox.erp.common.Utilities.isBlank;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +20,7 @@ public class UnitDimensionService {
 
     @Cacheable(UNIT_DIMENSIONS)
     public Slice<UnitDimensionItem> getAllItems(int page, int size, String search) {
-        if (isEmpty(search))
+        if (isBlank(search))
             return unitDimensionRepository.getAllItems(PageRequest.of(page, size));
         return unitDimensionRepository.getItemsSearched(PageRequest.of(page, size), search);
     }

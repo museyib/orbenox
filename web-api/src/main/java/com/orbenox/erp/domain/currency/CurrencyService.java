@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 
 import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
-import static org.springframework.util.ObjectUtils.isEmpty;
+import static com.orbenox.erp.common.Utilities.isBlank;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +20,7 @@ public class CurrencyService {
 
     @Cacheable(CURRENCIES)
     public Slice<CurrencyItem> getAllItems(int page, int size, String search) {
-        if (isEmpty(search))
+        if (isBlank(search))
             return currencyRepository.getAllItems(PageRequest.of(page, size));
         return currencyRepository.getItemsSearched(PageRequest.of(page, size), search);
     }

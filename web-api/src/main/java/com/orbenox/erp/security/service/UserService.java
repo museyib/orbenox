@@ -24,7 +24,7 @@ import java.util.List;
 
 
 import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
-import static org.springframework.util.ObjectUtils.isEmpty;
+import static com.orbenox.erp.common.Utilities.isBlank;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +36,7 @@ public class UserService {
 
     @Cacheable(USERS)
     public Slice<SimpleUserItem> getAllItems(int page, int size, String search) {
-        if (isEmpty(search))
+        if (isBlank(search))
             return userRepository.getAllItems(PageRequest.of(page, size));
         return userRepository.getItemsSearched(PageRequest.of(page, size), search);
     }

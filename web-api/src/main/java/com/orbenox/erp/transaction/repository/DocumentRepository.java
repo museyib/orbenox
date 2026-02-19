@@ -14,7 +14,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
 
     @Query("""
             SELECT d.id as id,
-                d.number as number,
+                d.documentNumber as number,
                 d.documentDate as documentDate,
                 d.description as description,
                 d.documentStatus as documentStatus,
@@ -30,7 +30,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
 
     @Query("""
             SELECT d.id as id,
-                d.number as number,
+                d.documentNumber as number,
                 d.documentDate as documentDate,
                 d.description as description,
                 d.documentStatus as documentStatus,

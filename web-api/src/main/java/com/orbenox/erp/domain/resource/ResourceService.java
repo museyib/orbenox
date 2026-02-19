@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import static com.orbenox.erp.config.CacheConfig.CacheNames.LOOKUPS;
 import static com.orbenox.erp.config.CacheConfig.CacheNames.RESOURCES;
-import static org.springframework.util.ObjectUtils.isEmpty;
+import static com.orbenox.erp.common.Utilities.isBlank;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +25,7 @@ public class ResourceService {
 
     @Cacheable(RESOURCES)
     public Slice<ResourceItem> getAllItems(int page, int size, String search) {
-        if (isEmpty(search))
+        if (isBlank(search))
             return resourceRepository.getAllItems(PageRequest.of(page, size));
         return resourceRepository.getItemsSearched(PageRequest.of(page, size), search);
     }

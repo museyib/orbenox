@@ -13,15 +13,15 @@ public class Utilities {
             throwable = throwable.getCause();
         }
         message = throwable.getMessage();
-        if (isEmpty(message)) {
+        if (isBlank(message)) {
             message = throwable.toString();
         }
 
         return message;
     }
 
-    private static boolean isEmpty(String text) {
-        return text == null || text.isEmpty();
+    public static boolean isBlank(String text) {
+        return text == null || text.isBlank();
     }
 
     public static void writeErrorResponse(HttpServletResponse response, int code, String message) throws IOException {

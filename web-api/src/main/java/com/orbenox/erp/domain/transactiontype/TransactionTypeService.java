@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 
 import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
-import static org.springframework.util.ObjectUtils.isEmpty;
+import static com.orbenox.erp.common.Utilities.isBlank;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +20,7 @@ public class TransactionTypeService {
 
     @Cacheable(TRANSACTION_TYPES)
     public Slice<TransactionTypeItem> getAllItems(int page, int size, String search) {
-        if (isEmpty(search))
+        if (isBlank(search))
             return transactionTypeRepository.getAllItems(PageRequest.of(page, size));
         return transactionTypeRepository.getItemsSearched(PageRequest.of(page, size), search);
     }

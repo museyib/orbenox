@@ -13,6 +13,12 @@ public interface TransactionTypeRepository extends JpaRepository<TransactionType
         SELECT t.id AS id,
             t.code AS code,
             t.name AS name,
+            t.documentNoPrefix AS documentNoPrefix,
+            t.stockAffectDirection AS stockAffectDirection,
+            t.commercialAffected AS commercialAffected,
+            t.accountingAffected AS accountingAffected,
+            t.creditLimitChecked AS creditLimitChecked,
+            t.approvalRequired AS approvalRequired,
             t.enabled AS enabled
         FROM TransactionType t
         WHERE t.deleted = false
@@ -23,6 +29,12 @@ public interface TransactionTypeRepository extends JpaRepository<TransactionType
         SELECT t.id AS id,
             t.code AS code,
             t.name AS name,
+            t.documentNoPrefix AS documentNoPrefix,
+            t.stockAffectDirection AS stockAffectDirection,
+            t.commercialAffected AS commercialAffected,
+            t.accountingAffected AS accountingAffected,
+            t.creditLimitChecked AS creditLimitChecked,
+            t.approvalRequired AS approvalRequired,
             t.enabled AS enabled
         FROM TransactionType t
         WHERE  t.deleted = false
@@ -34,6 +46,12 @@ public interface TransactionTypeRepository extends JpaRepository<TransactionType
         SELECT t.id AS id,
             t.code AS code,
             t.name AS name,
+            t.documentNoPrefix AS documentNoPrefix,
+            t.stockAffectDirection AS stockAffectDirection,
+            t.commercialAffected AS commercialAffected,
+            t.accountingAffected AS accountingAffected,
+            t.creditLimitChecked AS creditLimitChecked,
+            t.approvalRequired AS approvalRequired,
             t.enabled AS enabled
         FROM TransactionType t
         WHERE t.deleted = false AND t.enabled = true
@@ -44,6 +62,12 @@ public interface TransactionTypeRepository extends JpaRepository<TransactionType
             SELECT t.id as id,
                    t.code as code,
                    t.name as name,
+                   t.documentNoPrefix AS documentNoPrefix,
+                   t.stockAffectDirection AS stockAffectDirection,
+                   t.commercialAffected AS commercialAffected,
+                   t.accountingAffected AS accountingAffected,
+                   t.creditLimitChecked AS creditLimitChecked,
+                   t.approvalRequired AS approvalRequired,
                    t.enabled as enabled
             FROM TransactionType t
             WHERE t.id = :id AND t.deleted = false

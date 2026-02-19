@@ -2,9 +2,8 @@ package com.orbenox.erp.domain.transactiontype;
 
 import com.orbenox.erp.common.entity.BaseCardEntity;
 import com.orbenox.erp.domain.postingrule.PostingRule;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import com.orbenox.erp.enums.StockAffectDirection;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,14 +15,18 @@ import java.util.Set;
 public class TransactionType extends BaseCardEntity {
     @Column(nullable = false, unique = true)
     private String code;
+
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
-    private boolean commercialAffected;
+    private String documentNoPrefix;
+
+    @Enumerated(EnumType.STRING)
+    private StockAffectDirection stockAffectDirection;
 
     @Column(nullable = false)
-    private boolean stockAffected;
+    private boolean commercialAffected;
 
     @Column(nullable = false)
     private boolean accountingAffected;
@@ -36,4 +39,8 @@ public class TransactionType extends BaseCardEntity {
 
     @OneToMany(mappedBy = "type")
     private Set<PostingRule> rules;
+
+    public boolean isStockAffected() {
+        return stockAffectDirection != null;
+    }
 }

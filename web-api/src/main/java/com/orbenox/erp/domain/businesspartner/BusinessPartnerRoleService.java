@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 
 import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
-import static org.springframework.util.ObjectUtils.isEmpty;
+import static com.orbenox.erp.common.Utilities.isBlank;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class BusinessPartnerRoleService {
 
     @Cacheable(BUSINESS_PARTNER_ROLES)
     public Slice<BusinessPartnerRoleItem> getAllItems(int page, int size, String search) {
-        if (isEmpty(search))
+        if (isBlank(search))
             return businessPartnerRoleRepository.getAllItems(PageRequest.of(page, size));
         return businessPartnerRoleRepository.getItemsSearched(PageRequest.of(page, size), search);
     }

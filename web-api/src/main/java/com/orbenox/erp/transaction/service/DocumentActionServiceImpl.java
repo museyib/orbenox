@@ -2,6 +2,7 @@ package com.orbenox.erp.transaction.service;
 
 import com.orbenox.erp.enums.ApprovalStatus;
 import com.orbenox.erp.enums.DocumentStatus;
+import com.orbenox.erp.exception.BusinessRuleException;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.command.CreateDocumentCommand;
 import com.orbenox.erp.transaction.entity.Document;
@@ -36,7 +37,7 @@ public class DocumentActionServiceImpl implements DocumentActionService {
         ApprovalPolicy approvalPolicy = approvalPolicyResolver.resolve(doc.getType());
 
         if (doc.getDocumentStatus() != DocumentStatus.DRAFT)
-            throw new IllegalStateException(i18n.msg("error.document.onlyDraftCanBeSubmitted"));
+            throw new BusinessRuleException(i18n.msg("error.document.onlyDraftCanBeSubmitted"));
 
         doc.setDocumentStatus(DocumentStatus.IN_PROGRESS);
 
@@ -53,10 +54,10 @@ public class DocumentActionServiceImpl implements DocumentActionService {
         ApprovalPolicy approvalPolicy = approvalPolicyResolver.resolve(doc.getType());
 
         if (!approvalPolicy.requiresApproval(doc))
-            throw new IllegalStateException(i18n.msg("error.document.approvalNotRequired"));
+            throw new BusinessRuleException(i18n.msg("error.document.approvalNotRequired"));
 
         if (doc.getApprovalStatus() != ApprovalStatus.PENDING)
-            throw new IllegalStateException(i18n.msg("error.document.notPendingApproval"));
+            throw new BusinessRuleException(i18n.msg("error.document.notPendingApproval"));
 
         doc.setApprovalStatus(ApprovalStatus.APPROVED);
     }
@@ -68,14 +69,14 @@ public class DocumentActionServiceImpl implements DocumentActionService {
         ApprovalPolicy approvalPolicy = approvalPolicyResolver.resolve(doc.getType());
 
         if (doc.isPosted())
-            throw new IllegalStateException(i18n.msg("error.document.alreadyPosted"));
+            throw new BusinessRuleException(i18n.msg("error.document.alreadyPosted"));
 
         if (doc.getDocumentStatus() != DocumentStatus.IN_PROGRESS)
-            throw new IllegalStateException(i18n.msg("error.document.onlySubmittedCanBePosted"));
+            throw new BusinessRuleException(i18n.msg("error.document.onlySubmittedCanBePosted"));
 
         if (approvalPolicy.requiresApproval(doc) &&
                 doc.getApprovalStatus() != ApprovalStatus.APPROVED)
-            throw new IllegalStateException(i18n.msg("error.document.notApproved"));
+            throw new BusinessRuleException(i18n.msg("error.document.notApproved"));
 
         if (doc.getType().isAccountingAffected())
             accountingService.post(doc);
@@ -95,7 +96,7 @@ public class DocumentActionServiceImpl implements DocumentActionService {
         Document doc = documentRepo.findById(documentId).orElseThrow();
 
         if (doc.getApprovalStatus() != ApprovalStatus.PENDING)
-            throw new IllegalStateException(i18n.msg("error.document.onlyPendingCanBeRejected"));
+            throw new BusinessRuleException(i18n.msg("error.document.onlyPendingCanBeRejected"));
 
         doc.setApprovalStatus(ApprovalStatus.REJECTED);
         doc.setDocumentStatus(DocumentStatus.DRAFT);
@@ -107,7 +108,7 @@ public class DocumentActionServiceImpl implements DocumentActionService {
         Document doc = documentRepo.findById(documentId).orElseThrow();
 
         if (doc.getDocumentStatus() != DocumentStatus.POSTED)
-            throw new IllegalStateException(i18n.msg("error.document.onlyPostedCanBeClosed"));
+            throw new BusinessRuleException(i18n.msg("error.document.onlyPostedCanBeClosed"));
 
         doc.setDocumentStatus(DocumentStatus.CLOSED);
     }
@@ -118,7 +119,7 @@ public class DocumentActionServiceImpl implements DocumentActionService {
         Document doc = documentRepo.findById(documentId).orElseThrow();
 
         if (doc.getDocumentStatus() == DocumentStatus.POSTED)
-            throw new IllegalStateException(i18n.msg("error.document.postedCannotBeCancelled"));
+            throw new BusinessRuleException(i18n.msg("error.document.postedCannotBeCancelled"));
 
         doc.setDocumentStatus(DocumentStatus.CANCELLED);
     }

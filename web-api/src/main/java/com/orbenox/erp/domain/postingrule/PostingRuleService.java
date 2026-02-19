@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 
 import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
-import static org.springframework.util.ObjectUtils.isEmpty;
+import static com.orbenox.erp.common.Utilities.isBlank;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class PostingRuleService {
 
     @Cacheable(POSTING_RULES)
     public Slice<PostingRuleItem> getAllItems(int page, int size, String search) {
-        if (isEmpty(search))
+        if (isBlank(search))
             return postingRuleRepository.getAllItems(PageRequest.of(page, size));
         return postingRuleRepository.getItemsSearched(PageRequest.of(page, size), search);
     }

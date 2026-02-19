@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 
 import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
-import static org.springframework.util.ObjectUtils.isEmpty;
+import static com.orbenox.erp.common.Utilities.isBlank;
 import java.util.Optional;
 
 @Service
@@ -31,7 +31,7 @@ public class ProductService {
 
     @Cacheable(PRODUCTS)
     public Slice<ProductItem> getAllItems(int page, int size, String search) {
-        if (isEmpty(search))
+        if (isBlank(search))
             return productRepository.getAllItems(PageRequest.of(page, size));
         return productRepository.getItemsSearched(PageRequest.of(page, size), search);
     }

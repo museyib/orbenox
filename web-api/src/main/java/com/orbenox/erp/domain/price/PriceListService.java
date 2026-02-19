@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
-import static org.springframework.util.ObjectUtils.isEmpty;
+import static com.orbenox.erp.common.Utilities.isBlank;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +22,7 @@ public class PriceListService {
 
     @Cacheable(PRICE_LISTS_ALL)
     public Slice<PriceListItem> getAllItems(int page, int size, String search) {
-        if (isEmpty(search))
+        if (isBlank(search))
             return priceListRepository.getAllItems(PageRequest.of(page, size));
         return priceListRepository.getItemsSearched(PageRequest.of(page, size), search);
     }

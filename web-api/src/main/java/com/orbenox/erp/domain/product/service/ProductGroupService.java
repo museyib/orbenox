@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
-import static org.springframework.util.ObjectUtils.isEmpty;
+import static com.orbenox.erp.common.Utilities.isBlank;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +29,7 @@ public class ProductGroupService {
 
     @Cacheable(PRODUCT_GROUPS_ALL)
     public Slice<ProductGroupItem> getAllItems(int page, int size, String search) {
-        if (isEmpty(search))
+        if (isBlank(search))
             return productGroupRepository.getAllItems(PageRequest.of(page, size));
         return productGroupRepository.getItemsSearched(PageRequest.of(page, size), search);
     }

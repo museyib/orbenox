@@ -452,20 +452,21 @@ CREATE TABLE product_warehouse
 
 CREATE TABLE transaction_type
 (
-    id                   BIGSERIAL PRIMARY KEY,
-    code                 VARCHAR(100) NOT NULL,
-    name                 VARCHAR(255) NOT NULL,
-    commercial_affected  BOOLEAN      NOT NULL DEFAULT FALSE,
-    stock_affected       BOOLEAN      NOT NULL DEFAULT FALSE,
-    accounting_affected  BOOLEAN      NOT NULL DEFAULT FALSE,
-    credit_limit_checked BOOLEAN      NOT NULL DEFAULT FALSE,
-    approval_required    BOOLEAN      NOT NULL DEFAULT FALSE,
-    created_at           TIMESTAMP             DEFAULT now(),
-    updated_at           TIMESTAMP,
-    created_by           VARCHAR(100),
-    updated_by           VARCHAR(100),
-    enabled              BOOLEAN      NOT NULL DEFAULT TRUE,
-    deleted              BOOLEAN      NOT NULL DEFAULT FALSE
+    id                     BIGSERIAL PRIMARY KEY,
+    code                   VARCHAR(100) NOT NULL,
+    name                   VARCHAR(255) NOT NULL,
+    document_no_prefix          VARCHAR(5) NOT NULL,
+    commercial_affected    BOOLEAN      NOT NULL DEFAULT FALSE,
+    accounting_affected    BOOLEAN      NOT NULL DEFAULT FALSE,
+    credit_limit_checked   BOOLEAN      NOT NULL DEFAULT FALSE,
+    approval_required      BOOLEAN      NOT NULL DEFAULT FALSE,
+    stock_affect_direction VARCHAR(10),
+    created_at             TIMESTAMP             DEFAULT now(),
+    updated_at             TIMESTAMP,
+    created_by             VARCHAR(100),
+    updated_by             VARCHAR(100),
+    enabled                BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted                BOOLEAN      NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX ux_transaction_type_code_active
     ON transaction_type (code)
@@ -486,9 +487,9 @@ CREATE TABLE posting_rule
 CREATE TABLE document
 (
     id              BIGSERIAL PRIMARY KEY,
+    document_no          VARCHAR(100) NOT NULL,
     document_date   DATE         NOT NULL,
     type_id         BIGINT REFERENCES transaction_type (id),
-    number          VARCHAR(100) NOT NULL,
     description     VARCHAR(1000),
     document_status VARCHAR(100),
     approval_status VARCHAR(100),
