@@ -1,5 +1,6 @@
-package com.orbenox.erp.transaction.entity;
+package com.orbenox.erp.domain.transactiontype.numbering;
 
+import com.orbenox.erp.domain.transactiontype.TransactionType;
 import com.orbenox.erp.enums.ResetPeriod;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,12 +11,12 @@ import lombok.Setter;
 @Entity
 public class NumberingPolicy {
     @Id
-    @GeneratedValue
-    @Column(nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String documentTypeCode;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "type_id")
+    private TransactionType type;
 
     @Column(nullable = false)
     private String prefix;

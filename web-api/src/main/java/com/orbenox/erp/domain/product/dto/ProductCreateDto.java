@@ -14,7 +14,7 @@ import jakarta.validation.constraints.Size;
 public record ProductCreateDto(boolean enabled,
                                @NotBlank(message = "{code.notBlank}")
                                @Size(min = 1, max = 50, message = "{code.size}")
-                               @Pattern(regexp = "^[A-Z0-9-_]+$", message = "{code.pattern}")
+                               @Pattern(regexp = "^[a-zA-Z0-9-_]+$", message = "{code.pattern}")
                                String code,
                                @NotBlank(message = "{name.notBlank}")
                                @Size(min = 1, max = 255, message = "{name.size}")

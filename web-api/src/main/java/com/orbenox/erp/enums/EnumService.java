@@ -49,5 +49,15 @@ public class EnumService {
     public List<String> getPartnerTypes() {
         return Arrays.stream(PartnerType.values()).map(Enum::name).toList();
     }
+
+    @Cacheable(RESET_PERIODS)
+    public List<String> getResetPeriods() {
+        return Arrays.stream(ResetPeriod.values()).map(Enum::name).toList();
+    }
+
+    @Cacheable(STOCK_AFFECT_DIRECTIONS)
+    public List<String> getStockAffectDirections() {
+        return Arrays.stream(StockAffectDirection.values()).map(Enum::name).toList();
+    }
 }
 

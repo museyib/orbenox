@@ -455,7 +455,6 @@ CREATE TABLE transaction_type
     id                     BIGSERIAL PRIMARY KEY,
     code                   VARCHAR(100) NOT NULL,
     name                   VARCHAR(255) NOT NULL,
-    document_no_prefix          VARCHAR(5) NOT NULL,
     commercial_affected    BOOLEAN      NOT NULL DEFAULT FALSE,
     accounting_affected    BOOLEAN      NOT NULL DEFAULT FALSE,
     credit_limit_checked   BOOLEAN      NOT NULL DEFAULT FALSE,
@@ -484,10 +483,30 @@ CREATE TABLE posting_rule
     UNIQUE (type_id, sequence)
 );
 
+
+CREATE TABLE numbering_policy
+(
+    id              BIGSERIAL PRIMARY KEY,
+    type_id         BIGINT REFERENCES transaction_type (id),
+    prefix          VARCHAR(3)  NOT NULL,
+    reset_period    VARCHAR(10) NOT NULL,
+    sequence_length INT         NOT NULL
+);
+
+CREATE TABLE document_sequence
+(
+    id         BIGSERIAL PRIMARY KEY,
+    type_id    BIGINT REFERENCES transaction_type (id),
+    year       INT,
+    month      INT,
+    next_value BIGINT,
+    UNIQUE (type_id, year, month)
+);
+
 CREATE TABLE document
 (
     id              BIGSERIAL PRIMARY KEY,
-    document_no          VARCHAR(100) NOT NULL,
+    document_no     VARCHAR(100) NOT NULL,
     document_date   DATE         NOT NULL,
     type_id         BIGINT REFERENCES transaction_type (id),
     description     VARCHAR(1000),
@@ -573,4 +592,4 @@ CREATE TABLE stock_balance
     free_quantity     NUMERIC(20, 10) GENERATED ALWAYS AS ( quantity - reserved_quantity ) STORED,
     UNIQUE (product_id, warehouse_id),
     CHECK ( NOT quantity < 0 )
-)
+);

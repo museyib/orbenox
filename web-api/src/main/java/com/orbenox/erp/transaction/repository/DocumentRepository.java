@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DocumentRepository extends JpaRepository<Document, Long> {
-    Optional<Document> findByNumber(String number);
+    Optional<Document> findByDocumentNo(String number);
 
     @Query("""
             SELECT d.id as id,
-                d.documentNumber as number,
+                d.documentNo as documentNo,
                 d.documentDate as documentDate,
                 d.description as description,
                 d.documentStatus as documentStatus,
@@ -30,7 +30,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
 
     @Query("""
             SELECT d.id as id,
-                d.documentNumber as number,
+                d.documentNo as documentNo,
                 d.documentDate as documentDate,
                 d.description as description,
                 d.documentStatus as documentStatus,

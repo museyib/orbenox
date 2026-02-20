@@ -25,6 +25,7 @@ public abstract class TransactionTypeMapper {
     public abstract TransactionType toEntity(TransactionTypeCreateDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
+    @Mapping(target = "rules", ignore = true)
     public abstract void updateEntityFromDto(TransactionTypeUpdateDto dto, @MappingTarget TransactionType entity);
 
     Set<PostingRule> mapToRules(Set<PostingRuleDto> dtoList) {

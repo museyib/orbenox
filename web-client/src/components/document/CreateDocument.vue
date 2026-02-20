@@ -15,7 +15,6 @@ const priceLists = ref([]);
 const warehouses = ref([]);
 
 const form = ref({
-  number: "",
   documentDate: new Date().toISOString().slice(0, 10),
   typeId: null,
   description: "",
@@ -84,7 +83,7 @@ function removeLine(index) {
 }
 
 function validate() {
-  if (!form.value.number || !form.value.documentDate || !form.value.typeId) {
+  if (!form.value.documentDate || !form.value.typeId) {
     info.value = "Document number, date and transaction type are required";
     return false;
   }
@@ -165,7 +164,6 @@ onMounted(() => init());
 
     <section class="card">
       <form @submit.prevent="createDocumentAndMaybeSubmit(false)">
-        <label>{{ $t("documentNumber") }}: <input v-model="form.number" name="number" type="text"/></label><br/>
         <label>{{ $t("documentDate") }}: <input v-model="form.documentDate" name="documentDate" type="date"/></label><br/>
         <label>{{ $t("transactionType.title") }}:
           <select v-model="form.typeId">

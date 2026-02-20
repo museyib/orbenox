@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.TimeUnit;
 
+import static com.orbenox.erp.config.CacheConfig.CacheNames.*;
+
 /**
  * Cache configuration using Caffeine for better performance
  */
@@ -19,50 +21,52 @@ public class CacheConfig {
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(
-                CacheNames.USER_DETAILS,
-                CacheNames.HAS_PERMISSION,
-                CacheNames.USERS,
-                CacheNames.ROLES,
-                CacheNames.RESOURCES,
-                CacheNames.ACTIONS,
-                CacheNames.PRODUCTS,
-                CacheNames.PRODUCT_BARCODES,
-                CacheNames.BRANDS,
-                CacheNames.PRODUCERS,
-                CacheNames.PRODUCT_CATEGORIES,
-                CacheNames.PRODUCT_CLASSES,
-                CacheNames.PRODUCT_TYPES,
-                CacheNames.PRODUCT_GROUPS_ALL,
-                CacheNames.PRODUCT_GROUPS_EXCLUDED,
-                CacheNames.UNITS_ALL,
-                CacheNames.UNITS_BY_DIMENSION_ID,
-                CacheNames.UNIT_DIMENSIONS,
-                CacheNames.CURRENCIES,
-                CacheNames.COUNTRIES,
-                CacheNames.WAREHOUSES,
-                CacheNames.ACCOUNTS,
-                CacheNames.BUSINESS_PARTNERS,
-                CacheNames.BUSINESS_PARTNER_ROLES,
-                CacheNames.PRICE_LISTS_ALL,
-                CacheNames.PRICE_LISTS_EXCLUDED,
-                CacheNames.LOOKUPS,
-                CacheNames.PERMISSIONS,
-                CacheNames.TRANSACTION_TYPES,
-                CacheNames.ACCOUNT_TYPES,
-                CacheNames.AMOUNT_SOURCES,
-                CacheNames.APPROVAL_STATUSES,
-                CacheNames.DOCUMENT_STATUSES,
-                CacheNames.PARTNER_SIDES,
-                CacheNames.PARTNER_ROLES,
-                CacheNames.PARTNER_TYPES,
-                CacheNames.POSTING_RULES,
-                CacheNames.PERMISSIONS_USER,
-                CacheNames.PERMISSIONS_ROLE,
-                CacheNames.AVAILABLE_RESOURCE_ACTIONS_USER,
-                CacheNames.AVAILABLE_RESOURCE_ACTIONS_ROLE,
-                CacheNames.PRODUCT_PRICES,
-                CacheNames.PRODUCT_UNITS,
-                CacheNames.PRODUCT_WAREHOUSES
+                USER_DETAILS,
+                HAS_PERMISSION,
+                USERS,
+                ROLES,
+                RESOURCES,
+                ACTIONS,
+                PRODUCTS,
+                PRODUCT_BARCODES,
+                BRANDS,
+                PRODUCERS,
+                PRODUCT_CATEGORIES,
+                PRODUCT_CLASSES,
+                PRODUCT_TYPES,
+                PRODUCT_GROUPS_ALL,
+                PRODUCT_GROUPS_EXCLUDED,
+                UNITS_ALL,
+                UNITS_BY_DIMENSION_ID,
+                UNIT_DIMENSIONS,
+                CURRENCIES,
+                COUNTRIES,
+                WAREHOUSES,
+                ACCOUNTS,
+                BUSINESS_PARTNERS,
+                BUSINESS_PARTNER_ROLES,
+                PRICE_LISTS_ALL,
+                PRICE_LISTS_EXCLUDED,
+                LOOKUPS,
+                PERMISSIONS,
+                TRANSACTION_TYPES,
+                ACCOUNT_TYPES,
+                AMOUNT_SOURCES,
+                APPROVAL_STATUSES,
+                DOCUMENT_STATUSES,
+                PARTNER_SIDES,
+                PARTNER_ROLES,
+                PARTNER_TYPES,
+                POSTING_RULES,
+                PERMISSIONS_USER,
+                PERMISSIONS_ROLE,
+                AVAILABLE_RESOURCE_ACTIONS_USER,
+                AVAILABLE_RESOURCE_ACTIONS_ROLE,
+                PRODUCT_PRICES,
+                PRODUCT_UNITS,
+                PRODUCT_WAREHOUSES,
+                RESET_PERIODS,
+                STOCK_AFFECT_DIRECTIONS
         );
 
         cacheManager.setCaffeine(caffeineCacheBuilder());
@@ -125,5 +129,7 @@ public class CacheConfig {
         public static final String AVAILABLE_RESOURCE_ACTIONS_USER = "availableResourceActions.user";
         public static final String AVAILABLE_RESOURCE_ACTIONS_ROLE = "availableResourceActions.role";
         public static final String TRANSACTION_TYPES = "transactionTypes";
+        public static final String RESET_PERIODS = "resetPeriods";
+        public static final String STOCK_AFFECT_DIRECTIONS = "stockAffectDirections";
     }
 }

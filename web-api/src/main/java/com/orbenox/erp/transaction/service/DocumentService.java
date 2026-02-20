@@ -20,6 +20,7 @@ import com.orbenox.erp.transaction.entity.CommercialContext;
 import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.entity.ProductLine;
 import com.orbenox.erp.transaction.entity.StockContext;
+import com.orbenox.erp.domain.transactiontype.numbering.DocumentNumberGenerator;
 import com.orbenox.erp.transaction.repository.CommercialContextRepository;
 import com.orbenox.erp.transaction.repository.DocumentRepository;
 import com.orbenox.erp.transaction.repository.StockContextRepository;
@@ -33,6 +34,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class DocumentService {
 
+    private final DocumentNumberGenerator numberGenerator;
     private final DocumentRepository documentRepo;
     private final TransactionTypeRepository transactionTypeRepo;
     private final BusinessPartnerRepository businessPartnerRepo;
@@ -49,7 +51,7 @@ public class DocumentService {
                 .orElseThrow(() -> new IllegalArgumentException(i18n.msg("error.transactionType.invalid")));
 
         Document doc = new Document();
-        doc.setDocumentNo(command.documentNo());
+        doc.setDocumentNo(numberGenerator.generate(type, command.documentDate()));
         doc.setDocumentDate(command.documentDate());
         doc.setType(type);
         doc.setDescription(command.description());

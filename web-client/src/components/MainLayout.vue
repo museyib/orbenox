@@ -72,7 +72,7 @@ const home = () => {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .language-switcher select {

@@ -13,7 +13,6 @@ public interface TransactionTypeRepository extends JpaRepository<TransactionType
         SELECT t.id AS id,
             t.code AS code,
             t.name AS name,
-            t.documentNoPrefix AS documentNoPrefix,
             t.stockAffectDirection AS stockAffectDirection,
             t.commercialAffected AS commercialAffected,
             t.accountingAffected AS accountingAffected,
@@ -29,7 +28,6 @@ public interface TransactionTypeRepository extends JpaRepository<TransactionType
         SELECT t.id AS id,
             t.code AS code,
             t.name AS name,
-            t.documentNoPrefix AS documentNoPrefix,
             t.stockAffectDirection AS stockAffectDirection,
             t.commercialAffected AS commercialAffected,
             t.accountingAffected AS accountingAffected,
@@ -46,7 +44,6 @@ public interface TransactionTypeRepository extends JpaRepository<TransactionType
         SELECT t.id AS id,
             t.code AS code,
             t.name AS name,
-            t.documentNoPrefix AS documentNoPrefix,
             t.stockAffectDirection AS stockAffectDirection,
             t.commercialAffected AS commercialAffected,
             t.accountingAffected AS accountingAffected,
@@ -62,14 +59,15 @@ public interface TransactionTypeRepository extends JpaRepository<TransactionType
             SELECT t.id as id,
                    t.code as code,
                    t.name as name,
-                   t.documentNoPrefix AS documentNoPrefix,
                    t.stockAffectDirection AS stockAffectDirection,
                    t.commercialAffected AS commercialAffected,
                    t.accountingAffected AS accountingAffected,
                    t.creditLimitChecked AS creditLimitChecked,
                    t.approvalRequired AS approvalRequired,
-                   t.enabled as enabled
+                   t.enabled as enabled,
+                   n AS numberingPolicy
             FROM TransactionType t
+            LEFT JOIN t.numberingPolicy AS n
             WHERE t.id = :id AND t.deleted = false
             """)
     TransactionTypeItem getItemById(@Param("id") Long id);

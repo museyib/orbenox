@@ -16,7 +16,7 @@ const filteredDocuments = computed(() => {
   const q = searchQuery.value.trim().toLowerCase();
   if (!q) return documents.value;
   return documents.value.filter(d => {
-    const number = String(d.number || "").toLowerCase();
+    const number = String(d.documentNo || "").toLowerCase();
     const status = String(d.documentStatus || "").toLowerCase();
     const approval = String(d.approvalStatus || "").toLowerCase();
     const type = String(d.typeCode || d.typeName || "").toLowerCase();
@@ -114,7 +114,7 @@ onMounted(() => init());
           <tbody>
           <tr v-for="document in filteredDocuments" :key="document.id">
             <td class="mono">{{ document.id }}</td>
-            <td>{{ document.number }}</td>
+            <td>{{ document.documentNo }}</td>
             <td>{{ document.documentDate }}</td>
             <td>{{ document.typeCode || document.typeName }}</td>
             <td>{{ document.documentStatus }}</td>

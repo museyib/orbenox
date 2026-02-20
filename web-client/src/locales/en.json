@@ -237,5 +237,12 @@
   "partnerSide": "Partner side",
   "partnerRole": "Partner role",
   "transactions": "Transactions",
-  "stockBalance": "Stock"
+  "stockBalance": "Stock",
+  "commercialAffected": "Commercial is affected",
+  "accountingAffected": "Accounting is affected",
+  "creditLimitChecked": "Credit limit is checked",
+  "approvalRequired": "Approval is required",
+  "prefix": "Prefix",
+  "resetPeriod": "Reset period",
+  "sequenceLength": "Sequence length"
 }

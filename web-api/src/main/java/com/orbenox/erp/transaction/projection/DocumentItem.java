@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public interface DocumentItem {
     Long getId();
-    String getNumber();
+    String getDocumentNo();
     LocalDate getDocumentDate();
     String getDescription();
     DocumentStatus getDocumentStatus();

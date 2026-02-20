@@ -236,5 +236,12 @@
   "productSetup": "Mallar üzrə sazlamalar",
   "operations": "Əməliyyatlar",
   "partnerRole": "Partnyor rolu",
-  "stockBalance": "Anbar qalığı"
+  "stockBalance": "Anbar qalığı",
+  "commercialAffected": "Kommersiya təsirlənir",
+  "accountingAffected": "Hesab təsirlənir",
+  "creditLimitChecked": "Kredit limiti yoxlanır",
+  "approvalRequired": "Təsdiq tələb edir",
+  "prefix": "Prefiks",
+  "resetPeriod": "Yenilənmə dövrü",
+  "sequenceLength": "Rəqəm sayı"
 }

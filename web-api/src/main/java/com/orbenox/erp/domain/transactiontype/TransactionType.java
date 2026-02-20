@@ -2,6 +2,7 @@ package com.orbenox.erp.domain.transactiontype;
 
 import com.orbenox.erp.common.entity.BaseCardEntity;
 import com.orbenox.erp.domain.postingrule.PostingRule;
+import com.orbenox.erp.domain.transactiontype.numbering.NumberingPolicy;
 import com.orbenox.erp.enums.StockAffectDirection;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,9 +20,6 @@ public class TransactionType extends BaseCardEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String documentNoPrefix;
-
     @Enumerated(EnumType.STRING)
     private StockAffectDirection stockAffectDirection;
 
@@ -36,6 +34,9 @@ public class TransactionType extends BaseCardEntity {
 
     @Column(nullable = false)
     private boolean approvalRequired;
+
+    @OneToOne(mappedBy = "type")
+    private NumberingPolicy numberingPolicy;
 
     @OneToMany(mappedBy = "type")
     private Set<PostingRule> rules;

@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record CreateDocumentCommand(
-        String documentNo,
         LocalDate documentDate,
         Long typeId,
         String description,

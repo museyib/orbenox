@@ -79,7 +79,7 @@ onMounted(() => init());
     <PageHeader :title='$t("document.process")'/>
 
     <section v-if="documentData" class="card">
-      <p><strong>{{ $t("documentNumber") }}:</strong> {{ documentData.number }}</p>
+      <p><strong>{{ $t("documentNumber") }}:</strong> {{ documentData.documentNo }}</p>
       <p><strong>{{ $t("documentDate") }}:</strong> {{ documentData.documentDate }}</p>
       <p><strong>{{ $t("transactionType.title") }}:</strong> {{ documentData.typeCode || documentData.typeName }}</p>
       <p><strong>{{ $t("documentStatus") }}:</strong> {{ documentData.documentStatus }}</p>

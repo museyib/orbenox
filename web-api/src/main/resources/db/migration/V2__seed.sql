@@ -215,9 +215,9 @@ VALUES ('W001', 'warehouse 1', 'system');
 INSERT INTO product_price (product_id, price_list_id, unit_id, created_by, discount_ratio_limit)
 VALUES (1, 1, 1, 'system', 30);
 
-INSERT INTO transaction_type(code, name, document_no_prefix, commercial_affected, accounting_affected, credit_limit_checked, approval_required, stock_affect_direction, created_by)
-VALUES ('PRODUCT_APPROVE', 'Product approve', 'PA', false, true, false, false, 'IN', 'system'),
-       ('SALES_ORDER', 'Sales order', 'SO', true, true, true, true, 'OUT', 'system');
+INSERT INTO transaction_type(code, name, commercial_affected, accounting_affected, credit_limit_checked, approval_required, stock_affect_direction, created_by)
+VALUES ('PRODUCT_APPROVE', 'Product approve', false, true, false, false, 'IN', 'system'),
+       ('SALES_ORDER', 'Sales order', true, true, true, true, 'OUT', 'system');
 
 INSERT INTO posting_rule(sequence, type_id, debit_account_id, credit_account_id, amount_source, partner_side)
 VALUES (10,
@@ -226,3 +226,7 @@ VALUES (10,
         (SELECT id FROM account WHERE code = '3000'),
         'TOTAL',
         'DEBIT');
+
+INSERT INTO numbering_policy(type_id, prefix, reset_period, sequence_length)
+VALUES ((SELECT id FROM transaction_type WHERE code = 'PRODUCT_APPROVE'), 'PA', 'MONTHLY', 6),
+       ((SELECT id FROM transaction_type WHERE code = 'SALES_ORDER'), 'SO', 'MONTHLY', 6);

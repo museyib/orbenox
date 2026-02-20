@@ -1,6 +1,5 @@
-package com.orbenox.erp.transaction.repository;
+package com.orbenox.erp.domain.transactiontype.numbering;
 
-import com.orbenox.erp.transaction.entity.DocumentSequence;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -14,11 +13,11 @@ public interface DocumentSequenceRepository extends JpaRepository<DocumentSequen
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
         SELECT s FROM DocumentSequence s
-        WHERE s.documentTypeCode = :type
+        WHERE s.type.id = :typeId
             AND s.year = :year
             AND s.month = :month""")
-    Optional<DocumentSequence> findForUpdate(@Param("type") String type,
-                                                    @Param("id") Long year,
-                                                    @Param("id") Long month);
+    Optional<DocumentSequence> findForUpdate(@Param("type") Long typeId,
+                                                    @Param("year") int year,
+                                                    @Param("month") int month);
 
 }

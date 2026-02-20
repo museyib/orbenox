@@ -12,11 +12,32 @@ const router = useRouter();
 const route = useRoute();
 const info = ref('');
 const transactionType = ref({});
+const numberingPolicy = ref({});
+const resetPeriods = ref([]);
+const selectedResetPeriod = ref("");
+const stockAffectDirections = ref([]);
+const selectedStockAffectDirection = ref("");
 
 function init() {
   apiRequest('/api/transactionTypes/' + route.params.id, 'GET').then((response) => {
     if (response.code === 200) {
       transactionType.value = response.data;
+      selectedStockAffectDirection.value = transactionType.value.stockAffectDirection;
+      numberingPolicy.value = transactionType.value.numberingPolicy;
+      selectedResetPeriod.value = numberingPolicy.value.resetPeriod;
+    } else if (response.code === 401) {
+      refreshToken(() => init(), () => router.push('/ui/login'));
+    } else {
+      info.value = response.message;
+    }
+  }).catch(error => {
+    info.value = error;
+  });
+
+  apiRequest('/api/lookups?types=resetPeriods,stockAffectDirections', 'GET').then((response) => {
+    if (response.code === 200) {
+      resetPeriods.value = response.data.resetPeriods;
+      stockAffectDirections.value = response.data.stockAffectDirections;
     } else if (response.code === 401) {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
@@ -28,6 +49,9 @@ function init() {
 }
 
 function updateTransactionType() {
+  transactionType.value.stockAffectDirection = selectedStockAffectDirection;
+  numberingPolicy.value.resetPeriod = selectedResetPeriod;
+  transactionType.value.numberingPolicy = numberingPolicy;
   apiRequest('/api/transactionTypes/' + route.params.id, 'PATCH', transactionType.value).then((response) => {
     if (response.code === 200) {
       info.value = t('transactionType.updated');
@@ -55,7 +79,33 @@ onMounted(() => init());
         </label>
         <label>{{ $t('code') }}: <input v-model='transactionType.code' name='code' type='text'/></label><br/>
         <label>{{ $t('name') }}: <input v-model='transactionType.name' autocomplete='false' name='name' type='text'/></label><br/>
+
+        <label>{{ $t('stockAffectDirection') }}:
+          <select v-model="selectedStockAffectDirection" name='stockAffectDirection'>
+            <option v-for="stockAffectDirection in stockAffectDirections"
+                    :key="stockAffectDirection"
+                    :value="stockAffectDirection">
+              {{ stockAffectDirection}}
+            </option>
+          </select>
+        </label><br/>
+        <label>{{ $t('commercialAffected') }}: <input v-model="transactionType.commercialAffected" name="commercialAffected" type="checkbox"></label><br/>
+        <label>{{ $t('accountingAffected') }}: <input v-model="transactionType.accountingAffected" name="accountingAffected" type="checkbox"></label><br/>
+        <label>{{ $t('creditLimitChecked') }}: <input v-model="transactionType.creditLimitChecked" name="creditLimitChecked" type="checkbox"></label><br/>
+        <label>{{ $t('approvalRequired') }}: <input v-model="transactionType.approvalRequired" name="approvalRequired" type="checkbox"></label><br/>
         <label>{{ $t('enabled') }}: <input v-model="transactionType.enabled" name="enabled" type="checkbox"></label><br/>
+
+        <label>{{ $t('prefix') }}: <input v-model='numberingPolicy.prefix' type='text'/></label><br/>
+        <label>{{ $t('resetPeriod') }}:
+          <select v-model="selectedResetPeriod" name='resetPeriod'>
+            <option v-for="resetPeriod in resetPeriods"
+                    :key="resetPeriod"
+                    :value="resetPeriod">
+              {{ resetPeriod}}
+            </option>
+          </select>
+        </label><br/>
+        <label>{{ $t('sequenceLength') }}: <input v-model.number='numberingPolicy.sequenceLength' name='sequenceLength'/></label><br/>
         <button class="btn btn-primary" type="submit">{{ $t('save') }}</button>
       </form>
     </section>

@@ -77,6 +77,8 @@ public class LookupService {
                 case "partnerSides" -> result.put("partnerSides", enumService.getPartnerSides());
                 case "partnerRoles" -> result.put("partnerRoles", enumService.getPartnerRoles());
                 case "partnerTypes" -> result.put("partnerTypes", enumService.getPartnerTypes());
+                case "resetPeriods" -> result.put("resetPeriods", enumService.getResetPeriods());
+                case "stockAffectDirections" -> result.put("stockAffectDirections", enumService.getStockAffectDirections());
             }
         }
         return result;
