@@ -82,7 +82,7 @@ public class CreateAndPostDocumentTest {
 
     @BeforeEach
     public void createEntities() {
-        approveTypeId = transactionTypeRepo.findByCode("APPROVE").getId();
+        approveTypeId = transactionTypeRepo.findByCode("PRODUCT_APPROVE").getId();
         salesOrderTypeId = transactionTypeRepo.findByCode("SALES_ORDER").getId();
         partnerId = businessPartnerRepository.findAll().get(0).getId();
         priceListId = priceListRepository.findAll().get(0).getId();
@@ -100,7 +100,6 @@ public class CreateAndPostDocumentTest {
                 BigDecimal.ONE,
                 BigDecimal.ZERO);
         CreateDocumentCommand cmd = new CreateDocumentCommand(
-                "PA_001",
                 LocalDate.now(),
                 approveTypeId,
                 "Test",
@@ -142,7 +141,6 @@ public class CreateAndPostDocumentTest {
                 BigDecimal.ONE,
                 BigDecimal.valueOf(50.0));
         CreateDocumentCommand cmd = new CreateDocumentCommand(
-                "S0-001",
                 LocalDate.now(),
                 salesOrderTypeId,
                 "Sales order",
