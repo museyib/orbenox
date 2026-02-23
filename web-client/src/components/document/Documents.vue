@@ -8,6 +8,7 @@ import PageHeader from "@/components/PageHeader.vue";
 import InfoBar from "@/components/InfoBar.vue";
 
 const info = ref("");
+const infoType = ref('');
 const documents = ref([]);
 const searchQuery = ref("");
 const router = useRouter();
@@ -32,9 +33,11 @@ function init() {
       refreshToken(() => init(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -79,9 +82,11 @@ function runAction(documentId, action) {
       refreshToken(() => runAction(documentId, action), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -137,7 +142,7 @@ onMounted(() => init());
       </div>
     </section>
 
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
 

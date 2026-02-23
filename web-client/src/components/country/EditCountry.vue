@@ -11,6 +11,7 @@ const {t} = useI18n();
 const router = useRouter();
 const route = useRoute();
 const info = ref('');
+const infoType = ref('');
 const country = ref({});
 
 function init() {
@@ -21,9 +22,11 @@ function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -31,13 +34,16 @@ function updateCountry() {
   apiRequest('/api/countries/' + route.params.id, 'PATCH', country.value).then((response) => {
     if (response.code === 200) {
       info.value = t('country.updated');
+      infoType.value = "success";
     } else if (response.code === 401) {
       refreshToken(() => updateCountry(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -53,13 +59,14 @@ onMounted(() => init());
         <label>
           <input v-model='country.id' hidden='hidden' name='id' type='text'/>
         </label>
-        <label>{{ $t('code') }}: <input v-model='country.code' name='code' type='text'/></label><br/>
+        <label>{{ $t('code') }}: <input v-model='country.code' name='code' type='text'/></label>
         <label>{{ $t('name') }}: <input v-model='country.name' autocomplete='false' name='name'
-                                        type='text'/></label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="country.enabled" name="enabled" type="checkbox"></label><br/>
+                                        type='text'/></label>
+        <label>{{ $t('enabled') }}: <input v-model="country.enabled" name="enabled" type="checkbox"></label>
         <button class="btn btn-primary" type="submit">{{ $t('save') }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

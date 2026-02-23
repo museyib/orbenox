@@ -12,6 +12,7 @@ const {t} = useI18n();
 const router = useRouter();
 const route = useRoute();
 const info = ref('');
+const infoType = ref('');
 const actions = ref([]);
 const resources = ref([]);
 const currentUser = ref();
@@ -29,9 +30,11 @@ function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 
   apiRequest('/api/resources', 'GET').then((response) => {
@@ -44,9 +47,11 @@ function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -73,13 +78,16 @@ function updatePermission() {
   apiRequest('/api/permissions/user', 'PATCH', data).then((response) => {
     if (response.code === 200) {
       info.value = t('permission.updated');
+      infoType.value = "success";
     } else if (response.code === 401) {
       refreshToken(() => updatePermission(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -107,15 +115,6 @@ function removeFromPermissions(permission) {
   permissionsToDelete.value.push(permission);
 }
 
-const changeResource = (event) => {
-  resources.value.forEach((resource => {
-    const selectedId = Number(event.target.value);
-    if (resource.id === selectedId) {
-      currentResource.value = resource;
-    }
-  }));
-}
-
 function getResourceActions(resourceId) {
   apiRequest('/api/permissions/user/' + route.params.id + '/availableResourceActions?resourceId=' + resourceId, 'GET').then((response) => {
     if (response.code === 200) {
@@ -127,9 +126,11 @@ function getResourceActions(resourceId) {
           .filter(a => !givenPermissionIDs.has(resourceId + a.code));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -151,19 +152,9 @@ onMounted(() => init());
         <label>
           <input id="userId" hidden="hidden" name="userId" type="text"/>
         </label>
-        <label>{{ $t('grantedPermissions') }}:
-          <select id="assignedPermissions" multiple>
-            <option v-for="permission in userPermissions"
-                    :value="permission"
-                    v-on:dblclick="removeFromPermissions(permission)">
-              {{ permission.resource.code + ':' + permission.action.code }}
-            </option>
-          </select>
-        </label>
         <label>{{ $t('resource.title') }}:
           <select id="resource"
-                  v-model='currentResource'
-                  @change='changeResource'>
+                  v-model='currentResource'>
             <option v-for="resource in resources"
                     :key="resource.id"
                     :value="resource">
@@ -171,19 +162,31 @@ onMounted(() => init());
             </option>
           </select>
         </label>
-        <label>{{ $t('actions') }}:
-          <select id='availableActions' multiple>
-            <option v-for="action in actions"
-                    :key="action.code"
-                    :value="action.code"
-                    v-on:dblclick="addToPermissions(action)">
-              {{ action.code }}
-            </option>
-          </select>
-        </label><br/>
+        <div class="dual-selects">
+          <label>{{ $t('grantedPermissions') }}:
+            <select id="assignedPermissions" multiple>
+              <option v-for="permission in userPermissions"
+                      :value="permission"
+                      v-on:dblclick="removeFromPermissions(permission)">
+                {{ permission.resource.code + ':' + permission.action.code }}
+              </option>
+            </select>
+          </label>
+          <label>{{ $t('actions') }}:
+            <select id='availableActions' multiple>
+              <option v-for="action in actions"
+                      :key="action.code"
+                      :value="action.code"
+                      v-on:dblclick="addToPermissions(action)">
+                {{ action.code }}
+              </option>
+            </select>
+          </label>
+        </div>
         <button class="btn btn-primary" type="submit">{{ $t('save') }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

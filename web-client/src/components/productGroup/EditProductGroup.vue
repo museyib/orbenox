@@ -11,6 +11,7 @@ const {t} = useI18n();
 const router = useRouter();
 const route = useRoute();
 const info = ref('');
+const infoType = ref('');
 const productGroups = ref([]);
 const parentGroup = ref(null);
 const productGroup = ref({});
@@ -28,15 +29,18 @@ function init() {
           refreshToken(() => init(), () => router.push('/ui/login'));
         } else {
           info.value = response.message;
+          infoType.value = "error";
         }
       });
     } else if (response.code === 401) {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -45,10 +49,12 @@ function updateProductGroup() {
   apiRequest('/api/productGroups/' + route.params.id, 'PATCH', productGroup.value).then((response) => {
     if (response.code === 200) {
       info.value = t('productGroup.updated');
+      infoType.value = "success";
     } else if (response.code === 401) {
       refreshToken(() => updateProductGroup(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   });
 }
@@ -65,11 +71,11 @@ onMounted(() => init());
         <label>
           <input v-model='productGroup.id' hidden='hidden' name='id' type='text'/>
         </label>
-        <label>{{ $t('code') }}: <input v-model='productGroup.code' name='code' type='text'/></label><br/>
+        <label>{{ $t('code') }}: <input v-model='productGroup.code' name='code' type='text'/></label>
         <label>{{ $t('name') }}: <input v-model='productGroup.name' autocomplete='false' name='name'
-                                        type='text'/></label><br/>
-        <label>{{ $t('description') }}: <input v-model='productGroup.description' name='factorToBase'/></label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="productGroup.enabled" name="enabled" type="checkbox"></label><br/>
+                                        type='text'/></label>
+        <label>{{ $t('description') }}: <input v-model='productGroup.description' name='factorToBase'/></label>
+        <label>{{ $t('enabled') }}: <input v-model="productGroup.enabled" name="enabled" type="checkbox"></label>
         <label>{{ $t('parentGroup') }}:
           <select id="parentGroup" v-model="parentGroup">
             <option :key="null"
@@ -83,10 +89,11 @@ onMounted(() => init());
               {{ productGroup.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <button class="btn btn-primary" type="submit">{{ $t('save') }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

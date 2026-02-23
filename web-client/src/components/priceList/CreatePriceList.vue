@@ -8,6 +8,7 @@ import PageHeader from "@/components/PageHeader.vue";
 
 const router = useRouter();
 const info = ref('');
+const infoType = ref('');
 const enabled = ref(true);
 const priceLists = ref([]);
 const parentPrice = ref(null);
@@ -27,9 +28,11 @@ function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 
   apiRequest('/api/priceLists', 'GET').then(response => {
@@ -39,9 +42,11 @@ function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -50,7 +55,7 @@ function createPrice(event) {
   const data = Object.fromEntries(formData.entries());
   data.enabled = enabled.value;
   data.currencyId = selectedCurrency.value.id;
-  data.parentId = parentPrice.value ? parentPrice.value.id : null;
+  data.parentId = parentPrice.value ? parentPrice.value.id : 0;
   data.factorToParent = factorToParent.value;
   data.roundLength = roundLength.value;
   apiRequest('/api/priceLists', 'POST', data).then(response => {
@@ -60,9 +65,11 @@ function createPrice(event) {
       refreshToken(() => createPrice(event), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -76,14 +83,15 @@ onMounted(() => init());
 
     <section class="card">
       <form @submit.prevent="createPrice">
-        <label>{{ $t('code') }}: <input name="code" type="text"/></label><br/>
-        <label>{{ $t('name') }}: <input autocomplete="false" name="name" type="text"/></label><br/>
-        <label>{{ $t('factorToParent') }}: <input v-model.number="factorToParent" name="factorToParent" step="0.000001"/>
-        </label><br/>
+        <label>{{ $t('code') }}: <input name="code" type="text"/></label>
+        <label>{{ $t('name') }}: <input autocomplete="false" name="name" type="text"/></label>
+        <label>{{ $t('factorToParent') }}: <input v-model.number="factorToParent" name="factorToParent" type="number"
+                                                  step="0.000001"/>
+        </label>
         <label>{{ $t('roundLength') }}:
-          <input v-model.number="roundLength" name="roundLength"/>
-        </label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"></label><br/>
+          <input v-model.number="roundLength" name="roundLength" type="number" min="0" step="1"/>
+        </label>
+        <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"></label>
         <label>{{ $t('currency.title') }}:
           <select id="currency" v-model="selectedCurrency">
             <option v-for="currency in currencies"
@@ -92,7 +100,7 @@ onMounted(() => init());
               {{ currency.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <label>{{ $t('priceList.parent') }}:
           <select id="parentPrice" v-model="parentPrice">
             <option :key="null"
@@ -104,10 +112,11 @@ onMounted(() => init());
               {{ priceList.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <button class="btn btn-primary" type="submit">{{ $t('create') }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

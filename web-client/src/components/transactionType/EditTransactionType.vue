@@ -11,6 +11,7 @@ const {t} = useI18n();
 const router = useRouter();
 const route = useRoute();
 const info = ref('');
+const infoType = ref('');
 const transactionType = ref({});
 const numberingPolicy = ref({});
 const resetPeriods = ref([]);
@@ -29,9 +30,11 @@ function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 
   apiRequest('/api/lookups?types=resetPeriods,stockAffectDirections', 'GET').then((response) => {
@@ -42,9 +45,11 @@ function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -55,13 +60,16 @@ function updateTransactionType() {
   apiRequest('/api/transactionTypes/' + route.params.id, 'PATCH', transactionType.value).then((response) => {
     if (response.code === 200) {
       info.value = t('transactionType.updated');
+      infoType.value = "success";
     } else if (response.code === 401) {
       refreshToken(() => updateTransactionType(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -77,8 +85,8 @@ onMounted(() => init());
         <label>
           <input v-model='transactionType.id' hidden='hidden' name='id' type='text'/>
         </label>
-        <label>{{ $t('code') }}: <input v-model='transactionType.code' name='code' type='text'/></label><br/>
-        <label>{{ $t('name') }}: <input v-model='transactionType.name' autocomplete='false' name='name' type='text'/></label><br/>
+        <label>{{ $t('code') }}: <input v-model='transactionType.code' name='code' type='text'/></label>
+        <label>{{ $t('name') }}: <input v-model='transactionType.name' autocomplete='false' name='name' type='text'/></label>
 
         <label>{{ $t('stockAffectDirection') }}:
           <select v-model="selectedStockAffectDirection" name='stockAffectDirection'>
@@ -88,14 +96,14 @@ onMounted(() => init());
               {{ stockAffectDirection}}
             </option>
           </select>
-        </label><br/>
-        <label>{{ $t('commercialAffected') }}: <input v-model="transactionType.commercialAffected" name="commercialAffected" type="checkbox"></label><br/>
-        <label>{{ $t('accountingAffected') }}: <input v-model="transactionType.accountingAffected" name="accountingAffected" type="checkbox"></label><br/>
-        <label>{{ $t('creditLimitChecked') }}: <input v-model="transactionType.creditLimitChecked" name="creditLimitChecked" type="checkbox"></label><br/>
-        <label>{{ $t('approvalRequired') }}: <input v-model="transactionType.approvalRequired" name="approvalRequired" type="checkbox"></label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="transactionType.enabled" name="enabled" type="checkbox"></label><br/>
+        </label>
+        <label>{{ $t('commercialAffected') }}: <input v-model="transactionType.commercialAffected" name="commercialAffected" type="checkbox"></label>
+        <label>{{ $t('accountingAffected') }}: <input v-model="transactionType.accountingAffected" name="accountingAffected" type="checkbox"></label>
+        <label>{{ $t('creditLimitChecked') }}: <input v-model="transactionType.creditLimitChecked" name="creditLimitChecked" type="checkbox"></label>
+        <label>{{ $t('approvalRequired') }}: <input v-model="transactionType.approvalRequired" name="approvalRequired" type="checkbox"></label>
+        <label>{{ $t('enabled') }}: <input v-model="transactionType.enabled" name="enabled" type="checkbox"></label>
 
-        <label>{{ $t('prefix') }}: <input v-model='numberingPolicy.prefix' type='text'/></label><br/>
+        <label>{{ $t('prefix') }}: <input v-model='numberingPolicy.prefix' type='text'/></label>
         <label>{{ $t('resetPeriod') }}:
           <select v-model="selectedResetPeriod" name='resetPeriod'>
             <option v-for="resetPeriod in resetPeriods"
@@ -104,11 +112,16 @@ onMounted(() => init());
               {{ resetPeriod}}
             </option>
           </select>
-        </label><br/>
-        <label>{{ $t('sequenceLength') }}: <input v-model.number='numberingPolicy.sequenceLength' name='sequenceLength'/></label><br/>
+        </label>
+        <label>{{ $t('sequenceLength') }}: <input v-model.number='numberingPolicy.sequenceLength'
+                                                 name='sequenceLength'
+                                                 type='number'
+                                                 min='0'
+                                                 step='1'/></label>
         <button class="btn btn-primary" type="submit">{{ $t('save') }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

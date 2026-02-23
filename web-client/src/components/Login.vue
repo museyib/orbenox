@@ -6,6 +6,7 @@ import InfoBar from "@/components/InfoBar.vue";
 
 const router = useRouter();
 const info = ref("");
+const infoType = ref('');
 
 function handleLogin(event) {
   const formData = new FormData(event.target);
@@ -19,6 +20,7 @@ function handleLogin(event) {
       router.push('/');
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   });
 }
@@ -26,9 +28,9 @@ function handleLogin(event) {
 <template>
   <h1>Please log in</h1>
   <form id="loginForm" @submit.prevent="handleLogin">
-    <label>Username: <input name="username" type="text"/></label><br/>
-    <label>Password: <input name="password" type="password"/></label><br/>
+    <label>Username: <input name="username" type="text"/></label>
+    <label>Password: <input name="password" type="password"/></label>
     <button class="btn btn-sm" type="submit">Login</button>
   </form>
-  <InfoBar :info="info"/>
+  <InfoBar :info="info" :type="infoType"/>
 </template>

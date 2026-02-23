@@ -1,6 +1,7 @@
 package com.orbenox.erp.domain.product.controller;
 
 import com.orbenox.erp.common.Response;
+import com.orbenox.erp.domain.product.projection.ProductPriceItem;
 import com.orbenox.erp.domain.product.projection.ProductPricingData;
 import com.orbenox.erp.domain.product.request.UpdateProductPriceRequest;
 import com.orbenox.erp.domain.product.service.ProductPriceService;
@@ -26,5 +27,12 @@ public class ProductPriceController {
     @PostMapping
     public ResponseEntity<Response<ProductPricingData>> updateProductPrices(@Valid @RequestBody UpdateProductPriceRequest request) {
         return ResponseEntity.ok(Response.successData(productPriceService.updateProductPrices(request)));
+    }
+
+    @GetMapping("/byPriceListId")
+    public ResponseEntity<Response<ProductPriceItem>> getByProductIdAndPriceListId(@RequestParam Long productId,
+                                                                                   @RequestParam Long priceListId,
+                                                                                   @RequestParam Long unitId) {
+        return ResponseEntity.ok(Response.successData(productPriceService.getByProductIdAndPriceListId(productId, priceListId, unitId)));
     }
 }

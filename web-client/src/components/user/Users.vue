@@ -9,6 +9,7 @@ import Toolbar from "@/components/Toolbar.vue";
 
 const router = useRouter();
 const info = ref('');
+const infoType = ref('');
 const users = ref([]);
 const searchQuery = ref('');
 const page = ref(0);
@@ -35,9 +36,11 @@ async function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   } catch (error) {
     info.value = error;
+    infoType.value = "error";
   }
 }
 function create() {
@@ -56,9 +59,11 @@ function deleteUser(userId) {
       refreshToken(() => deleteUser(userId), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -154,7 +159,7 @@ onMounted(() => init());
         </label>
       </div>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
 <style scoped>

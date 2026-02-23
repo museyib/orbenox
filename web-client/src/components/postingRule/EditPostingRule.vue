@@ -11,6 +11,7 @@ const {t} = useI18n();
 const router = useRouter();
 const route = useRoute();
 const info = ref("");
+const infoType = ref('');
 const postingRule = ref({});
 const transactionTypes = ref([]);
 const accounts = ref([]);
@@ -40,9 +41,11 @@ function init() {
       refreshToken(() => init(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 
   apiRequest("/api/lookups?types=transactionTypes,accounts,amountSources,partnerSides", "GET").then(response => {
@@ -55,9 +58,11 @@ function init() {
       refreshToken(() => init(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -69,13 +74,16 @@ function updatePostingRule() {
   apiRequest("/api/postingRules/" + route.params.id, "PATCH", postingRule.value).then(response => {
     if (response.code === 200) {
       info.value = t("postingRule.updated");
+      infoType.value = "success";
     } else if (response.code === 401) {
       refreshToken(() => updatePostingRule(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -91,45 +99,46 @@ onMounted(() => init());
         <label>
           <input v-model='postingRule.id' hidden='hidden' name='id' type='text'/>
         </label>
-        <label>{{ $t("sequence") }}: <input v-model='postingRule.sequence' name='sequence' type='number'/></label><br/>
+        <label>{{ $t("sequence") }}: <input v-model='postingRule.sequence' name='sequence' type='number'/></label>
         <label>{{ $t("transactionType.title") }}:
           <select v-model="selectedTransactionType">
             <option v-for="transactionType in transactionTypes" :key="transactionType.id" :value="transactionType">
               {{ transactionType.code }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <label>{{ $t("debitAccount") }}:
           <select v-model="selectedDebitAccount">
             <option v-for="account in accounts" :key="account.id" :value="account">
               {{ account.code }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <label>{{ $t("creditAccount") }}:
           <select v-model="selectedCreditAccount">
             <option v-for="account in accounts" :key="account.id" :value="account">
               {{ account.code }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <label>{{ $t("amountSource") }}:
           <select v-model="postingRule.amountSource">
             <option v-for="amountSource in amountSources" :key="amountSource" :value="amountSource">
               {{ amountSource }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <label>{{ $t("partnerSide") }}:
           <select v-model="postingRule.partnerSide">
             <option v-for="partnerSide in partnerSides" :key="partnerSide" :value="partnerSide">
               {{ partnerSide }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <button class="btn btn-primary" type="submit">{{ $t("save") }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

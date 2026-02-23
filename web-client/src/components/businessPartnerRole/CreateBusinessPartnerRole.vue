@@ -8,6 +8,7 @@ import InfoBar from "@/components/InfoBar.vue";
 
 const router = useRouter();
 const info = ref("");
+const infoType = ref('');
 const enabled = ref(true);
 const businessPartners = ref([]);
 const partnerRoles = ref([]);
@@ -26,9 +27,11 @@ function init() {
       refreshToken(() => init(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -46,9 +49,11 @@ function createBusinessPartnerRole(event) {
       refreshToken(() => createBusinessPartnerRole(event), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -67,18 +72,19 @@ onMounted(() => init());
               {{ businessPartner.code }} - {{ businessPartner.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <label>{{ $t("partnerRole") }}:
           <select v-model="selectedPartnerRole">
             <option v-for="partnerRole in partnerRoles" :key="partnerRole" :value="partnerRole">
               {{ partnerRole }}
             </option>
           </select>
-        </label><br/>
-        <label>{{ $t("enabled") }}: <input v-model="enabled" type="checkbox"></label><br/>
+        </label>
+        <label>{{ $t("enabled") }}: <input v-model="enabled" type="checkbox"></label>
         <button class="btn btn-primary" type="submit">{{ $t("create") }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

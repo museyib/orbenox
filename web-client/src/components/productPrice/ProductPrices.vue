@@ -11,6 +11,7 @@ import {round} from "@/tools.js";
 const route = useRoute();
 const router = useRouter();
 const info = ref('');
+const infoType = ref('');
 const currentProduct = ref();
 const productPrices = ref([]);
 const priceLists = ref([]);
@@ -41,17 +42,21 @@ function init() {
           refreshToken(() => init(), () => router.push('/ui/login'));
         } else {
           info.value = response.message;
+          infoType.value = "error";
         }
       }).catch(error => {
         info.value = error;
+        infoType.value = "error";
       });
     } else if (response.code === 401) {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -107,9 +112,11 @@ function updatePrices() {
       refreshToken(() => updatePrices(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   })
 }
 
@@ -195,16 +202,17 @@ onMounted(() => init());
               <td class="mono">{{ priceData.id }}</td>
               <td>{{ priceData.priceList.code }}</td>
               <td>{{ priceData.unit.code }}</td>
-              <td><input v-model.number="priceData.price" type="text" @change.prevent="handlePriceChange(priceData)"/>
+              <td><input v-model.number="priceData.price" type="number" step="0.0001"
+                         @change.prevent="handlePriceChange(priceData)"/>
               </td>
-              <td><input v-model.number="priceData.factorToParent"
+              <td><input v-model.number="priceData.factorToParent" type="number" step="0.000001"
                          @change.prevent="handleFixAndFactorChange(priceData)"/></td>
-              <td><input v-model.number="priceData.roundLength"
+              <td><input v-model.number="priceData.roundLength" type="number" min="0" step="1"
                          @change.prevent="handleFixAndFactorChange(priceData)"/></td>
               <td>{{ getBasePrice(priceData, priceData.unit)}}</td>
               <td><input v-model="priceData.fixedPrice" type="checkbox"
                          @change.prevent="handleFixAndFactorChange(priceData)"/></td>
-              <td><input v-model.number="priceData.discountRatioLimit"/></td>
+              <td><input v-model.number="priceData.discountRatioLimit" type="number" min="0" step="0.01"/></td>
             </tr>
             </tbody>
           </table>
@@ -216,10 +224,11 @@ onMounted(() => init());
       </div>
       <button class="btn btn-primary" type="submit" @click="updatePrices">{{ $t('save') }}</button>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
 
 <style scoped>
 
 </style>
+

@@ -8,6 +8,7 @@ import Toolbar from "@/components/Toolbar.vue";
 import {useRouter} from "vue-router";
 
 const info = ref('');
+const infoType = ref('');
 const resources = ref([]);
 const searchQuery = ref('');
 const page = ref(0);
@@ -36,9 +37,11 @@ async function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   } catch (error) {
     info.value = error;
+    infoType.value = "error";
   }
 }
 
@@ -63,9 +66,11 @@ async function deleteResource(resourceId) {
       refreshToken(() => deleteResource(resourceId), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   } catch (error) {
     info.value = error;
+    infoType.value = "error";
   }
 }
 
@@ -156,7 +161,7 @@ onMounted(() => init());
         </label>
       </div>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
 
@@ -191,3 +196,4 @@ button:disabled {
   pointer-events: none;
 }
 </style>
+

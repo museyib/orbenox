@@ -8,6 +8,7 @@ import PageHeader from "@/components/PageHeader.vue";
 
 const router = useRouter();
 const info = ref('');
+const infoType = ref('');
 const enabled = ref(true);
 const brands = ref([]);
 const selectedBrand = ref();
@@ -73,9 +74,11 @@ function init() {
       }
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -98,9 +101,11 @@ function createProduct(event) {
       refreshToken(() => createProduct(event), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -113,11 +118,11 @@ onMounted(() => init());
 
     <section class="card">
       <form @submit.prevent="createProduct">
-        <label>{{ $t('code') }}: <input name="code" type="text"/></label><br/>
-        <label>{{ $t('name') }}: <input autocomplete="false" name="name" type="text"/></label><br/>
-        <label>{{ $t('description') }}: <input name="description" type="text"/></label><br/>
-        <label>{{ $t('barcode') }}: <input name="defaultBarcode" type="text"/></label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"></label><br/>
+        <label>{{ $t('code') }}: <input name="code" type="text"/></label>
+        <label>{{ $t('name') }}: <input autocomplete="false" name="name" type="text"/></label>
+        <label>{{ $t('description') }}: <input name="description" type="text"/></label>
+        <label>{{ $t('barcode') }}: <input name="defaultBarcode" type="text"/></label>
+        <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"></label>
 
         <label>{{ $t('brand.title') }}:
           <select id="brand" v-model="selectedBrand">
@@ -128,7 +133,7 @@ onMounted(() => init());
               {{ brand.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
 
         <label>{{ $t('productType.title') }}:
           <select id="productType" v-model="selectedProductType">
@@ -139,7 +144,7 @@ onMounted(() => init());
               {{ productType.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
 
         <label>{{ $t('productClass.title') }}:
           <select id="productClass" v-model="selectedProductClass">
@@ -150,7 +155,7 @@ onMounted(() => init());
               {{ productClass.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
 
         <label>{{ $t('productGroup.title') }}:
           <select id="productGroup" v-model="selectedProductGroup">
@@ -161,7 +166,7 @@ onMounted(() => init());
               {{ productGroup.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
 
         <label>{{ $t('productCategory.title') }}:
           <select id="productCategory" v-model="selectedProductCategory">
@@ -172,7 +177,7 @@ onMounted(() => init());
               {{ productCategory.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
 
         <label>{{ $t('producer.title') }}:
           <select id="producer" v-model="selectedProducer">
@@ -183,7 +188,7 @@ onMounted(() => init());
               {{ producer.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
 
         <label>{{ $t('country.title') }}:
           <select id="country" v-model="selectedCountry">
@@ -194,7 +199,7 @@ onMounted(() => init());
               {{ country.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
 
         <label>{{ $t('unit.title') }}:
           <select id="unit" v-model="selectedUnit">
@@ -205,10 +210,11 @@ onMounted(() => init());
               {{ unit.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <button class="btn btn-primary" type="submit">{{ $t('create') }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

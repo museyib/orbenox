@@ -8,6 +8,7 @@ import InfoBar from "@/components/InfoBar.vue";
 
 const router = useRouter();
 const info = ref("");
+const infoType = ref('');
 const transactionTypes = ref([]);
 const accounts = ref([]);
 const amountSources = ref([]);
@@ -37,9 +38,11 @@ function init() {
       refreshToken(() => init(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -59,9 +62,11 @@ function createPostingRule(event) {
       refreshToken(() => createPostingRule(event), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -74,45 +79,46 @@ onMounted(() => init());
 
     <section class="card">
       <form @submit.prevent="createPostingRule">
-        <label>{{ $t("sequence") }}: <input name="sequence" type="number"/></label><br/>
+        <label>{{ $t("sequence") }}: <input name="sequence" type="number"/></label>
         <label>{{ $t("transactionType.title") }}:
           <select v-model="selectedTransactionType">
             <option v-for="transactionType in transactionTypes" :key="transactionType.id" :value="transactionType">
               {{ transactionType.code }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <label>{{ $t("debitAccount") }}:
           <select v-model="selectedDebitAccount">
             <option v-for="account in accounts" :key="account.id" :value="account">
               {{ account.code }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <label>{{ $t("creditAccount") }}:
           <select v-model="selectedCreditAccount">
             <option v-for="account in accounts" :key="account.id" :value="account">
               {{ account.code }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <label>{{ $t("amountSource") }}:
           <select v-model="selectedAmountSource">
             <option v-for="amountSource in amountSources" :key="amountSource" :value="amountSource">
               {{ amountSource }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <label>{{ $t("partnerSide") }}:
           <select v-model="selectedPartnerSide">
             <option v-for="partnerSide in partnerSides" :key="partnerSide" :value="partnerSide">
               {{ partnerSide }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <button class="btn btn-primary" type="submit">{{ $t("create") }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

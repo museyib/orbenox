@@ -11,6 +11,7 @@ const {t} = useI18n();
 const router = useRouter();
 const route = useRoute();
 const info = ref("");
+const infoType = ref('');
 const businessPartner = ref({});
 const partnerTypes = ref([]);
 
@@ -22,9 +23,11 @@ function init() {
       refreshToken(() => init(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 
   apiRequest("/api/lookups?types=partnerTypes", "GET").then(response => {
@@ -34,9 +37,11 @@ function init() {
       refreshToken(() => init(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -44,13 +49,16 @@ function updateBusinessPartner() {
   apiRequest("/api/businessPartners/" + route.params.id, "PATCH", businessPartner.value).then(response => {
     if (response.code === 200) {
       info.value = t("businessPartner.updated");
+      infoType.value = "success";
     } else if (response.code === 401) {
       refreshToken(() => updateBusinessPartner(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -66,21 +74,22 @@ onMounted(() => init());
         <label>
           <input v-model='businessPartner.id' hidden='hidden' name='id' type='text'/>
         </label>
-        <label>{{ $t("code") }}: <input v-model='businessPartner.code' name='code' type='text'/></label><br/>
+        <label>{{ $t("code") }}: <input v-model='businessPartner.code' name='code' type='text'/></label>
         <label>{{ $t("name") }}: <input v-model='businessPartner.name' autocomplete='false' name='name'
-                                        type='text'/></label><br/>
-        <label>{{ $t("taxId") }}: <input v-model='businessPartner.taxId' name='taxId' type='text'/></label><br/>
+                                        type='text'/></label>
+        <label>{{ $t("taxId") }}: <input v-model='businessPartner.taxId' name='taxId' type='text'/></label>
         <label>{{ $t("partnerType") }}:
           <select v-model="businessPartner.type">
             <option v-for="partnerType in partnerTypes" :key="partnerType" :value="partnerType">
               {{ partnerType }}
             </option>
           </select>
-        </label><br/>
-        <label>{{ $t("enabled") }}: <input v-model="businessPartner.enabled" type="checkbox"></label><br/>
+        </label>
+        <label>{{ $t("enabled") }}: <input v-model="businessPartner.enabled" type="checkbox"></label>
         <button class="btn btn-primary" type="submit">{{ $t("save") }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

@@ -8,6 +8,7 @@ import PageHeader from "@/components/PageHeader.vue";
 
 const router = useRouter();
 const info = ref('');
+const infoType = ref('');
 const enabled = ref(true);
 
 function createRole(event) {
@@ -21,9 +22,11 @@ function createRole(event) {
       refreshToken(() => createRole(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 </script>
@@ -34,13 +37,14 @@ function createRole(event) {
 
     <section class="card">
       <form @submit.prevent="createRole">
-        <label>{{ $t('code') }}: <input name="code" type="text"/></label><br/>
-        <label>{{ $t('name') }}: <input name="name" type="text"/></label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"></label><br/>
+        <label>{{ $t('code') }}: <input name="code" type="text"/></label>
+        <label>{{ $t('name') }}: <input name="name" type="text"/></label>
+        <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"></label>
         <button class="btn btn-primary" type="submit">{{ $t('create') }}</button>
-        <br/>
+
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

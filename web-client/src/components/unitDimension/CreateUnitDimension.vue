@@ -8,6 +8,7 @@ import InfoBar from "@/components/InfoBar.vue";
 
 const router = useRouter();
 const info = ref("");
+const infoType = ref('');
 const enabled = ref(true);
 
 function createUnitDimension(event) {
@@ -21,9 +22,11 @@ function createUnitDimension(event) {
       refreshToken(() => createUnitDimension(event), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 </script>
@@ -34,12 +37,13 @@ function createUnitDimension(event) {
 
     <section class="card">
       <form @submit.prevent="createUnitDimension">
-        <label>{{ $t("code") }}: <input name="code" type="text"/></label><br/>
-        <label>{{ $t("name") }}: <input autocomplete="false" name="name" type="text"/></label><br/>
-        <label>{{ $t("enabled") }}: <input v-model="enabled" type="checkbox"></label><br/>
+        <label>{{ $t("code") }}: <input name="code" type="text"/></label>
+        <label>{{ $t("name") }}: <input autocomplete="false" name="name" type="text"/></label>
+        <label>{{ $t("enabled") }}: <input v-model="enabled" type="checkbox"></label>
         <button class="btn btn-primary" type="submit">{{ $t("create") }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

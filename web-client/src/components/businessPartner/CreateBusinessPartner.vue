@@ -8,6 +8,7 @@ import InfoBar from "@/components/InfoBar.vue";
 
 const router = useRouter();
 const info = ref("");
+const infoType = ref('');
 const enabled = ref(true);
 const partnerTypes = ref([]);
 const selectedPartnerType = ref("");
@@ -23,9 +24,11 @@ function init() {
       refreshToken(() => init(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -41,9 +44,11 @@ function createBusinessPartner(event) {
       refreshToken(() => createBusinessPartner(event), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -56,20 +61,21 @@ onMounted(() => init());
 
     <section class="card">
       <form @submit.prevent="createBusinessPartner">
-        <label>{{ $t("code") }}: <input name="code" type="text"/></label><br/>
-        <label>{{ $t("name") }}: <input autocomplete="false" name="name" type="text"/></label><br/>
-        <label>{{ $t("taxId") }}: <input name="taxId" type="text"/></label><br/>
+        <label>{{ $t("code") }}: <input name="code" type="text"/></label>
+        <label>{{ $t("name") }}: <input autocomplete="false" name="name" type="text"/></label>
+        <label>{{ $t("taxId") }}: <input name="taxId" type="text"/></label>
         <label>{{ $t("partnerType") }}:
           <select v-model="selectedPartnerType">
             <option v-for="partnerType in partnerTypes" :key="partnerType" :value="partnerType">
               {{ partnerType }}
             </option>
           </select>
-        </label><br/>
-        <label>{{ $t("enabled") }}: <input v-model="enabled" type="checkbox"></label><br/>
+        </label>
+        <label>{{ $t("enabled") }}: <input v-model="enabled" type="checkbox"></label>
         <button class="btn btn-primary" type="submit">{{ $t("create") }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

@@ -16,8 +16,8 @@ public interface DocumentSequenceRepository extends JpaRepository<DocumentSequen
         WHERE s.type.id = :typeId
             AND s.year = :year
             AND s.month = :month""")
-    Optional<DocumentSequence> findForUpdate(@Param("type") Long typeId,
-                                                    @Param("year") int year,
-                                                    @Param("month") int month);
+    Optional<DocumentSequence> findForUpdate(@Param("typeId") Long typeId,
+                                             @Param("year") int year,
+                                             @Param("month") int month);
 
 }

@@ -1,5 +1,6 @@
 package com.orbenox.erp.domain.product.service;
 
+import com.orbenox.erp.common.Response;
 import com.orbenox.erp.common.entity.BaseEntity;
 import com.orbenox.erp.domain.product.dto.ProductPriceUpdateDto;
 import com.orbenox.erp.domain.product.entity.ProductPrice;
@@ -71,6 +72,12 @@ public class ProductPriceService {
         productPricingData.setProduct(productItem);
         productPricingData.setPrices(items);
         return productPricingData;
+    }
+
+    public ProductPriceItem getByProductIdAndPriceListId(Long productId,
+                                                                   Long priceListId,
+                                                                   Long unitId) {
+        return productPriceRepository.getByProductIdAndPriceListId(productId, priceListId, unitId);
     }
 }
 

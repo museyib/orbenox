@@ -8,6 +8,7 @@ import PageHeader from "@/components/PageHeader.vue";
 
 const router = useRouter();
 const info = ref('');
+const infoType = ref('');
 const enabled = ref(true);
 const actions = ref([]);
 const assignedActions = ref([]);
@@ -18,9 +19,11 @@ function init() {
       actions.value = response.data.actions;
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -36,9 +39,11 @@ function createResource(event) {
       refreshToken(() => createResource(event), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -61,28 +66,31 @@ onMounted(() => init());
 
     <section class="card">
       <form @submit.prevent="createResource">
-        <label>{{ $t('code') }}: <input name="code" type="text"/></label><br/>
-        <label>{{ $t('name') }}: <input autocomplete="false" name="name" type="text"/></label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"/></label><br/>
-        <label>{{ $t('assignedActions') }}:
-          <select id="assignedActions" multiple>
-            <option v-for="action in assignedActions"
-                    v-on:dblclick='removeFromAssignedActions(action)'
-            >{{ action }}
-            </option>
-          </select>
-        </label>
-        <label>{{ $t('actions') }}:
-          <select id='availableActions' multiple>
-            <option v-for="action in actions"
-                    v-on:dblclick='addToAssignedActions(action)'
-            >{{ action }}
-            </option>
-          </select><br/>
-        </label><br/>
+        <label>{{ $t('code') }}: <input name="code" type="text"/></label>
+        <label>{{ $t('name') }}: <input autocomplete="false" name="name" type="text"/></label>
+        <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"/></label>
+        <div class="dual-selects">
+          <label>{{ $t('assignedActions') }}:
+            <select id="assignedActions" multiple>
+              <option v-for="action in assignedActions"
+                      v-on:dblclick='removeFromAssignedActions(action)'
+              >{{ action }}
+              </option>
+            </select>
+          </label>
+          <label>{{ $t('actions') }}:
+            <select id='availableActions' multiple>
+              <option v-for="action in actions"
+                      v-on:dblclick='addToAssignedActions(action)'
+              >{{ action }}
+              </option>
+            </select>
+          </label>
+        </div>
         <button class="btn btn-primary" type="submit">{{ $t('create') }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

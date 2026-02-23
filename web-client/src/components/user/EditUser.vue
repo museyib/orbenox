@@ -11,6 +11,7 @@ const {t} = useI18n();
 const router = useRouter();
 const route = useRoute();
 const info = ref('');
+const infoType = ref('');
 const userTypes = ref([]);
 const roles = ref([]);
 const assignedRoles = ref([]);
@@ -31,17 +32,21 @@ function init() {
           roles.value = response.data.roles.filter(role => role.enabled && !assignedIds.has(role.id));
         } else {
           info.value = response.message;
+          infoType.value = "error";
         }
       }).catch(error => {
         info.value = error;
+        infoType.value = "error";
       });
     } else if (response.code === 401) {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -51,13 +56,16 @@ function updateUser() {
   apiRequest('/api/users/' + route.params.id, 'PATCH', user.value).then((response) => {
     if (response.code === 200) {
       info.value = t('user.updated');
+      infoType.value = "success";
     } else if (response.code === 401) {
       refreshToken(() => updateUser(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -82,11 +90,11 @@ onMounted(() => init());
       <form @submit.prevent='updateUser'>
         <label>
           <input v-model='user.id' hidden="hidden" name="id" type="text"/>
-        </label><br/>
+        </label>
         <label>{{ $t('user.username') }}:
-          <input v-model='user.username' autocomplete='false' name="username" type="text"/></label><br/>
+          <input v-model='user.username' autocomplete='false' name="username" type="text"/></label>
         <label>{{ $t('user.displayName') }}:
-          <input v-model='user.displayName' autocomplete='false' name="displayName" type="text"/></label><br/>
+          <input v-model='user.displayName' autocomplete='false' name="displayName" type="text"/></label>
         <label>{{ $t('user.userType') }}:
           <select id='userType' v-model='user.userType'>
             <option v-for="userType in userTypes"
@@ -96,27 +104,30 @@ onMounted(() => init());
               {{ userType.name }}
             </option>
           </select>
-        </label><br/>
-        <label>{{ $t('assignedRoles') }}:
-          <select id='assignedRoles' multiple>
-            <option v-for="role in assignedRoles"
-                    v-on:dblclick="removeFromAssignedRoles(role)">
-              {{ role.code }}
-            </option>
-          </select>
         </label>
-        <label>{{ $t('roles') }}:
-          <select id='availableRoles' multiple>
-            <option v-for="role in roles"
-                    v-on:dblclick="addToAssignedRoles(role)">
-              {{ role.code }}
-            </option>
-          </select>
-        </label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="user.enabled" name="enabled" type="checkbox"></label> <br/>
+        <div class="dual-selects">
+          <label>{{ $t('assignedRoles') }}:
+            <select id='assignedRoles' multiple>
+              <option v-for="role in assignedRoles"
+                      v-on:dblclick="removeFromAssignedRoles(role)">
+                {{ role.code }}
+              </option>
+            </select>
+          </label>
+          <label>{{ $t('roles') }}:
+            <select id='availableRoles' multiple>
+              <option v-for="role in roles"
+                      v-on:dblclick="addToAssignedRoles(role)">
+                {{ role.code }}
+              </option>
+            </select>
+          </label>
+        </div>
+        <label>{{ $t('enabled') }}: <input v-model="user.enabled" name="enabled" type="checkbox"></label>
         <button class="btn btn-primary" type="submit">{{ $t('save') }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

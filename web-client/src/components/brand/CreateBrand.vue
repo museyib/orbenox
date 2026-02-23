@@ -8,6 +8,7 @@ import PageHeader from "@/components/PageHeader.vue";
 
 const router = useRouter();
 const info = ref('');
+const infoType = ref('');
 const enabled = ref(true);
 
 function createBrand(event) {
@@ -21,9 +22,11 @@ function createBrand(event) {
       refreshToken(() => createBrand(event), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -35,13 +38,13 @@ function createBrand(event) {
 
     <section class="card">
       <form @submit.prevent="createBrand">
-        <label>{{ $t('code') }}: <input name="code" type="text"/></label><br/>
-        <label>{{ $t('name') }}: <input autocomplete="false" name="name" type="text"/></label><br/>
-        <label>{{ $t('description') }}: <input name="description" type="text"/></label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"></label><br/>
+        <label>{{ $t('code') }}: <input name="code" type="text"/></label>
+        <label>{{ $t('name') }}: <input autocomplete="false" name="name" type="text"/></label>
+        <label>{{ $t('description') }}: <input name="description" type="text"/></label>
+        <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"></label>
         <button class="btn btn-primary" type="submit">{{ $t('create') }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type = "infoType"/>
   </MainLayout>
 </template>

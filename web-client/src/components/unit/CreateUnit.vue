@@ -8,6 +8,7 @@ import PageHeader from "@/components/PageHeader.vue";
 
 const router = useRouter();
 const info = ref('');
+const infoType = ref('');
 const unitDimensions = ref([]);
 const selectedUnitDimension = ref();
 const isBase = ref(false);
@@ -24,9 +25,11 @@ function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -43,9 +46,11 @@ function createUnit(event) {
       refreshToken(() => createUnit(event), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -58,11 +63,11 @@ onMounted(() => init());
 
     <section class="card">
       <form @submit.prevent="createUnit">
-        <label>{{ $t('code') }}: <input name="code" type="text"/></label><br/>
-        <label>{{ $t('name') }}: <input autocomplete="false" name="name" type="text"/></label><br/>
-        <label>{{ $t('factorToBase') }}: <input name="factorToBase" step="0.000001" type="number"/></label><br/>
-        <label>{{ $t('offsetToBase') }}: <input name="offsetToBase" step="0.000001" type="number"/></label><br/>
-        <label>{{ $t('isBase') }}: <input v-model='isBase' name="isBase" type="checkbox"/></label><br/>
+        <label>{{ $t('code') }}: <input name="code" type="text"/></label>
+        <label>{{ $t('name') }}: <input autocomplete="false" name="name" type="text"/></label>
+        <label>{{ $t('factorToBase') }}: <input name="factorToBase" step="0.000001" type="number"/></label>
+        <label>{{ $t('offsetToBase') }}: <input name="offsetToBase" step="0.000001" type="number"/></label>
+        <label>{{ $t('isBase') }}: <input v-model='isBase' name="isBase" type="checkbox"/></label>
         <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"></label>
         <label>{{ $t('unitDimension') }}:
           <select id="unitDimension" v-model="selectedUnitDimension">
@@ -73,11 +78,12 @@ onMounted(() => init());
               {{ unitDimension.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <button class="btn btn-primary" type="submit">{{ $t('create') }}</button>
-        <br/>
+
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

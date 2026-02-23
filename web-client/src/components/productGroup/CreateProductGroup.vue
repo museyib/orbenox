@@ -8,6 +8,7 @@ import PageHeader from "@/components/PageHeader.vue";
 
 const router = useRouter();
 const info = ref('');
+const infoType = ref('');
 const enabled = ref(true);
 const productGroups = ref([]);
 const selectedProductGroup = ref(null);
@@ -23,9 +24,11 @@ function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -41,9 +44,11 @@ function createProductGroup(event) {
       refreshToken(() => createProductGroup(event), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -56,10 +61,10 @@ onMounted(() => init());
 
     <section class="card">
       <form @submit.prevent="createProductGroup">
-        <label>{{ $t('code') }}: <input name="code" type="text"/></label><br/>
-        <label>{{ $t('name') }}: <input autocomplete="false" name="name" type="text"/></label><br/>
-        <label>{{ $t('description') }}: <input name="description" type="text"/></label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"></label><br/>
+        <label>{{ $t('code') }}: <input name="code" type="text"/></label>
+        <label>{{ $t('name') }}: <input autocomplete="false" name="name" type="text"/></label>
+        <label>{{ $t('description') }}: <input name="description" type="text"/></label>
+        <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"></label>
         <label>{{ $t('parentGroup') }}:
           <select id="parentGroup" v-model="selectedProductGroup">
             <option :key="null"
@@ -72,11 +77,12 @@ onMounted(() => init());
               {{ productGroup.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <button class="btn btn-primary" type="submit">{{ $t('create') }}</button>
-        <br/>
+
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

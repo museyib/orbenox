@@ -8,6 +8,7 @@ import InfoBar from "@/components/InfoBar.vue";
 import {useRouter} from "vue-router";
 
 const info = ref('');
+const infoType = ref('');
 const brands = ref([]);
 const searchQuery = ref('');
 const page = ref(0);
@@ -35,9 +36,11 @@ async function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   } catch (error) {
     info.value = error;
+    infoType.value = "error";
   }
 }
 function create() {
@@ -56,9 +59,11 @@ function deleteBrand(brandId) {
       refreshToken(() => deleteBrand(brandId), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -148,7 +153,7 @@ onMounted(() => init());
         </label>
       </div>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type = "infoType"/>
   </MainLayout>
 </template>
 <style scoped>

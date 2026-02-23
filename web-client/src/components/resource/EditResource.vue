@@ -9,6 +9,7 @@ import PageHeader from "@/components/PageHeader.vue";
 const router = useRouter();
 const route = useRoute();
 const info = ref('');
+const infoType = ref('');
 const resource = ref({});
 const actions = ref([]);
 const assignedActions = ref([]);
@@ -24,17 +25,21 @@ function init() {
           actions.value = response.data.actions.filter(action => !assignedActions.value.includes(action));
         } else {
           info.value = response.message;
+          infoType.value = "error";
         }
       }).catch(error => {
         info.value = error;
+        infoType.value = "error";
       });
     } else if (response.code === 401) {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -43,13 +48,16 @@ function updateRole() {
   apiRequest('/api/resources/' + route.params.id, 'PATCH', resource.value).then((response) => {
     if (response.code === 200) {
       info.value = 'Resource updated';
+      infoType.value = "error";
     } else if (response.code === 401) {
       refreshToken(() => updateRole(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -75,29 +83,32 @@ onMounted(() => init());
         <label>
           <input v-model='resource.id' hidden="hidden" name="id" type="text"/>
         </label>
-        <label>{{ $t('code') }}: <input v-model='resource.code' name="code" type="text"/></label><br/>
+        <label>{{ $t('code') }}: <input v-model='resource.code' name="code" type="text"/></label>
         <label>{{ $t('name') }}: <input v-model='resource.name' autocomplete='false' name="name"
-                                        type="text"/></label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="resource.enabled" type="checkbox"/></label><br/>
-        <label>{{ $t('assignedActions') }}:
-          <select id="assignedActions" multiple>
-            <option v-for="action in assignedActions"
-                    v-on:dblclick='removeFromAssignedActions(action)'
-            >{{ action }}
-            </option>
-          </select>
-        </label>
-        <label>{{ $t('actions') }}:
-          <select id='availableActions' multiple>
-            <option v-for="action in actions"
-                    v-on:dblclick='addToAssignedActions(action)'
-            >{{ action }}
-            </option>
-          </select><br/>
-        </label><br/>
+                                        type="text"/></label>
+        <label>{{ $t('enabled') }}: <input v-model="resource.enabled" type="checkbox"/></label>
+        <div class="dual-selects">
+          <label>{{ $t('assignedActions') }}:
+            <select id="assignedActions" multiple>
+              <option v-for="action in assignedActions"
+                      v-on:dblclick='removeFromAssignedActions(action)'
+              >{{ action }}
+              </option>
+            </select>
+          </label>
+          <label>{{ $t('actions') }}:
+            <select id='availableActions' multiple>
+              <option v-for="action in actions"
+                      v-on:dblclick='addToAssignedActions(action)'
+              >{{ action }}
+              </option>
+            </select>
+          </label>
+        </div>
         <button class="btn btn-primary" type="submit">{{ $t('save') }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

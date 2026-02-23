@@ -11,6 +11,7 @@ const {t} = useI18n();
 const router = useRouter();
 const route = useRoute();
 const info = ref('');
+const infoType = ref('');
 const priceList = ref({});
 const priceLists = ref([]);
 const currencies = ref([]);
@@ -27,15 +28,18 @@ function init() {
           refreshToken(() => init(), () => router.push('/ui/login'));
         } else {
           info.value = response.message;
+          infoType.value = "error";
         }
       });
     } else if (response.code === 401) {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 
   apiRequest('/api/lookups?types=currencies', 'GET').then(response => {
@@ -45,9 +49,11 @@ function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -57,13 +63,16 @@ function updatePrice() {
   apiRequest('/api/priceLists/' + route.params.id, 'PATCH', priceList.value).then((response) => {
     if (response.code === 200) {
       info.value = t('priceList.updated');
+      infoType.value = "success";
     } else if (response.code === 401) {
       refreshToken(() => updatePrice(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -79,18 +88,19 @@ onMounted(() => init());
         <label>
           <input v-model='priceList.id' hidden='hidden' name='id' type='text'/>
         </label>
-        <label>{{ $t('code') }}: <input v-model='priceList.code' name='code' type='text'/></label><br/>
+        <label>{{ $t('code') }}: <input v-model='priceList.code' name='code' type='text'/></label>
         <label>{{ $t('name') }}: <input v-model='priceList.name' autocomplete='false' name='name'
-                                        type='text'/></label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="priceList.enabled" name="enabled" type="checkbox"></label><br/>
+                                        type='text'/></label>
+        <label>{{ $t('enabled') }}: <input v-model="priceList.enabled" name="enabled" type="checkbox"></label>
         <label>{{ $t('factorToParent') }}:
           <input v-model.number="priceList.factorToParent"
                  name="factorToParent"
+                 type="number"
                  step="0.000001"/>
-        </label><br/>
+        </label>
         <label>{{ $t('roundLength') }}:
-        <input v-model.number="priceList.roundLength" name="roundLength"/>
-        </label><br/>
+        <input v-model.number="priceList.roundLength" name="roundLength" type="number" min="0" step="1"/>
+        </label>
         <label>{{ $t('currency.title') }}:
           <select id="currency" v-model="priceList.currency">
             <option v-for="currency in currencies"
@@ -99,7 +109,7 @@ onMounted(() => init());
               {{ currency.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <label>{{ $t('priceList.parent') }}:
           <select id="parentPrice" v-model="priceList.parent">
             <option :key="null"
@@ -111,10 +121,11 @@ onMounted(() => init());
               {{ priceList.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <button class="btn btn-primary" type="submit">{{ $t('save') }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

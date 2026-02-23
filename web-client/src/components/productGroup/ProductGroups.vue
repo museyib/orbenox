@@ -8,6 +8,7 @@ import PageHeader from "@/components/PageHeader.vue";
 import {useRouter} from "vue-router";
 
 const info = ref('');
+const infoType = ref('');
 const productGroups = ref([]);
 const searchQuery = ref('');
 const page = ref(0);
@@ -35,9 +36,11 @@ async function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   } catch (error) {
     info.value = error;
+    infoType.value = "error";
   }
 }
 function create() {
@@ -56,6 +59,7 @@ function deleteProductGroup(productGroupId) {
       refreshToken(() => deleteProductGroup(productGroupId), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   });
 }
@@ -151,7 +155,7 @@ onMounted(() => init());
         </label>
       </div>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
 <style scoped>

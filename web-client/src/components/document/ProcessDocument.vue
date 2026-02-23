@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import {computed, onMounted, ref} from "vue";
 import {apiRequest, refreshToken} from "@/api.js";
 import {useRoute, useRouter} from "vue-router";
@@ -9,6 +9,7 @@ import InfoBar from "@/components/InfoBar.vue";
 const route = useRoute();
 const router = useRouter();
 const info = ref("");
+const infoType = ref('');
 const documentData = ref(null);
 
 const actions = computed(() => {
@@ -51,9 +52,11 @@ function init() {
       refreshToken(() => init(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -65,9 +68,11 @@ function runAction(action) {
       refreshToken(() => runAction(action), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -102,7 +107,7 @@ onMounted(() => init());
       <button v-if="actions.cancel" class="btn btn-sm btn-danger" @click="runAction('cancel')">{{ $t("cancel") }}</button>
     </section>
 
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
 

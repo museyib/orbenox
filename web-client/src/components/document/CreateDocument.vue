@@ -1,13 +1,15 @@
-﻿<script setup>
+<script setup>
 import {computed, onMounted, ref} from "vue";
 import {apiRequest, refreshToken} from "@/api.js";
 import {useRouter} from "vue-router";
 import MainLayout from "@/components/MainLayout.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import InfoBar from "@/components/InfoBar.vue";
+import ProductLine from "@/components/document/ProductLine.vue";
 
 const router = useRouter();
 const info = ref("");
+const infoType = ref('');
 const transactionTypes = ref([]);
 const products = ref([]);
 const partners = ref([]);
@@ -23,7 +25,7 @@ const form = ref({
   priceListId: null,
   sourceWarehouseId: null,
   targetWarehouseId: null,
-  lines: [{productId: null, quantity: 1, unitPrice: 0, discountRatio: 0}]
+  lines: [{product: null, quantity: 1, unitPrice: 0, discountRatio: 0}]
 });
 
 const selectedType = computed(() => transactionTypes.value.find(t => t.id === Number(form.value.typeId)) || null);
@@ -67,9 +69,11 @@ function init() {
       refreshToken(() => init(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -84,16 +88,19 @@ function removeLine(index) {
 
 function validate() {
   if (!form.value.documentDate || !form.value.typeId) {
-    info.value = "Document number, date and transaction type are required";
+    info.value = "Date and transaction type are required";
+    infoType.value = "error";
     return false;
   }
-  if (form.value.lines.some(l => !l.productId || Number(l.quantity) <= 0)) {
+  if (form.value.lines.some(l => !l.product || Number(l.quantity) <= 0)) {
     info.value = "Each line requires product and quantity > 0";
+    infoType.value = "error";
     return false;
   }
   if (scope.value.commercial) {
     if (!form.value.partnerId || !form.value.priceListId) {
       info.value = "Commercial transaction requires partner and price list";
+      infoType.value = "error";
       return false;
     }
   }
@@ -115,7 +122,7 @@ function buildPayload() {
     sourceWarehouseId: stock && form.value.sourceWarehouseId ? Number(form.value.sourceWarehouseId) : null,
     targetWarehouseId: stock && form.value.targetWarehouseId ? Number(form.value.targetWarehouseId) : null,
     lines: form.value.lines.map(l => ({
-      productId: Number(l.productId),
+      productId: Number(l.product.id),
       quantity: Number(l.quantity),
       unitPrice: Number(l.unitPrice),
       discountRatio: Number(l.discountRatio || 0)
@@ -139,6 +146,7 @@ function createDocumentAndMaybeSubmit(shouldSubmit) {
           }
         }).catch(error => {
           info.value = error;
+          infoType.value = "error";
         });
       } else if (documentId) {
         router.push(`/ui/documents/process/${documentId}`);
@@ -149,9 +157,11 @@ function createDocumentAndMaybeSubmit(shouldSubmit) {
       refreshToken(() => createDocumentAndMaybeSubmit(shouldSubmit), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -164,15 +174,15 @@ onMounted(() => init());
 
     <section class="card">
       <form @submit.prevent="createDocumentAndMaybeSubmit(false)">
-        <label>{{ $t("documentDate") }}: <input v-model="form.documentDate" name="documentDate" type="date"/></label><br/>
+        <label>{{ $t("documentDate") }}: <input v-model="form.documentDate" name="documentDate" type="date"/></label>
         <label>{{ $t("transactionType.title") }}:
           <select v-model="form.typeId">
             <option v-for="type in transactionTypes" :key="type.id" :value="type.id">
               {{ type.code }} - {{ type.name }}
             </option>
           </select>
-        </label><br/>
-        <label>{{ $t("description") }}: <input v-model="form.description" name="description" type="text"/></label><br/>
+        </label>
+        <label>{{ $t("description") }}: <input v-model="form.description" name="description" type="text"/></label>
 
         <p>
           {{ $t("processScope") }}:
@@ -190,16 +200,18 @@ onMounted(() => init());
                 {{ partner.code }} - {{ partner.name }}
               </option>
             </select>
-          </label><br/>
+          </label>
           <label>{{ $t("priceList.title") }}:
             <select v-model="form.priceListId">
               <option :value="null">-</option>
-              <option v-for="priceList in priceLists" :key="priceList.id" :value="priceList.id">
+              <option v-for="priceList in priceLists"
+                      :key="priceList.id"
+                      :value="priceList.id">
                 {{ priceList.code }} - {{ priceList.name }}
               </option>
             </select>
-          </label><br/>
-          <label>{{ $t("paymentMethod") }}: <input v-model="form.paymentMethod" name="paymentMethod" type="text"/></label><br/>
+          </label>
+          <label>{{ $t("paymentMethod") }}: <input v-model="form.paymentMethod" name="paymentMethod" type="text"/></label>
         </div>
 
         <div v-if="scope.stock">
@@ -210,7 +222,7 @@ onMounted(() => init());
                 {{ warehouse.code }} - {{ warehouse.name }}
               </option>
             </select>
-          </label><br/>
+          </label>
           <label>{{ $t("targetWarehouse") }}:
             <select v-model="form.targetWarehouseId">
               <option :value="null">-</option>
@@ -218,23 +230,31 @@ onMounted(() => init());
                 {{ warehouse.code }} - {{ warehouse.name }}
               </option>
             </select>
-          </label><br/>
+          </label>
         </div>
 
         <h4>{{ $t("lines") }}</h4>
-        <div v-for="(line, index) in form.lines" :key="index" style="margin-bottom: 12px; padding: 8px; border: 1px solid #ddd;">
-          <label>{{ $t("product.title") }}:
-            <select v-model="line.productId">
-              <option :value="null">-</option>
-              <option v-for="product in products" :key="product.id" :value="product.id">
-                {{ product.code }} - {{ product.name }}
-              </option>
-            </select>
-          </label><br/>
-          <label>{{ $t("quantity") }}: <input v-model="line.quantity" min="0" step="0.0001" type="number"/></label><br/>
-          <label>{{ $t("price") }}: <input v-model="line.unitPrice" min="0" step="0.0001" type="number"/></label><br/>
-          <label>{{ $t("discountRatio") }}: <input v-model="line.discountRatio" min="0" step="0.01" type="number"/></label><br/>
-          <button class="btn btn-sm btn-danger" type="button" @click="removeLine(index)">{{ $t("removeLine") }}</button>
+        <div class="line-table">
+          <table class="lines-table" role="table">
+            <thead>
+            <tr>
+              <th>{{ $t("product.title") }}</th>
+              <th class="num-col">{{ $t("quantity") }}</th>
+              <th class="num-col">{{ $t("price") }}</th>
+              <th class="num-col">{{ $t("discountRatio") }}</th>
+              <th class="actions-col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <ProductLine v-for="(line, index) in form.lines"
+                         :key="index"
+                         :products="products"
+                         :product="line.product"
+                         :priceListId="form.priceListId"
+                         :line="line"
+                         :onRemove="() => removeLine(index)"></ProductLine>
+            </tbody>
+          </table>
         </div>
 
         <button class="btn btn-sm" type="button" @click="addLine">{{ $t("addLine") }}</button>
@@ -245,7 +265,38 @@ onMounted(() => init());
       </form>
     </section>
 
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+
+<style scoped>
+.line-table {
+  overflow-x: auto;
+}
+
+.lines-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.lines-table th {
+  text-align: left;
+  font-weight: 600;
+  font-size: .84rem;
+  color: var(--muted);
+  padding: .4rem .35rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.lines-table td {
+  padding: .35rem;
+  border-bottom: 1px dashed var(--glass);
+  vertical-align: middle;
+}
+
+.num-col {
+  text-align: right;
+}
+</style>
 

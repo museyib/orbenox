@@ -11,6 +11,7 @@ import InfoBar from "@/components/InfoBar.vue";
 const route = useRoute();
 const router = useRouter();
 const info = ref('');
+const infoType = ref('');
 const currentProduct = ref();
 const productBarcodes = ref([]);
 const units = ref([]);
@@ -26,9 +27,11 @@ function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 
   apiRequest('/api/lookups?types=units', 'GET').then(response => {
@@ -38,9 +41,11 @@ function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -90,9 +95,11 @@ function updateBarcodes() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -146,10 +153,11 @@ onMounted(() => init());
       </div>
       <button class="btn btn-primary" type="submit" @click="updateBarcodes">{{ $t('save') }}</button>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
 
 <style scoped>
 
 </style>
+

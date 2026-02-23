@@ -11,6 +11,7 @@ const {t} = useI18n();
 const router = useRouter();
 const route = useRoute();
 const info = ref('');
+const infoType = ref('');
 const unit = ref({});
 
 const units = ref([]);
@@ -55,17 +56,21 @@ function init() {
           refreshToken(() => init(), () => router.push('/ui/login'));
         } else {
           info.value = response.message;
+          infoType.value = "error";
         }
       }).catch(error => {
         info.value = error;
+        infoType.value = "error";
       });
     } else if (response.code === 401) {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 
   apiRequest('/api/lookups?types=unitDimensions', 'GET').then((response) => {
@@ -75,9 +80,11 @@ function init() {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -86,13 +93,16 @@ function updateUnit() {
   apiRequest('/api/units/' + route.params.id, 'PATCH', unit.value).then((response) => {
     if (response.code === 200) {
       info.value = t('unit.updated');
+      infoType.value = "success";
     } else if (response.code === 401) {
       refreshToken(() => updateUnit(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -108,12 +118,14 @@ onMounted(() => init());
         <label>
           <input v-model='unit.id' hidden='hidden' name='id' type='text'/>
         </label>
-        <label>{{ $t('code') }}: <input v-model='unit.code' name='code' type='text'/></label><br/>
-        <label>{{ $t('name') }}: <input v-model='unit.name' autocomplete='false' name='name' type='text'/></label><br/>
-        <label>{{ $t('factorToBase') }}: <input v-model='unit.factorToBase' name='factorToBase'/></label><br/>
-        <label>{{ $t('offsetToBase') }}: <input v-model='unit.offsetToBase' name='offsetToBase'/></label><br/>
-        <label>{{ $t('isBase') }}: <input v-model='unit.base' name='isBase' type='checkbox'/></label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="unit.enabled" name="enabled" type="checkbox"></label><br/>
+        <label>{{ $t('code') }}: <input v-model='unit.code' name='code' type='text'/></label>
+        <label>{{ $t('name') }}: <input v-model='unit.name' autocomplete='false' name='name' type='text'/></label>
+        <label>{{ $t('factorToBase') }}:
+          <input v-model='unit.factorToBase' name='factorToBase' type='number' step='0.000001'/></label>
+        <label>{{ $t('offsetToBase') }}:
+          <input v-model='unit.offsetToBase' name='offsetToBase' type='number' step='0.000001'/></label>
+        <label>{{ $t('isBase') }}: <input v-model='unit.base' name='isBase' type='checkbox'/></label>
+        <label>{{ $t('enabled') }}: <input v-model="unit.enabled" name="enabled" type="checkbox"></label>
         <label>{{ $t('unitDimension') }}:
           <select id='unitDimension' v-model='unit.unitDimension'>
             <option
@@ -124,15 +136,16 @@ onMounted(() => init());
               {{ unitDimension.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <button class="btn btn-primary" type="submit">{{ $t('save') }}</button>
       </form>
-      <br/>
+
       <div>
         <h3>Converter</h3>
-        <input v-model.number='convertValue' name='value' @input='executeConvertLocal'>
-        <span>{{ unit.code }}</span><br/>
-        <input v-model.number='convertResult' name='result'>
+        <input v-model.number='convertValue' name='value' type='number' step='0.000001'
+               @input='executeConvertLocal'>
+        <span>{{ unit.code }}</span>
+        <input v-model.number='convertResult' name='result' type='number' step='0.000001'>
         <select id='convertTarget' v-model='convertTo' @change='executeConvertLocal'>
           <option
               v-for='unit in units'
@@ -140,9 +153,10 @@ onMounted(() => init());
               :value='unit'>
             {{ unit.name }}
           </option>
-        </select><br/>
+        </select>
       </div>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

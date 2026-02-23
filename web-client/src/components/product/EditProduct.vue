@@ -11,6 +11,7 @@ const {t} = useI18n();
 const router = useRouter();
 const route = useRoute();
 const info = ref('');
+const infoType = ref('');
 const product = ref({});
 const brands = ref([]);
 const productTypes = ref([]);
@@ -34,18 +35,22 @@ function init() {
           refreshToken(() => init(), () => router.push('/ui/login'));
         } else {
           info.value = response.message;
+          infoType.value = "error";
         }
       }).catch(error => {
         info.value = error;
+        infoType.value = "error";
       });
 
     } else if (response.code === 401) {
       refreshToken(() => init(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 
   apiRequest('/api/lookups?types=brands,productTypes,productClasses,productGroups,units,countries,productCategories,producers',
@@ -61,9 +66,11 @@ function init() {
       units.value = response.data.units;
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -79,13 +86,16 @@ function updateProduct() {
   apiRequest('/api/products/' + route.params.id, 'PATCH', product.value).then((response) => {
     if (response.code === 200) {
       info.value = t('product.updated');
+      infoType.value = "success";
     } else if (response.code === 401) {
       refreshToken(() => updateProduct(), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -121,10 +131,10 @@ onMounted(() => init());
         <label>
           <input v-model='product.id' hidden='hidden' name='id' type='text'/>
         </label>
-        <label>{{ $t('code') }}: <input v-model='product.code' name='code' type='text'/></label><br/>
+        <label>{{ $t('code') }}: <input v-model='product.code' name='code' type='text'/></label>
         <label>{{ $t('name') }}: <input v-model='product.name' autocomplete='false' name='name'
-                                        type='text'/></label><br/>
-        <label>{{ $t('description') }}: <input v-model='product.description' name='description'/></label><br/>
+                                        type='text'/></label>
+        <label>{{ $t('description') }}: <input v-model='product.description' name='description'/></label>
         <label>{{ $t('barcode') }}:
           <input v-model='product.defaultBarcode' name='defaultBarcode'/>
           <select v-model="product.defaultBarcode">
@@ -135,8 +145,8 @@ onMounted(() => init());
               {{ barcodeData.barcode }}
             </option>
           </select>
-        </label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="product.enabled" name="enabled" type="checkbox"></label><br/>
+        </label>
+        <label>{{ $t('enabled') }}: <input v-model="product.enabled" name="enabled" type="checkbox"></label>
 
         <label>{{ $t('brand.title') }}:
           <select id="brand" v-model="product.brand">
@@ -147,7 +157,7 @@ onMounted(() => init());
               {{ brand.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
 
         <label>{{ $t('productType.title') }}:
           <select id="productType" v-model="product.productType">
@@ -158,7 +168,7 @@ onMounted(() => init());
               {{ productType.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
 
         <label>{{ $t('productClass.title') }}:
           <select id="productClass" v-model="product.productClass">
@@ -169,7 +179,7 @@ onMounted(() => init());
               {{ productClass.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
 
         <label>{{ $t('productGroup.title') }}:
           <select id="productGroup" v-model="product.productGroup">
@@ -180,7 +190,7 @@ onMounted(() => init());
               {{ productGroup.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
 
         <label>{{ $t('productCategory.title') }}:
           <select id="productCategory" v-model="product.productCategory">
@@ -191,7 +201,7 @@ onMounted(() => init());
               {{ productCategory.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
 
         <label>{{ $t('producer.title') }}:
           <select id="producer" v-model="product.producer">
@@ -202,7 +212,7 @@ onMounted(() => init());
               {{ producer.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
 
         <label>{{ $t('country.title') }}:
           <select id="country" v-model="product.country">
@@ -213,7 +223,7 @@ onMounted(() => init());
               {{ country.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
 
         <label>{{ $t('unit.title') }}:
           <select id="unit" v-model="product.defaultUnit">
@@ -224,7 +234,7 @@ onMounted(() => init());
               {{ unit.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <button class="btn btn-primary" type="submit">{{ $t('save') }}</button>
       </form>
       <button class="btn btn-sm" @click='productPrices(product.id)'>{{ $t('productPrices') }}</button>
@@ -233,6 +243,7 @@ onMounted(() => init());
       <button class="btn btn-sm" @click='productWarehouses(product.id)'>{{ $t('productWarehouses') }}</button>
       <button class="btn btn-sm" @click='stockBalance(product.id)'>{{ $t('stockBalance') }}</button>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

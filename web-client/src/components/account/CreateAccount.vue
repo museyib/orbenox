@@ -8,6 +8,7 @@ import InfoBar from "@/components/InfoBar.vue";
 
 const router = useRouter();
 const info = ref("");
+const infoType = ref('');
 const enabled = ref(true);
 const accountTypes = ref([]);
 const selectedAccountType = ref("");
@@ -23,9 +24,11 @@ function init() {
       refreshToken(() => init(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -41,9 +44,11 @@ function createAccount(event) {
       refreshToken(() => createAccount(event), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -56,19 +61,20 @@ onMounted(() => init());
 
     <section class="card">
       <form @submit.prevent="createAccount">
-        <label>{{ $t("code") }}: <input name="code" type="text"/></label><br/>
-        <label>{{ $t("name") }}: <input autocomplete="false" name="name" type="text"/></label><br/>
+        <label>{{ $t("code") }}: <input name="code" type="text"/></label>
+        <label>{{ $t("name") }}: <input autocomplete="false" name="name" type="text"/></label>
         <label>{{ $t("accountType") }}:
           <select v-model="selectedAccountType">
             <option v-for="accountType in accountTypes" :key="accountType" :value="accountType">
               {{ accountType }}
             </option>
           </select>
-        </label><br/>
-        <label>{{ $t("enabled") }}: <input v-model="enabled" type="checkbox"></label><br/>
+        </label>
+        <label>{{ $t("enabled") }}: <input v-model="enabled" type="checkbox"></label>
         <button class="btn btn-primary" type="submit">{{ $t("create") }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

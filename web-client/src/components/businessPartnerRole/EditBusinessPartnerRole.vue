@@ -11,6 +11,7 @@ const {t} = useI18n();
 const router = useRouter();
 const route = useRoute();
 const info = ref("");
+const infoType = ref('');
 const businessPartnerRole = ref({});
 const businessPartners = ref([]);
 const partnerRoles = ref([]);
@@ -29,9 +30,11 @@ function init() {
       refreshToken(() => init(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 
   apiRequest("/api/lookups?types=businessPartners,partnerRoles", "GET").then(response => {
@@ -42,9 +45,11 @@ function init() {
       refreshToken(() => init(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -53,13 +58,16 @@ function updateBusinessPartnerRole() {
   apiRequest("/api/businessPartnerRoles/" + route.params.id, "PATCH", businessPartnerRole.value).then(response => {
     if (response.code === 200) {
       info.value = t("businessPartnerRole.updated");
+      infoType.value = "success";
     } else if (response.code === 401) {
       refreshToken(() => updateBusinessPartnerRole(), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -81,18 +89,19 @@ onMounted(() => init());
               {{ businessPartner.code }} - {{ businessPartner.name }}
             </option>
           </select>
-        </label><br/>
+        </label>
         <label>{{ $t("partnerRole") }}:
           <select v-model="businessPartnerRole.role">
             <option v-for="partnerRole in partnerRoles" :key="partnerRole" :value="partnerRole">
               {{ partnerRole }}
             </option>
           </select>
-        </label><br/>
-        <label>{{ $t("enabled") }}: <input v-model="businessPartnerRole.enabled" type="checkbox"></label><br/>
+        </label>
+        <label>{{ $t("enabled") }}: <input v-model="businessPartnerRole.enabled" type="checkbox"></label>
         <button class="btn btn-primary" type="submit">{{ $t("save") }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

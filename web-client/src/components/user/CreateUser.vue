@@ -8,6 +8,7 @@ import PageHeader from "@/components/PageHeader.vue";
 
 const router = useRouter();
 const info = ref('');
+const infoType = ref('');
 const userTypes = ref([]);
 const selectedUserType = ref();
 const roles = ref([]);
@@ -25,9 +26,11 @@ function init() {
       }
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -44,9 +47,11 @@ function createUser(event) {
       refreshToken(() => createUser(event), () => router.push('/ui/login'));
     } else {
       info.value = response.message;
+      infoType.value = "error";
     }
   }).catch(error => {
     info.value = error;
+    infoType.value = "error";
   });
 }
 
@@ -69,9 +74,9 @@ onMounted(() => init());
 
     <section class="card">
       <form @submit.prevent="createUser">
-        <label>{{ $t('user.username') }}: <input name="username" type="text"/></label><br/>
-        <label>{{ $t('user.password') }}: <input name="password" type="password"/></label><br/>
-        <label>{{ $t('user.displayName') }}: <input name="displayName" type="text"/></label><br/>
+        <label>{{ $t('user.username') }}: <input name="username" type="text"/></label>
+        <label>{{ $t('user.password') }}: <input name="password" type="password"/></label>
+        <label>{{ $t('user.displayName') }}: <input name="displayName" type="text"/></label>
         <label>{{ $t('user.userType') }}:
           <select id='userType' v-model="selectedUserType">
             <option v-for="userType in userTypes"
@@ -81,27 +86,30 @@ onMounted(() => init());
               {{ userType.name }}
             </option>
           </select>
-        </label><br/>
-        <label>{{ $t('assignedRoles') }}:
-          <select id='assignedRoles' multiple>
-            <option v-for="role in assignedRoles"
-                    v-on:dblclick="removeFromAssignedRoles(role)">
-              {{ role.code }}
-            </option>
-          </select>
         </label>
-        <label>{{ $t('roles') }}:
-          <select id='availableRoles' multiple>
-            <option v-for="role in roles"
-                    v-on:dblclick="addToAssignedRoles(role)">
-              {{ role.code }}
-            </option>
-          </select>
-        </label><br/>
-        <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"></label><br/>
+        <div class="dual-selects">
+          <label>{{ $t('assignedRoles') }}:
+            <select id='assignedRoles' multiple>
+              <option v-for="role in assignedRoles"
+                      v-on:dblclick="removeFromAssignedRoles(role)">
+                {{ role.code }}
+              </option>
+            </select>
+          </label>
+          <label>{{ $t('roles') }}:
+            <select id='availableRoles' multiple>
+              <option v-for="role in roles"
+                      v-on:dblclick="addToAssignedRoles(role)">
+                {{ role.code }}
+              </option>
+            </select>
+          </label>
+        </div>
+        <label>{{ $t('enabled') }}: <input v-model="enabled" name="enabled" type="checkbox"></label>
         <button class="btn btn-primary" type="submit">{{ $t('create') }}</button>
       </form>
     </section>
-    <InfoBar :info="info"/>
+    <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
+

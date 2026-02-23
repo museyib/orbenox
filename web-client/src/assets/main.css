@@ -29,7 +29,7 @@ label {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: .35rem;
+    gap: .25rem;
     margin: 0;
     color: #111827;
 }
@@ -37,7 +37,11 @@ label {
 form {
     display: flex;
     flex-direction: column;
-    gap: .65rem;
+    gap: .4rem;
+}
+
+form br {
+    display: none;
 }
 
 form .btn {
@@ -54,8 +58,8 @@ textarea {
     background: var(--input-bg);
     border: 1px solid var(--input-border);
     border-radius: 10px;
-    padding: .5rem .7rem;
-    min-height: 34px;
+    padding: .38rem .6rem;
+    min-height: 30px;
     transition: border-color .12s ease, box-shadow .12s ease, background .12s ease;
 }
 
@@ -87,8 +91,8 @@ textarea:disabled {
 }
 
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]) {
-    min-width: 160px;
-    max-width: 320px;
+    min-width: 220px;
+    max-width: 440px;
 }
 
 select:not([multiple]) {
@@ -104,8 +108,23 @@ select:not([multiple]) {
 }
 
 select[multiple] {
-    min-height: 120px;
+    min-height: 110px;
     padding: .45rem .6rem;
+}
+
+.dual-selects {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .75rem;
+    align-items: start;
+}
+
+.dual-selects label {
+    width: 100%;
+}
+
+.dual-selects select[multiple] {
+    width: 100%;
 }
 
 input[type="checkbox"] {
@@ -271,5 +290,9 @@ input[type="number"] {
 
     .search {
         min-width: 140px;
+    }
+
+    .dual-selects {
+        grid-template-columns: 1fr;
     }
 }

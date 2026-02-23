@@ -29,4 +29,22 @@ public interface ProductPriceRepository extends JpaRepository<ProductPrice, Long
     List<ProductPriceItem> getItemsByProductId(@Param("productId") Long productId);
 
     ProductPrice findByProductAndPriceList(Product product, PriceList priceList);
+    @Query("""
+            SELECT p.id as id,
+                p.product as product,
+                p.priceList as priceList,
+                p.unit as unit,
+                p.price as price,
+                p.factorToParent as factorToParent,
+                p.fixedPrice as fixedPrice,
+                p.roundLength as roundLength,
+                p.discountRatioLimit as discountRatioLimit
+            FROM ProductPrice p
+            WHERE p.product.id = :productId
+                AND p.priceList.id = :priceListId
+                AND p.unit.id = :unitId
+            ORDER BY p.unit.id, p.priceList.id""")
+    ProductPriceItem getByProductIdAndPriceListId(@Param("productId") Long productId,
+                                                  @Param("priceListId") Long priceListId,
+                                                  @Param("unitId") Long unitId);
 }
