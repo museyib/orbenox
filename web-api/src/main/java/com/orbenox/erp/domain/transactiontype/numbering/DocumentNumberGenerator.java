@@ -27,7 +27,7 @@ public class DocumentNumberGenerator {
                 .orElseGet(() -> createNewSequence(type, year, month));
 
         long value = sequence.getNextValue();
-        sequence.setNextValue(value);
+        sequence.setNextValue(value + 1);
 
         return buildNumber(policy, date, value);
     }
@@ -46,7 +46,7 @@ public class DocumentNumberGenerator {
         sequence.setType(type);
         sequence.setYear(year);
         sequence.setMonth(month);
-        sequence.setNextValue(2L);
+        sequence.setNextValue(1L);
         return documentSequenceRepo.save(sequence);
     }
 

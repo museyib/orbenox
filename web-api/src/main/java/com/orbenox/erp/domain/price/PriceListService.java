@@ -29,7 +29,7 @@ public class PriceListService {
 
     @Cacheable(PRICE_LISTS_EXCLUDED)
     public List<PriceListItem.PriceListParent> findAllExcluded(Long idToExclude) {
-        List<PriceListItem> items = priceListRepository.getAllItems(PageRequest.of(0, Integer.MAX_VALUE)).getContent();
+        List<PriceListItem> items = priceListRepository.getAllItems();
         Map<Long, List<PriceListItem>> childrenMap = items.stream()
                 .collect(Collectors.groupingBy(
                         priceListItem -> priceListItem.getParent() == null

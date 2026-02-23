@@ -27,6 +27,22 @@ public interface PriceListRepository extends JpaRepository<PriceList, Long> {
             ORDER BY p.id""")
     Slice<PriceListItem> getAllItems(Pageable pageable);
 
+    @Query("""
+            SELECT p.id as id,
+                p.code as code,
+                p.name as name,
+                p.factorToParent as factorToParent,
+                p.enabled as enabled,
+                p.roundLength as roundLength,
+                c as currency,
+                pp as parent
+            FROM PriceList p
+            LEFT JOIN p.parent pp
+            LEFT JOIN p.currency c
+            WHERE p.deleted = false
+            ORDER BY p.id""")
+    List<PriceListItem> getAllItems();
+
 @Query("""
             SELECT p.id as id,
                 p.code as code,
