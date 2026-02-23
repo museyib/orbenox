@@ -1,6 +1,5 @@
 package com.orbenox.erp.domain.product.service;
 
-import com.orbenox.erp.common.Response;
 import com.orbenox.erp.common.entity.BaseEntity;
 import com.orbenox.erp.domain.product.dto.ProductPriceUpdateDto;
 import com.orbenox.erp.domain.product.entity.ProductPrice;
