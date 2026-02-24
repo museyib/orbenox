@@ -16,19 +16,7 @@ public interface PriceListItem {
 
     PriceListParent getParent();
 
-    CurrencyItem getCurrency();
-
     Short getRoundLength();
-
-    interface CurrencyItem {
-        Long getId();
-
-        String getCode();
-
-        String getName();
-
-        boolean isEnabled();
-    }
 
     interface PriceListParent {
         Long getId();

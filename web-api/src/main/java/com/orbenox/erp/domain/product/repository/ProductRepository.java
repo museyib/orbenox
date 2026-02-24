@@ -21,15 +21,23 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                 p.description as description,
                 p.defaultBarcode as defaultBarcode,
                 p.enabled as enabled,
-                p.brand as brand,
-                p.producer as producer,
-                p.productType as productType,
-                p.productClass as productClass,
-                p.productCategory as productCategory,
-                p.productGroup as productGroup,
-                p.country as country,
-                p.defaultUnit as defaultUnit
+                p_brand as brand,
+                p_producer as producer,
+                p_productType as productType,
+                p_productClass as productClass,
+                p_productCategory as productCategory,
+                p_productGroup as productGroup,
+                p_country as country,
+                p_defaultUnit as defaultUnit
             FROM Product p
+            LEFT JOIN p.brand as p_brand
+            LEFT JOIN p.producer as p_producer
+            LEFT JOIN p.productType as p_productType
+            LEFT JOIN p.productClass as p_productClass
+            LEFT JOIN p.productCategory as p_productCategory
+            LEFT JOIN p.productGroup as p_productGroup
+            LEFT JOIN p.country as p_country
+            LEFT JOIN p.defaultUnit as p_defaultUnit
             WHERE p.deleted = false
             ORDER BY p.id""")
     Slice<ProductItem> getAllItems(Pageable pageable);
@@ -41,15 +49,23 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                 p.description as description,
                 p.defaultBarcode as defaultBarcode,
                 p.enabled as enabled,
-                p.brand as brand,
-                p.producer as producer,
-                p.productType as productType,
-                p.productClass as productClass,
-                p.productCategory as productCategory,
-                p.productGroup as productGroup,
-                p.country as country,
-                p.defaultUnit as defaultUnit
+                p_brand as brand,
+                p_producer as producer,
+                p_productType as productType,
+                p_productClass as productClass,
+                p_productCategory as productCategory,
+                p_productGroup as productGroup,
+                p_country as country,
+                p_defaultUnit as defaultUnit
             FROM Product p
+            LEFT JOIN p.brand as p_brand
+            LEFT JOIN p.producer as p_producer
+            LEFT JOIN p.productType as p_productType
+            LEFT JOIN p.productClass as p_productClass
+            LEFT JOIN p.productCategory as p_productCategory
+            LEFT JOIN p.productGroup as p_productGroup
+            LEFT JOIN p.country as p_country
+            LEFT JOIN p.defaultUnit as p_defaultUnit
             WHERE  p.deleted = false
                     AND (LOWER(p.code) LIKE %:search% OR LOWER(p.name) LIKE %:search% OR LOWER(p.description) LIKE %:search% OR LOWER(p.defaultBarcode) LIKE %:search%)
             ORDER BY p.id""")
@@ -60,20 +76,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                 p.code as code,
                 p.name as name,
                 p.description as description,
-                p.defaultBarcode as defaultBarcode,
-                p.enabled as enabled,
-                p.brand as brand,
-                p.producer as producer,
-                p.productType as productType,
-                p.productClass as productClass,
-                p.productCategory as productCategory,
-                p.productGroup as productGroup,
-                p.country as country,
-                p.defaultUnit as defaultUnit
+                p.defaultBarcode as defaultBarcode
             FROM Product p
             WHERE p.deleted = false AND p.enabled = true
             ORDER BY p.id""")
-    List<ProductItem> getEnabledItems();
+    List<SimpleProductItem> getEnabledItems();
 
     @Query("""
             SELECT p.id as id,
@@ -82,15 +89,23 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                 p.description as description,
                 p.defaultBarcode as defaultBarcode,
                 p.enabled as enabled,
-                p.brand as brand,
-                p.producer as producer,
-                p.productType as productType,
-                p.productClass as productClass,
-                p.productCategory as productCategory,
-                p.productGroup as productGroup,
-                p.country as country,
-                p.defaultUnit as defaultUnit
+                p_brand as brand,
+                p_producer as producer,
+                p_productType as productType,
+                p_productClass as productClass,
+                p_productCategory as productCategory,
+                p_productGroup as productGroup,
+                p_country as country,
+                p_defaultUnit as defaultUnit
             FROM Product p
+            LEFT JOIN p.brand as p_brand
+            LEFT JOIN p.producer as p_producer
+            LEFT JOIN p.productType as p_productType
+            LEFT JOIN p.productClass as p_productClass
+            LEFT JOIN p.productCategory as p_productCategory
+            LEFT JOIN p.productGroup as p_productGroup
+            LEFT JOIN p.country as p_country
+            LEFT JOIN p.defaultUnit as p_defaultUnit
             WHERE p.id = :id AND p.deleted = false""")
     ProductItem getItemById(@Param("id") Long id);
 

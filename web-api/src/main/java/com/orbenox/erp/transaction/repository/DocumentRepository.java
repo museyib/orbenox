@@ -35,11 +35,15 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
                 d.approvalStatus as approvalStatus,
                 t as typeItem,
                 ws as sourceWarehouse,
-                wt as targetWarehouse
+                wt as targetWarehouse,
+                p as businessPartner,
+                pl as priceList
             FROM Document d
             LEFT JOIN d.type t
             LEFT JOIN d.stockContext.sourceWarehouse ws
             LEFT JOIN d.stockContext.targetWarehouse wt
+            LEFT JOIN d.commercialContext.partner p
+            LEFT JOIN d.commercialContext.priceList pl
             WHERE d.id = :id
             """)
     DocumentItem getItemById(@Param("id") Long id);

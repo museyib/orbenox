@@ -87,14 +87,7 @@ watch(
 <template>
   <tr class="product-line-row">
     <td class="cell cell-product">
-      <select v-model="line.product" :disabled="props.disabled">
-        <option :value="null">-</option>
-        <option v-for="product in props.products"
-                :key="product.id"
-                :value="product">
-          {{ product.code }} - {{ product.name }}
-        </option>
-      </select>
+      <input v-model="line.product.id" :disabled="props.disabled" />
     </td>
     <td class="cell cell-number">
       <input v-model="line.quantity" :disabled="props.disabled" min="0" step="0.0001" type="number"/>

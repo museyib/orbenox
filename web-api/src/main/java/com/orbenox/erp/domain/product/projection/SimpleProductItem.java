@@ -10,6 +10,4 @@ public interface SimpleProductItem {
     String getDescription();
 
     String getDefaultBarcode();
-
-    boolean isEnabled();
 }

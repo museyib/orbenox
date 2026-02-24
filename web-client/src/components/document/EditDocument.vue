@@ -60,6 +60,7 @@ function loadLookups() {
           partners.value = response.data.businessPartners || [];
           priceLists.value = response.data.priceLists || [];
           warehouses.value = response.data.warehouses || [];
+          console.log(response.data.products)
         } else if (response.code === 401) {
           refreshToken(() => loadLookups(), () => router.push("/ui/login"));
         } else {
@@ -111,7 +112,7 @@ function validate() {
     return false;
   }
   if (scope.value.commercial) {
-    if (!documentData.value.partnerId || !documentData.value.priceListId) {
+    if (!documentData.value.businessPartner.id || !documentData.value.priceList.id) {
       info.value = t("document.validationCommercial");
       infoType.value = "error";
       return false;
@@ -128,9 +129,9 @@ function buildPayload() {
     documentDate: documentData.value.documentDate,
     typeId: Number(documentData.value.typeItem.id),
     description: documentData.value.description,
-    partnerId: commercial ? Number(documentData.value.partnerId) : null,
+    partnerId: commercial ? Number(documentData.value.businessPartner.id) : null,
     paymentMethod: commercial ? documentData.value.paymentMethod : null,
-    priceListId: commercial ? Number(documentData.value.priceListId) : null,
+    priceListId: commercial ? Number(documentData.value.priceList.id) : null,
     sourceWarehouseId: stock && documentData.value.sourceWarehouse ? Number(documentData.value.sourceWarehouse.id) : null,
     targetWarehouseId: stock && documentData.value.targetWarehouse ? Number(documentData.value.targetWarehouse.id) : null,
     lines: documentData.value.productLines.map(l => ({
@@ -227,15 +228,17 @@ onMounted(() => {
 
         <div v-if="scope.commercial">
           <label>{{ $t("businessPartner.title") }}:
-            <select v-model="documentData.partnerId" :disabled="!canEdit">
+            <select v-model="documentData.businessPartner" :disabled="!canEdit">
               <option :value="null">-</option>
-              <option v-for="partner in partners" :key="partner.id" :value="partner">
+              <option v-for="partner in partners"
+                      :key="partner.id"
+                      :value="partner">
                 {{ partner.code }} - {{ partner.name }}
               </option>
             </select>
           </label>
           <label>{{ $t("priceList.title") }}:
-            <select v-model="documentData.priceListId" :disabled="!canEdit">
+            <select v-model="documentData.priceList" :disabled="!canEdit">
               <option :value="null">-</option>
               <option v-for="priceList in priceLists"
                       :key="priceList.id"
@@ -274,6 +277,8 @@ onMounted(() => {
             <thead>
             <tr>
               <th>{{ $t("product.title") }}</th>
+              <th>{{ $t("product.title") }}</th>
+              <th>{{ $t("product.title") }}</th>
               <th class="num-col">{{ $t("quantity") }}</th>
               <th class="num-col">{{ $t("price") }}</th>
               <th class="num-col">{{ $t("discountRatio") }}</th>
@@ -281,19 +286,42 @@ onMounted(() => {
             </tr>
             </thead>
             <tbody>
-            <ProductLine v-for="(line, index) in documentData.productLines"
-                         :key="index"
-                         :products="products"
-                         :product="{id: line.productId, code: line.productCode, name: line.productName}"
-                         :priceListId="documentData.priceListId"
-                         :line="line"
-                         :disabled="!canEdit"
-                         :onRemove="() => removeLine(index)"></ProductLine>
+
+            <tr class="product-line-row" v-for="(line, index) in documentData.productLines">
+              <td class="cell cell-product">
+                <input v-model="line.product.id" :disabled="!canEdit"/>
+              </td>
+              <td class="cell cell-product">
+                <input v-model="line.product.code" :disabled="!canEdit"/>
+              </td>
+              <td class="cell cell-product">
+                <input v-model="line.product.name" :disabled="!canEdit"/>
+              </td>
+              <td class="cell cell-number">
+                <input v-model="line.quantity" :disabled="!canEdit" min="0" step="0.0001" type="number"/>
+              </td>
+              <td class="cell cell-number">
+                <input v-model="line.unitPrice" :disabled="!canEdit" min="0" step="0.0001" type="number"/>
+              </td>
+              <td class="cell cell-number">
+                <input v-model="line.discountRatio" :disabled="!canEdit" min="0" step="0.01" type="number"/>
+              </td>
+              <td class="cell cell-remove">
+                <button class="btn btn-sm btn-danger" type="button" @click="() => removeLine(index)">x</button>
+              </td>
+            </tr>
+<!--            <ProductLine v-for="(line, index) in documentData.productLines"-->
+<!--                         :key="index"-->
+<!--                         :products="products"-->
+<!--                         :product="{id: line.productId, code: line.productCode, name: line.productName}"-->
+<!--                         :priceListId="documentData.priceListId"-->
+<!--                         :line="line"-->
+<!--                         :disabled="!canEdit"-->
+<!--                         :onRemove="() => removeLine(index)"></ProductLine>-->
             </tbody>
           </table>
         </div>
 
-        <button class="btn btn-sm" type="button" :disabled="!canEdit" @click="addLine">{{ $t("addLine") }}</button>
         <p><strong>{{ $t("total") }}:</strong> {{ totalAmount.toFixed(2) }}</p>
 
         <button class="btn btn-primary" type="submit" :disabled="!canEdit">{{ $t("saveDraft") }}</button>
