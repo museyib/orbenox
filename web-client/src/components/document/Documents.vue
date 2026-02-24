@@ -49,7 +49,15 @@ function openProcess(documentId) {
   router.push("/ui/documents/process/" + documentId);
 }
 
+function editDocument(documentId) {
+  router.push("/ui/documents/edit/" + documentId);
+}
+
 function canSubmit(doc) {
+  return doc.documentStatus === "DRAFT";
+}
+
+function canEdit(doc) {
   return doc.documentStatus === "DRAFT";
 }
 
@@ -126,6 +134,7 @@ onMounted(() => init());
             <td>{{ document.approvalStatus }}</td>
             <td class="actions-col">
               <button class="btn btn-sm" @click="openProcess(document.id)">{{ $t("process") }}</button>
+              <button v-if="canEdit(document)" class="btn btn-sm" @click="editDocument(document.id)">{{ $t("edit") }}</button>
               <button v-if="canSubmit(document)" class="btn btn-sm" @click="runAction(document.id, 'submit')">{{ $t("submit") }}</button>
               <button v-if="canApprove(document)" class="btn btn-sm" @click="runAction(document.id, 'approve')">{{ $t("approve") }}</button>
               <button v-if="canReject(document)" class="btn btn-sm btn-danger" @click="runAction(document.id, 'reject')">{{ $t("reject") }}</button>

@@ -1,5 +1,7 @@
 package com.orbenox.erp.transaction.projection;
 
+import com.orbenox.erp.domain.transactiontype.SimpleTransactionTypeItem;
+import com.orbenox.erp.domain.warehouse.WarehouseItem;
 import com.orbenox.erp.enums.ApprovalStatus;
 import com.orbenox.erp.enums.DocumentStatus;
 
@@ -12,8 +14,9 @@ public interface DocumentItem {
     String getDescription();
     DocumentStatus getDocumentStatus();
     ApprovalStatus getApprovalStatus();
-    Long getTypeId();
-    String getTypeCode();
-    String getTypeName();
+    SimpleTransactionTypeItem getTypeItem();
+    Long getPartnerId();
+    WarehouseItem getSourceWarehouse();
+    WarehouseItem getTargetWarehouse();
 }
 

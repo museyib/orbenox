@@ -7,10 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface DocumentRepository extends JpaRepository<Document, Long> {
-    Optional<Document> findByDocumentNo(String number);
 
     @Query("""
             SELECT d.id as id,
@@ -35,11 +33,13 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
                 d.description as description,
                 d.documentStatus as documentStatus,
                 d.approvalStatus as approvalStatus,
-                t.id as typeId,
-                t.code as typeCode,
-                t.name as typeName
+                t as typeItem,
+                ws as sourceWarehouse,
+                wt as targetWarehouse
             FROM Document d
-            JOIN d.type t
+            LEFT JOIN d.type t
+            LEFT JOIN d.stockContext.sourceWarehouse ws
+            LEFT JOIN d.stockContext.targetWarehouse wt
             WHERE d.id = :id
             """)
     DocumentItem getItemById(@Param("id") Long id);

@@ -1,6 +1,7 @@
 package com.orbenox.erp.transaction.controller;
 
 import com.orbenox.erp.common.Response;
+import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.command.CreateDocumentCommand;
 import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.projection.DocumentItem;
@@ -19,6 +20,7 @@ import java.util.List;
 public class SalesOrderController {
     private final DocumentActionService documentActionService;
     private final DocumentRepository documentRepository;
+    private final LocalizationService i18n;
 
     @PreAuthorize("hasPermission('SALES_ORDER', 'READ')")
     @GetMapping
@@ -84,7 +86,7 @@ public class SalesOrderController {
     private DocumentItem getItemOrThrow(Long id) {
         DocumentItem item = documentRepository.getItemById(id);
         if (item == null) {
-            throw new IllegalArgumentException("Document not found: " + id);
+            throw new IllegalArgumentException(i18n.msg("error.document.notFound", id));
         }
         return item;
     }

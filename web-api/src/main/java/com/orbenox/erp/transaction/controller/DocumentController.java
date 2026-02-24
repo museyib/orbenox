@@ -1,10 +1,14 @@
 package com.orbenox.erp.transaction.controller;
 
 import com.orbenox.erp.common.Response;
+import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.command.CreateDocumentCommand;
 import com.orbenox.erp.transaction.entity.Document;
+import com.orbenox.erp.transaction.projection.DocumentData;
 import com.orbenox.erp.transaction.projection.DocumentItem;
+import com.orbenox.erp.transaction.projection.ProductLineItem;
 import com.orbenox.erp.transaction.repository.DocumentRepository;
+import com.orbenox.erp.transaction.repository.ProductLineRepository;
 import com.orbenox.erp.transaction.service.DocumentActionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,18 +22,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DocumentController {
     private final DocumentActionService documentActionService;
-    private final DocumentRepository documentRepository;
+    private final DocumentRepository documentRepo;
+    private final ProductLineRepository productLineRepo;
+    private final LocalizationService i18n;
 
     @PreAuthorize("hasPermission('DOCUMENT', 'READ')")
     @GetMapping
     public ResponseEntity<Response<List<DocumentItem>>> getAll() {
-        return ResponseEntity.ok(Response.successData(documentRepository.getAllItems()));
+        return ResponseEntity.ok(Response.successData(documentRepo.getAllItems()));
     }
 
     @PreAuthorize("hasPermission('DOCUMENT', 'READ')")
     @GetMapping("/{id}")
-    public ResponseEntity<Response<DocumentItem>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(Response.successData(getItemOrThrow(id)));
+    public ResponseEntity<Response<DocumentData>> getById(@PathVariable Long id) {
+        DocumentItem doc = getItemOrThrow(id);
+        List<ProductLineItem> productLines = productLineRepo.getItemsByDocumentId(doc.getId());
+        DocumentData data = new DocumentData(doc, productLines);
+        return ResponseEntity.ok(Response.successData(data));
     }
 
     @PreAuthorize("hasPermission('DOCUMENT', 'CREATE')")
@@ -82,9 +91,9 @@ public class DocumentController {
     }
 
     private DocumentItem getItemOrThrow(Long id) {
-        DocumentItem item = documentRepository.getItemById(id);
+        DocumentItem item = documentRepo.getItemById(id);
         if (item == null) {
-            throw new IllegalArgumentException("Document not found: " + id);
+            throw new IllegalArgumentException(i18n.msg("error.document.notFound", id));
         }
         return item;
     }

@@ -2,11 +2,13 @@
 import {computed, onMounted, ref} from "vue";
 import {apiRequest, refreshToken} from "@/api.js";
 import {useRouter} from "vue-router";
+import {useI18n} from "vue-i18n";
 import MainLayout from "@/components/MainLayout.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import InfoBar from "@/components/InfoBar.vue";
 import ProductLine from "@/components/document/ProductLine.vue";
 
+const {t} = useI18n();
 const router = useRouter();
 const info = ref("");
 const infoType = ref('');
@@ -88,18 +90,18 @@ function removeLine(index) {
 
 function validate() {
   if (!form.value.documentDate || !form.value.typeId) {
-    info.value = "Date and transaction type are required";
+    info.value = t("document.validationDateType");
     infoType.value = "error";
     return false;
   }
   if (form.value.lines.some(l => !l.product || Number(l.quantity) <= 0)) {
-    info.value = "Each line requires product and quantity > 0";
+    info.value = t("document.validationLines");
     infoType.value = "error";
     return false;
   }
   if (scope.value.commercial) {
     if (!form.value.partnerId || !form.value.priceListId) {
-      info.value = "Commercial transaction requires partner and price list";
+      info.value = t("document.validationCommercial");
       infoType.value = "error";
       return false;
     }

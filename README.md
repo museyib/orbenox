@@ -64,3 +64,10 @@ npm run build
 
 - `web-client` is currently included in Maven reactor for module consistency, but frontend build is managed with npm.
 - If you run a module directly (for example from an IDE), child modules now resolve the root parent via `../pom.xml`.
+
+## Git hooks
+
+To enable the encoding guard hook:
+```bash
+git config core.hooksPath .githooks
+```

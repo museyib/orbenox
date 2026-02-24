@@ -1,4 +1,4 @@
-{
+﻿{
   "user": {
     "title": "İstifadəçi",
     "new": "Yeni istifadəçi",
@@ -107,7 +107,13 @@
   "document": {
     "title": "Sənəd",
     "new": "Yeni sənəd",
-    "process": "Sənəd prosesi"
+    "edit": "Sənəd düzəlişi",
+    "process": "Sənəd prosesi",
+    "updated": "Sənəd yeniləndi",
+    "editLocked": "Düzəliş yalnız qaralama sənədlər üçün mümkündür",
+    "validationDateType": "Tarix və sənəd tipi məcburidir",
+    "validationLines": "Hər sətirdə məhsul və miqdar > 0 olmalıdır",
+    "validationCommercial": "Kommersiya əməliyyatı üçün partnyor və qiymət tələb olunur"
   },
   "account": {
     "title": "Hesab",

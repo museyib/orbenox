@@ -20,6 +20,10 @@ const props = defineProps({
     type: Array,
     required: true
   },
+  disabled: {
+    type: Boolean,
+    default: false
+  },
   onRemove: {
     type: Function,
     required: false
@@ -31,9 +35,10 @@ const info = ref("");
 const infoType = ref('');
 
 const line = computed(() => props.line);
+const product = computed(() => props.product);
 
 const selectedProduct = computed({
-  get: () => props.line?.product ?? null,
+  get: () => props.product,
   set: (value) => {
     if (props.line) {
       props.line.product = value;
@@ -68,6 +73,9 @@ function getPriceListData (productId, priceListId, unitId) {
 watch(
   () => [selectedProduct.value, props.priceListId],
   ([newProduct, newPriceListId]) => {
+    if (props.disabled) {
+      return;
+    }
     if (!newProduct || !newPriceListId) {
       return;
     }
@@ -79,7 +87,7 @@ watch(
 <template>
   <tr class="product-line-row">
     <td class="cell cell-product">
-      <select v-model="selectedProduct">
+      <select v-model="line.product" :disabled="props.disabled">
         <option :value="null">-</option>
         <option v-for="product in props.products"
                 :key="product.id"
@@ -89,16 +97,16 @@ watch(
       </select>
     </td>
     <td class="cell cell-number">
-      <input v-model="line.quantity" min="0" step="0.0001" type="number"/>
+      <input v-model="line.quantity" :disabled="props.disabled" min="0" step="0.0001" type="number"/>
     </td>
     <td class="cell cell-number">
-      <input v-model="line.unitPrice" min="0" step="0.0001" type="number"/>
+      <input v-model="line.unitPrice" :disabled="props.disabled" min="0" step="0.0001" type="number"/>
     </td>
     <td class="cell cell-number">
-      <input v-model="line.discountRatio" min="0" step="0.01" type="number"/>
+      <input v-model="line.discountRatio" :disabled="props.disabled" min="0" step="0.01" type="number"/>
     </td>
     <td class="cell cell-remove">
-      <button v-if="onRemove" class="btn btn-sm btn-danger" type="button" @click="onRemove">x</button>
+      <button v-if="onRemove && !props.disabled" class="btn btn-sm btn-danger" type="button" @click="onRemove">x</button>
     </td>
   </tr>
 </template>

@@ -43,17 +43,11 @@ public interface TransactionTypeRepository extends JpaRepository<TransactionType
     @Query("""
         SELECT t.id AS id,
             t.code AS code,
-            t.name AS name,
-            t.stockAffectDirection AS stockAffectDirection,
-            t.commercialAffected AS commercialAffected,
-            t.accountingAffected AS accountingAffected,
-            t.creditLimitChecked AS creditLimitChecked,
-            t.approvalRequired AS approvalRequired,
-            t.enabled AS enabled
+            t.name AS name
         FROM TransactionType t
         WHERE t.deleted = false AND t.enabled = true
         ORDER BY t.id""")
-    List<TransactionTypeItem> getEnabledItems();
+    List<SimpleTransactionTypeItem> getEnabledItems();
 
     @Query("""
             SELECT t.id as id,
