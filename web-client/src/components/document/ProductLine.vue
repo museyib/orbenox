@@ -2,6 +2,7 @@
 import {apiRequest, refreshToken} from "@/api.js";
 import {computed, ref, watch} from "vue";
 import {useRouter} from "vue-router";
+import ProductPicker from "@/components/ProductPicker.vue";
 
 const props = defineProps({
   line:{
@@ -27,25 +28,39 @@ const props = defineProps({
   onRemove: {
     type: Function,
     required: false
+  },
+  onClose :{
+    type: Function,
+    required: false
   }
 });
 
 const router = useRouter();
 const info = ref("");
 const infoType = ref('');
+const showPicker = ref(false);
+const searchTerm = ref("");
 
 const line = computed(() => props.line);
-const product = computed(() => props.product);
+const fallbackProduct = computed(() => props.product);
 
-const selectedProduct = computed({
-  get: () => props.product,
-  set: (value) => {
-    if (props.line) {
-      props.line.product = value;
-    }
-  }
+const activeProduct = computed(() => {
+  const fromLine = line.value?.product;
+  if (fromLine?.id) return fromLine;
+  const fromFallback = fallbackProduct.value;
+  if (fromFallback?.id) return fromFallback;
+  return null;
 });
 
+const onClose = () => {
+  showPicker.value = false;
+  props.onClose();
+}
+
+function ensureLineProduct() {
+  if (!props.line || props.line.product || !fallbackProduct.value?.id) return;
+  props.line.product = fallbackProduct.value;
+}
 
 function getPriceListData (productId, priceListId, unitId) {
   if (!productId || !priceListId || !unitId) {
@@ -71,7 +86,7 @@ function getPriceListData (productId, priceListId, unitId) {
 }
 
 watch(
-  () => [selectedProduct.value, props.priceListId],
+  () => [activeProduct.value, props.priceListId],
   ([newProduct, newPriceListId]) => {
     if (props.disabled) {
       return;
@@ -82,31 +97,59 @@ watch(
     getPriceListData(newProduct.id, newPriceListId, newProduct.defaultUnit?.id);
   }
 );
+
+watch(
+  () => [fallbackProduct.value, line.value],
+  () => ensureLineProduct(),
+  {immediate: true}
+);
+
+watch(
+  () => showPicker.value,
+  (isOpen) => {
+    if (isOpen) {
+      searchTerm.value = "";
+    }
+  }
+);
 </script>
 
 <template>
   <tr class="product-line-row">
     <td class="cell cell-product">
-      <input v-model="line.product.id" :disabled="props.disabled" />
+      <span>{{ activeProduct?.code || "-" }}</span>
+      <button v-if="!props.disabled" class="btn btn-sm" type="button" @click="showPicker = true">
+        {{ activeProduct ? $t("changeProduct") : $t("selectProduct") }}
+      </button>
+    </td>
+    <td class="cell cell-product">
+      {{ activeProduct?.name || "-" }}
     </td>
     <td class="cell cell-number">
-      <input v-model="line.quantity" :disabled="props.disabled" min="0" step="0.0001" type="number"/>
+      <input v-model="line.quantity" :disabled="props.disabled" min="0" step="0.0001" type="number" name="quantity"/>
     </td>
     <td class="cell cell-number">
-      <input v-model="line.unitPrice" :disabled="props.disabled" min="0" step="0.0001" type="number"/>
+      <input v-model="line.unitPrice" :disabled="props.disabled" min="0" step="0.0001" type="number" name="unitPrice"/>
     </td>
     <td class="cell cell-number">
-      <input v-model="line.discountRatio" :disabled="props.disabled" min="0" step="0.01" type="number"/>
+      <input v-model="line.discountRatio" :disabled="props.disabled" min="0" step="0.01" type="number" name="discountRatio"/>
     </td>
     <td class="cell cell-remove">
       <button v-if="onRemove && !props.disabled" class="btn btn-sm btn-danger" type="button" @click="onRemove">x</button>
     </td>
   </tr>
+
+  <teleport to="body">
+    <ProductPicker :line="line"
+                   :products="props.products"
+                   :showPicker="showPicker"
+                   :onClose="onClose"  />
+  </teleport>
 </template>
 
 <style scoped>
 .cell {
-  width: 100%;
+  width: 40%;
 }
 
 .cell-number {

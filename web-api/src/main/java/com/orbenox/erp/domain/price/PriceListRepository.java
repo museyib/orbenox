@@ -65,14 +65,11 @@ public interface PriceListRepository extends JpaRepository<PriceList, Long> {
                 p.code as code,
                 p.name as name,
                 p.factorToParent as factorToParent,
-                p.enabled as enabled,
-                p.roundLength as roundLength,
-                pp as parent
+                p.roundLength as roundLength
             FROM PriceList p
-            LEFT JOIN p.parent pp
             WHERE p.deleted = false AND p.enabled = true
             ORDER BY p.id""")
-    List<PriceListItem> getEnabledItems();
+    List<SimplePriceListItem> getEnabledItems();
 
     @Query("""
             SELECT p.id as id,

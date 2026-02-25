@@ -60,7 +60,6 @@ function loadLookups() {
           partners.value = response.data.businessPartners || [];
           priceLists.value = response.data.priceLists || [];
           warehouses.value = response.data.warehouses || [];
-          console.log(response.data.products)
         } else if (response.code === 401) {
           refreshToken(() => loadLookups(), () => router.push("/ui/login"));
         } else {
@@ -96,8 +95,12 @@ function addLine() {
 }
 
 function removeLine(index) {
-  if (!canEdit.value || documentData.value.productLines.length === 1) return;
   documentData.value.productLines.splice(index, 1);
+}
+
+function removeEmptyLines() {
+  documentData.value.productLines = documentData.value.productLines.filter(l => l.product);
+  console.log(documentData.value.productLines)
 }
 
 function validate() {
@@ -106,7 +109,7 @@ function validate() {
     infoType.value = "error";
     return false;
   }
-  if (documentData.value.productLines.some(l => !l.product || Number(l.quantity) <= 0)) {
+  if (documentData.value.productLines.some(l => !l.product?.id || Number(l.quantity) <= 0)) {
     info.value = t("document.validationLines");
     infoType.value = "error";
     return false;
@@ -206,7 +209,7 @@ onMounted(() => {
           <input v-model="documentData.documentDate" :disabled="!canEdit" name="documentDate" type="date"/>
         </label>
         <label>{{ $t("transactionType.title") }}:
-          <select v-model="documentData.typeItem" :disabled="!canEdit">
+          <select v-model="documentData.typeItem" :disabled="!canEdit" name="transactionType">
             <option v-for="type in transactionTypes"
                     :key="type.id"
                     :value="type">
@@ -254,7 +257,7 @@ onMounted(() => {
 
         <div v-if="scope.stock">
           <label>{{ $t("sourceWarehouse") }}:
-            <select v-model="documentData.sourceWarehouse" :disabled="!canEdit">
+            <select v-model="documentData.sourceWarehouse" :disabled="!canEdit" name="sourceWarehouse">
               <option :value="null">-</option>
               <option v-for="warehouse in warehouses" :key="warehouse.id" :value="warehouse">
                 {{ warehouse.code }} - {{ warehouse.name }}
@@ -262,7 +265,7 @@ onMounted(() => {
             </select>
           </label>
           <label>{{ $t("targetWarehouse") }}:
-            <select v-model="documentData.targetWarehouse" :disabled="!canEdit">
+            <select v-model="documentData.targetWarehouse" :disabled="!canEdit" name="targetWarehouse">
               <option :value="null">-</option>
               <option v-for="warehouse in warehouses" :key="warehouse.id" :value="warehouse">
                 {{ warehouse.code }} - {{ warehouse.name }}
@@ -276,9 +279,8 @@ onMounted(() => {
           <table class="lines-table" role="table">
             <thead>
             <tr>
-              <th>{{ $t("product.title") }}</th>
-              <th>{{ $t("product.title") }}</th>
-              <th>{{ $t("product.title") }}</th>
+              <th>{{ $t("code") }}</th>
+              <th>{{ $t("name") }}</th>
               <th class="num-col">{{ $t("quantity") }}</th>
               <th class="num-col">{{ $t("price") }}</th>
               <th class="num-col">{{ $t("discountRatio") }}</th>
@@ -286,42 +288,20 @@ onMounted(() => {
             </tr>
             </thead>
             <tbody>
-
-            <tr class="product-line-row" v-for="(line, index) in documentData.productLines">
-              <td class="cell cell-product">
-                <input v-model="line.product.id" :disabled="!canEdit"/>
-              </td>
-              <td class="cell cell-product">
-                <input v-model="line.product.code" :disabled="!canEdit"/>
-              </td>
-              <td class="cell cell-product">
-                <input v-model="line.product.name" :disabled="!canEdit"/>
-              </td>
-              <td class="cell cell-number">
-                <input v-model="line.quantity" :disabled="!canEdit" min="0" step="0.0001" type="number"/>
-              </td>
-              <td class="cell cell-number">
-                <input v-model="line.unitPrice" :disabled="!canEdit" min="0" step="0.0001" type="number"/>
-              </td>
-              <td class="cell cell-number">
-                <input v-model="line.discountRatio" :disabled="!canEdit" min="0" step="0.01" type="number"/>
-              </td>
-              <td class="cell cell-remove">
-                <button class="btn btn-sm btn-danger" type="button" @click="() => removeLine(index)">x</button>
-              </td>
-            </tr>
-<!--            <ProductLine v-for="(line, index) in documentData.productLines"-->
-<!--                         :key="index"-->
-<!--                         :products="products"-->
-<!--                         :product="{id: line.productId, code: line.productCode, name: line.productName}"-->
-<!--                         :priceListId="documentData.priceListId"-->
-<!--                         :line="line"-->
-<!--                         :disabled="!canEdit"-->
-<!--                         :onRemove="() => removeLine(index)"></ProductLine>-->
+            <ProductLine v-for="(line, index) in documentData.productLines"
+                         :key="index"
+                         :products="products"
+                         :product="{id: line.productId, code: line.productCode, name: line.productName}"
+                         :priceListId="documentData.priceListId"
+                         :line="line"
+                         :disabled="!canEdit"
+                         :onRemove="() => removeLine(index)"
+                         :onClose="() => removeEmptyLines()"></ProductLine>
             </tbody>
           </table>
         </div>
 
+        <button class="btn btn-sm" type="button" @click="addLine">{{ $t("addLine") }}</button>
         <p><strong>{{ $t("total") }}:</strong> {{ totalAmount.toFixed(2) }}</p>
 
         <button class="btn btn-primary" type="submit" :disabled="!canEdit">{{ $t("saveDraft") }}</button>
@@ -374,5 +354,19 @@ onMounted(() => {
 
 .num-col {
   text-align: right;
+}
+
+.cell {
+  width: 40%;
+}
+
+.cell-number {
+  text-align: right;
+}
+
+.cell-remove {
+  justify-content: center;
+  min-width: 0;
+  padding: .2rem .4rem;
 }
 </style>

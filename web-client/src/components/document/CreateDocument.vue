@@ -27,7 +27,7 @@ const form = ref({
   priceListId: null,
   sourceWarehouseId: null,
   targetWarehouseId: null,
-  lines: [{product: null, quantity: 1, unitPrice: 0, discountRatio: 0}]
+  lines: []
 });
 
 const selectedType = computed(() => transactionTypes.value.find(t => t.id === Number(form.value.typeId)) || null);
@@ -80,12 +80,15 @@ function init() {
 }
 
 function addLine() {
-  form.value.lines.push({productId: null, quantity: 1, unitPrice: 0, discountRatio: 0});
+  form.value.lines.push({product: null, productId: null, quantity: 1, unitPrice: 0, discountRatio: 0});
 }
 
 function removeLine(index) {
-  if (form.value.lines.length === 1) return;
   form.value.lines.splice(index, 1);
+}
+
+function removeEmptyLines() {
+  form.value.lines = form.value.lines.filter(l => l.product);
 }
 
 function validate() {
@@ -94,7 +97,7 @@ function validate() {
     infoType.value = "error";
     return false;
   }
-  if (form.value.lines.some(l => !l.product || Number(l.quantity) <= 0)) {
+  if (form.value.lines.some(l => !l.product?.id || Number(l.quantity) <= 0)) {
     info.value = t("document.validationLines");
     infoType.value = "error";
     return false;
@@ -178,7 +181,7 @@ onMounted(() => init());
       <form @submit.prevent="createDocumentAndMaybeSubmit(false)">
         <label>{{ $t("documentDate") }}: <input v-model="form.documentDate" name="documentDate" type="date"/></label>
         <label>{{ $t("transactionType.title") }}:
-          <select v-model="form.typeId">
+          <select v-model="form.typeId" name="transactionType">
             <option v-for="type in transactionTypes" :key="type.id" :value="type.id">
               {{ type.code }} - {{ type.name }}
             </option>
@@ -218,7 +221,7 @@ onMounted(() => init());
 
         <div v-if="scope.stock">
           <label>{{ $t("sourceWarehouse") }}:
-            <select v-model="form.sourceWarehouseId">
+            <select v-model="form.sourceWarehouseId" name="sourceWarehouse">
               <option :value="null">-</option>
               <option v-for="warehouse in warehouses" :key="warehouse.id" :value="warehouse.id">
                 {{ warehouse.code }} - {{ warehouse.name }}
@@ -226,7 +229,7 @@ onMounted(() => init());
             </select>
           </label>
           <label>{{ $t("targetWarehouse") }}:
-            <select v-model="form.targetWarehouseId">
+            <select v-model="form.targetWarehouseId" name="targetWarehouse">
               <option :value="null">-</option>
               <option v-for="warehouse in warehouses" :key="warehouse.id" :value="warehouse.id">
                 {{ warehouse.code }} - {{ warehouse.name }}
@@ -240,7 +243,8 @@ onMounted(() => init());
           <table class="lines-table" role="table">
             <thead>
             <tr>
-              <th>{{ $t("product.title") }}</th>
+              <th>{{ $t("code") }}</th>
+              <th>{{ $t("name") }}</th>
               <th class="num-col">{{ $t("quantity") }}</th>
               <th class="num-col">{{ $t("price") }}</th>
               <th class="num-col">{{ $t("discountRatio") }}</th>
@@ -251,10 +255,11 @@ onMounted(() => init());
             <ProductLine v-for="(line, index) in form.lines"
                          :key="index"
                          :products="products"
-                         :product="line.product"
+                         :product="{id: line.productId, code: line.productCode, name: line.productName}"
                          :priceListId="form.priceListId"
                          :line="line"
-                         :onRemove="() => removeLine(index)"></ProductLine>
+                         :onRemove="() => removeLine(index)"
+                         :onClose="() => removeEmptyLines()"></ProductLine>
             </tbody>
           </table>
         </div>

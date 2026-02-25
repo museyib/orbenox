@@ -5,7 +5,7 @@ import com.orbenox.erp.domain.currency.CurrencyItem;
 import java.math.BigDecimal;
 
 @SuppressWarnings("unused")
-public interface PriceListItem {
+public interface SimplePriceListItem {
     Long getId();
 
     String getCode();
@@ -14,21 +14,5 @@ public interface PriceListItem {
 
     BigDecimal getFactorToParent();
 
-    boolean isEnabled();
-
-    PriceListParent getParent();
-
     Short getRoundLength();
-
-    CurrencyItem getCurrency();
-
-    interface PriceListParent {
-        Long getId();
-
-        String getCode();
-
-        String getName();
-
-        boolean isEnabled();
-    }
 }
