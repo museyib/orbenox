@@ -100,7 +100,6 @@ function removeLine(index) {
 
 function removeEmptyLines() {
   documentData.value.productLines = documentData.value.productLines.filter(l => l.product);
-  console.log(documentData.value.productLines)
 }
 
 function validate() {

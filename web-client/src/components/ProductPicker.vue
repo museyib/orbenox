@@ -22,7 +22,7 @@ const props = defineProps({
   }
 });
 
-const showPicker = ref(() => props.showPicker);
+const showPicker = computed(() => props.showPicker);
 const searchTerm = ref("");
 
 const filteredProducts = computed(() => {
