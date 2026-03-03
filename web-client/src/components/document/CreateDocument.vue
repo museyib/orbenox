@@ -80,7 +80,7 @@ function init() {
 }
 
 function addLine() {
-  form.value.lines.push({product: null, productId: null, quantity: 1, unitPrice: 0, discountRatio: 0});
+  form.value.lines.push({product: null, productId: null, quantity: 1, unitPrice: 0, discountRatio: 0, autoOpenPicker: true});
 }
 
 function removeLine(index) {

@@ -2,7 +2,7 @@
 import {apiRequest, refreshToken} from "@/api.js";
 import {computed, ref, watch} from "vue";
 import {useRouter} from "vue-router";
-import ProductPicker from "@/components/ProductPicker.vue";
+import ProductPicker from "@/components/document/ProductPicker.vue";
 
 const props = defineProps({
   line:{
@@ -54,7 +54,7 @@ const activeProduct = computed(() => {
 
 const onClose = () => {
   showPicker.value = false;
-  props.onClose();
+  props.onClose?.();
 }
 
 function ensureLineProduct() {
@@ -101,6 +101,18 @@ watch(
 watch(
   () => [fallbackProduct.value, line.value],
   () => ensureLineProduct(),
+  {immediate: true}
+);
+
+watch(
+  () => line.value?.autoOpenPicker,
+  (shouldOpen) => {
+    if (!shouldOpen || props.disabled) {
+      return;
+    }
+    showPicker.value = true;
+    line.value.autoOpenPicker = false;
+  },
   {immediate: true}
 );
 

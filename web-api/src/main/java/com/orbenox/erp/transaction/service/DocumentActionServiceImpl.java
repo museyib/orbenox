@@ -7,6 +7,7 @@ import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.command.CreateDocumentCommand;
 import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.policy.approval.ApprovalPolicy;
+import com.orbenox.erp.transaction.policy.post.DocumentPostPolicy;
 import com.orbenox.erp.transaction.repository.DocumentRepository;
 import com.orbenox.erp.transaction.resolver.PolicyResolver;
 import jakarta.transaction.Transactional;
@@ -19,10 +20,8 @@ public class DocumentActionServiceImpl implements DocumentActionService {
 
     private final DocumentRepository documentRepo;
     private final DocumentService documentService;
-    private final AccountingService accountingService;
-    private final CommercialService commercialService;
-    private final StockService stockService;
     private final PolicyResolver<ApprovalPolicy> approvalPolicyResolver;
+    private final PolicyResolver<DocumentPostPolicy> documentPostPolicyResolver;
     private final LocalizationService i18n;
 
     @Override
@@ -78,14 +77,7 @@ public class DocumentActionServiceImpl implements DocumentActionService {
                 doc.getApprovalStatus() != ApprovalStatus.APPROVED)
             throw new BusinessRuleException(i18n.msg("error.document.notApproved"));
 
-        if (doc.getType().isAccountingAffected())
-            accountingService.post(doc);
-
-        if (doc.getType().isStockAffected())
-            stockService.post(doc);
-
-        if (doc.getType().isCommercialAffected())
-            commercialService.post(doc);
+        documentPostPolicyResolver.resolve(doc.getType()).post(doc);
 
         doc.setDocumentStatus(DocumentStatus.POSTED);
     }

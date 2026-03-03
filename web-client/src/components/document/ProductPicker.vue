@@ -41,7 +41,7 @@ function setProduct(product) {
   props.line.productId = product.id;
   props.line.productCode = product.code;
   props.line.productName = product.name;
-  showPicker.value = false;
+  props.onClose?.();
 }
 </script>
 

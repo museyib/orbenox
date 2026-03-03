@@ -91,7 +91,7 @@ function loadDocument() {
 
 function addLine() {
   if (!canEdit.value) return;
-  documentData.value.productLines.push({product: null, quantity: 1, unitPrice: 0, discountRatio: 0});
+  documentData.value.productLines.push({product: null, quantity: 1, unitPrice: 0, discountRatio: 0, autoOpenPicker: true});
 }
 
 function removeLine(index) {
@@ -353,19 +353,5 @@ onMounted(() => {
 
 .num-col {
   text-align: right;
-}
-
-.cell {
-  width: 40%;
-}
-
-.cell-number {
-  text-align: right;
-}
-
-.cell-remove {
-  justify-content: center;
-  min-width: 0;
-  padding: .2rem .4rem;
 }
 </style>
