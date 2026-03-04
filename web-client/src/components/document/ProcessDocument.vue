@@ -10,7 +10,7 @@ const route = useRoute();
 const router = useRouter();
 const info = ref("");
 const infoType = ref('');
-const documentData = ref(null);
+const documentData = ref({});
 
 const actions = computed(() => {
   const doc = documentData.value;
@@ -47,7 +47,7 @@ const timeline = computed(() => {
 function init() {
   apiRequest("/api/documents/" + route.params.id, "GET").then(response => {
     if (response.code === 200) {
-      documentData.value = response.data;
+      documentData.value = response.data.documentItem;
     } else if (response.code === 401) {
       refreshToken(() => init(), () => router.push("/ui/login"));
     } else {
