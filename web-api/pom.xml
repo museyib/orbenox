@@ -11,6 +11,9 @@
     <artifactId>web-api</artifactId>
     <name>web-api</name>
     <description>orbenox</description>
+    <properties>
+        <java.version>25</java.version>
+    </properties>
     <url/>
     <licenses>
         <license/>
