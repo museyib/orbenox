@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Component
 @Order
 @RequiredArgsConstructor
@@ -35,5 +37,11 @@ public class DefaultDocumentPostPolicy implements DocumentPostPolicy {
         if (document.getType().isCommercialAffected()) {
             commercialService.post(document);
         }
+    }
+
+    protected boolean allQuantitiesPositive(Document document) {
+        return document.getProductLines()
+                .stream()
+                .allMatch(line -> line.getQuantity().compareTo(BigDecimal.ZERO) > 0);
     }
 }

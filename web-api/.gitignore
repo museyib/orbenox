@@ -33,7 +33,7 @@ build/
 application.properties
 
 ### Environment Files ###
-.env
+../.env
 .env.local
 
 logs/

@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: orbenox
+  datasource:
+    url: "${DB_URL}"
+    username: "${DB_USERNAME}"
+    password: "${DB_PASSWORD}"
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      auto-commit: true
+      pool-name: OrbenoxHikariPool
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+        generate_statistics: false
+  flyway:
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+  messages:
+    basename: messages
+    encoding: UTF-8
+  web:
+    error:
+      include-message: never
+      include-stacktrace: never
+      include-exception: false
+
+server:
+  port: "${SERVER_PORT:8090}"
+
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+app:
+  jwtSecretKey: "${JWT_SECRET_KEY:0e1156ac32b34087c0fc3da6b5cc015e1d86f013acdfc1bbbed78940f1d8c81d}"
+  jwtExpiration: "${JWT_EXPIRATION:86400000}"

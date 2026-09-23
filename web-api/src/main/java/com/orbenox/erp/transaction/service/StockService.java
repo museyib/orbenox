@@ -1,8 +1,9 @@
 package com.orbenox.erp.transaction.service;
 
 import com.orbenox.erp.domain.product.entity.Product;
-import com.orbenox.erp.domain.stock.StockBalance;
 import com.orbenox.erp.domain.warehouse.Warehouse;
+import com.orbenox.erp.enums.StockAffectDirection;
+import com.orbenox.erp.exception.BusinessRuleException;
 import com.orbenox.erp.transaction.entity.*;
 import com.orbenox.erp.domain.stock.StockBalanceRepository;
 import com.orbenox.erp.transaction.repository.StockMovementRepository;
@@ -11,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 @Transactional
@@ -25,11 +29,23 @@ public class StockService implements ContextService {
         StockContext sc = doc.getStockContext();
 
         if (sc != null) {
+            List<StockOperation> operations = new ArrayList<>();
             for (ProductLine line : doc.getProductLines()) {
-                if (sc.getSourceWarehouse() != null)
-                    createMovement(doc, line.getProduct(), sc.getSourceWarehouse(), line.getQuantity().negate());
-                if (sc.getTargetWarehouse() != null)
-                    createMovement(doc, line.getProduct(), sc.getTargetWarehouse(), line.getQuantity());
+                if (sc.getSourceWarehouse() != null) {
+                    operations.add(new StockOperation(line.getProduct(), sc.getSourceWarehouse(), line.getQuantity()));
+                }
+                if (sc.getTargetWarehouse() != null) {
+                    operations.add(new StockOperation(line.getProduct(), sc.getTargetWarehouse(), line.getQuantity()));
+                }
+            }
+
+            operations.sort(Comparator
+                    .comparing((StockOperation operation) -> operation.warehouse().getId())
+                    .thenComparing(operation -> operation.product().getId())
+                    .thenComparing(operation -> operation.quantity().signum()));
+
+            for (StockOperation operation : operations) {
+                createMovement(doc, operation.product(), operation.warehouse(), operation.quantity());
             }
         }
     }
@@ -42,19 +58,25 @@ public class StockService implements ContextService {
         sm.setDocument(doc);
         stockMovementRepo.save(sm);
 
-        applyMovement(product, warehouse, quantity);
+        StockAffectDirection stockAffectDirection = doc.getType().getStockAffectDirection();
+
+        applyMovement(product, warehouse, quantity, stockAffectDirection);
     }
 
-    private void applyMovement(Product product, Warehouse warehouse, BigDecimal quantity) {
-        StockBalance stockBalance = stockBalanceRepo.findByProductAndWarehouse(product, warehouse)
-                .orElseGet(() -> {
-                    StockBalance sb = new StockBalance();
-                    sb.setProduct(product);
-                    sb.setWarehouse(warehouse);
-                    sb.setQuantity(BigDecimal.ZERO);
-                    return sb;
-                });
-        stockBalance.setQuantity(stockBalance.getQuantity().add(quantity));
-        stockBalanceRepo.save(stockBalance);
+    private void applyMovement(Product product, Warehouse warehouse, BigDecimal quantity, StockAffectDirection stockAffectDirection) {
+
+        int affected;
+        switch (stockAffectDirection) {
+            case IN -> affected = stockBalanceRepo.increaseQuantity(product.getId(), warehouse.getId(), quantity);
+            case OUT -> affected = stockBalanceRepo.decreaseQuantity(product.getId(), warehouse.getId(), quantity);
+            default ->  affected = 0;
+        }
+
+        if (affected == 0) {
+            throw new BusinessRuleException("Insufficient stock quantity for the product: " + product.getId());
+        }
+    }
+
+    private record StockOperation(Product product, Warehouse warehouse, BigDecimal quantity) {
     }
 }

@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: orbenox
+  datasource:
+    url: "${DB_URL:jdbc:postgresql://localhost:5435/orbenox}"
+    username: "${DB_USERNAME:postgres}"
+    password: "${DB_PASSWORD:postgres}"
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      auto-commit: true
+      pool-name: OrbenoxHikariPool
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: true
+  flyway:
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  messages:
+    basename: messages
+    encoding: UTF-8
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      repositories:
+        enabled: false
+
+server:
+  port: "${SERVER_PORT:8090}"
+
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
+    path: /swagger
+    enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: ${EUREKA_PREFER_IP_ADDRESS:true}
+
+app:
+  jwtSecretKey: "${JWT_SECRET_KEY:0e1156ac32b34087c0fc3da6b5cc015e1d86f013acdfc1bbbed78940f1d8c81d}"
+  jwtExpiration: "${JWT_EXPIRATION:86400000}"

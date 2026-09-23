@@ -1,6 +1,7 @@
 package com.orbenox.erp.transaction.controller;
 
 import com.orbenox.erp.common.Response;
+import com.orbenox.erp.IdempotencyService;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.command.CreateDocumentCommand;
 import com.orbenox.erp.transaction.entity.Document;
@@ -21,6 +22,7 @@ public class ProductApproveController {
     private final DocumentActionService documentActionService;
     private final DocumentRepository documentRepository;
     private final LocalizationService i18n;
+    private final IdempotencyService idempotencyService;
 
     @PreAuthorize("hasPermission('PRODUCT_APPROVE', 'READ')")
     @GetMapping
@@ -36,9 +38,13 @@ public class ProductApproveController {
 
     @PreAuthorize("hasPermission('PRODUCT_APPROVE', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<DocumentItem>> create(@RequestBody CreateDocumentCommand command) {
+    public ResponseEntity<Response<DocumentItem>> create(@RequestHeader("Idempotency-Key") String key,
+                                                         @RequestBody CreateDocumentCommand command) {
         Document document = documentActionService.createDraft(command);
-        return ResponseEntity.ok(Response.successData(getItemOrThrow(document.getId())));
+        DocumentItem item = getItemOrThrow(document.getId());
+        Response<DocumentItem> response = Response.successData(item);
+        idempotencyService.complete(key, response, 200);
+        return ResponseEntity.ok(response);
     }
 
     @PreAuthorize("hasPermission('PRODUCT_APPROVE', 'SUBMIT')")
@@ -91,4 +97,3 @@ public class ProductApproveController {
         return item;
     }
 }
-

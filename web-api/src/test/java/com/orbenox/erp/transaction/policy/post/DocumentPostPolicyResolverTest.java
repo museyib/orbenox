@@ -10,6 +10,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class DocumentPostPolicyResolverTest {
 
@@ -50,6 +51,7 @@ class DocumentPostPolicyResolverTest {
         DefaultDocumentPostPolicy defaultPolicy = mock(DefaultDocumentPostPolicy.class);
         ProductApproveDocumentPostPolicy policy = new ProductApproveDocumentPostPolicy(defaultPolicy);
         Document document = new Document();
+        when(defaultPolicy.allQuantitiesPositive(document)).thenReturn(true);
 
         policy.post(document);
 

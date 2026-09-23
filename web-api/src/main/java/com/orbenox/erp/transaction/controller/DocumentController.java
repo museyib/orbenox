@@ -1,5 +1,6 @@
 package com.orbenox.erp.transaction.controller;
 
+import com.orbenox.erp.IdempotencyService;
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.command.CreateDocumentCommand;
@@ -10,6 +11,7 @@ import com.orbenox.erp.transaction.projection.ProductLineItem;
 import com.orbenox.erp.transaction.repository.DocumentRepository;
 import com.orbenox.erp.transaction.repository.ProductLineRepository;
 import com.orbenox.erp.transaction.service.DocumentActionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +27,7 @@ public class DocumentController {
     private final DocumentRepository documentRepo;
     private final ProductLineRepository productLineRepo;
     private final LocalizationService i18n;
+    private final IdempotencyService idempotencyService;
 
     @PreAuthorize("hasPermission('DOCUMENT', 'READ')")
     @GetMapping
@@ -43,9 +46,13 @@ public class DocumentController {
 
     @PreAuthorize("hasPermission('DOCUMENT', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<DocumentItem>> create(@RequestBody CreateDocumentCommand command) {
+    public ResponseEntity<Response<DocumentItem>> create(@RequestHeader("Idempotency-Key") String key,
+                                                         @RequestBody @Valid CreateDocumentCommand command) {
         Document document = documentActionService.createDraft(command);
-        return ResponseEntity.ok(Response.successData(getItemOrThrow(document.getId())));
+        DocumentItem documentItem = getItemOrThrow(document.getId());
+        Response<DocumentItem> response = Response.successData(documentItem);
+        idempotencyService.complete(key, response, 200);
+        return ResponseEntity.ok(response);
     }
 
     @PreAuthorize("hasPermission('DOCUMENT', 'SUBMIT')")
@@ -98,4 +105,3 @@ public class DocumentController {
         return item;
     }
 }
-

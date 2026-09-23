@@ -135,11 +135,11 @@ function buildPayload() {
   };
 }
 
-function createDocumentAndMaybeSubmit(shouldSubmit) {
+function createDocumentAndMaybeSubmit(shouldSubmit, idempotencyKey = crypto.randomUUID()) {
   if (!validate()) return;
 
   const payload = buildPayload();
-  apiRequest("/api/documents", "POST", payload).then(response => {
+  apiRequest("/api/documents", "POST", payload, idempotencyKey).then(response => {
     if (response.code === 200) {
       const documentId = response.data?.id;
       if (shouldSubmit && documentId) {
@@ -159,7 +159,7 @@ function createDocumentAndMaybeSubmit(shouldSubmit) {
         router.push("/ui/documents");
       }
     } else if (response.code === 401) {
-      refreshToken(() => createDocumentAndMaybeSubmit(shouldSubmit), () => router.push("/ui/login"));
+      refreshToken(() => createDocumentAndMaybeSubmit(shouldSubmit, idempotencyKey), () => router.push("/ui/login"));
     } else {
       info.value = response.message;
       infoType.value = "error";
@@ -306,4 +306,3 @@ onMounted(() => init());
   text-align: right;
 }
 </style>
-
