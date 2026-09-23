@@ -29,6 +29,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Response<String>> handleException(Exception e) {
+        e.printStackTrace();
         int code = HttpStatus.INTERNAL_SERVER_ERROR.value();
         String message = MessageFormat.format("{0}: {1}", i18n.msg("error.internal"), getMessage(e));
         log.error(message);

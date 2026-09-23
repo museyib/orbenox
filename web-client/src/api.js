@@ -1,5 +1,5 @@
-export async function apiRequest(url, method, body = null) {
-    const baseURL = 'http://localhost:8090';
+export async function apiRequest(url, method, body = null, idempotencyKey = null) {
+    const baseURL = 'http://localhost:8080';
     const token = localStorage.getItem('token');
     const locale = localStorage.getItem('locale') || navigator.language || 'en'
     const headers = {
@@ -9,6 +9,9 @@ export async function apiRequest(url, method, body = null) {
     }
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
+    }
+    if (idempotencyKey) {
+        headers['Idempotency-Key'] = idempotencyKey;
     }
     const options = {
         method: method,

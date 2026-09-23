@@ -1,0 +1,78 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: orbenox-db
+    environment:
+      POSTGRES_DB: orbenox
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    container_name: shop-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  eureka-service:
+    build:
+      context: ./eureka-service
+    environment:
+      SERVER_PORT: ${EUREKA_SERVICE_PORT}
+    ports:
+      - "${EUREKA_SERVICE_PORT}:${EUREKA_SERVICE_PORT}"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q --spider http://localhost:${EUREKA_SERVICE_PORT}/actuator/health" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    environment:
+      SERVER_PORT: ${API_GATEWAY_PORT}
+      EUREKA_DEFAULT_ZONE: ${EUREKA_DEFAULT_ZONE}
+      EUREKA_PREFER_IP_ADDRESS: ${EUREKA_PREFER_IP_ADDRESS}
+    ports:
+      - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q --spider http://localhost:${API_GATEWAY_PORT}/actuator/health" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    depends_on:
+      eureka-service:
+        condition: service_healthy
+      web-api:
+        condition: service_started
+
+  web-api:
+    build:
+      context: ./web-api
+    deploy:
+      replicas: 2
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://postgres:5432/orbenox
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      SPRING_DATA_REDIS_HOST: redis
+      EUREKA_DEFAULT_ZONE: ${EUREKA_DEFAULT_ZONE}
+      EUREKA_PREFER_IP_ADDRESS: ${EUREKA_PREFER_IP_ADDRESS}
+    ports:
+      - "8090"
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  postgres_data:
+  redis_data:

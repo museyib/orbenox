@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -13,10 +14,14 @@ import java.util.Date;
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-    private final String SECRET_KEY = "0e1156ac32b34087c0fc3da6b5cc015e1d86f013acdfc1bbbed78940f1d8c81d";
+
+    @Value("${app.jwtSecretKey}")
+    private String SECRET_KEY;
+
+    @Value("${app.jwtExpiration}")
+    private long EXPIRATION_TIME;
 
     public String generateToken(UserDetails userDetails) {
-        long EXPIRATION_TIME = 1000 * 60 * 60;
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities().stream()

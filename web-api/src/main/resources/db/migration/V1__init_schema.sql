@@ -591,5 +591,5 @@ CREATE TABLE stock_balance
     reserved_quantity NUMERIC(20, 10) NOT NULL DEFAULT 0,
     free_quantity     NUMERIC(20, 10) GENERATED ALWAYS AS ( quantity - reserved_quantity ) STORED,
     UNIQUE (product_id, warehouse_id),
-    CHECK ( NOT quantity < 0 )
+    CHECK ( quantity >= 0 )
 );

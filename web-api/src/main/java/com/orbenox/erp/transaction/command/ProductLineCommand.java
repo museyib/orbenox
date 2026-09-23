@@ -1,10 +1,12 @@
 package com.orbenox.erp.transaction.command;
 
+import jakarta.validation.constraints.Positive;
+
 import java.math.BigDecimal;
 
 public record ProductLineCommand(
         Long productId,
-        BigDecimal quantity,
-        BigDecimal unitPrice,
-        BigDecimal discountRatio
+        @Positive BigDecimal quantity,
+        @Positive BigDecimal unitPrice,
+        @Positive BigDecimal discountRatio
 ) {}
