@@ -1,10 +1,10 @@
 package com.orbenox.erp.transaction.service;
 
-import com.orbenox.erp.transaction.command.CreateDocumentCommand;
+import com.orbenox.erp.transaction.command.DocumentCommand;
 import com.orbenox.erp.transaction.entity.Document;
 
-public interface DocumentActionService {
-    Document createDraft(CreateDocumentCommand command);
+public interface DocumentActionService<T extends DocumentCommand> {
+    Document createDraft(T command);
 
     void submit(Long documentId);
 

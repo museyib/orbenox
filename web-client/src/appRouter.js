@@ -72,8 +72,9 @@ import CreateBusinessPartnerRole from "@/components/businessPartnerRole/CreateBu
 import EditBusinessPartnerRole from "@/components/businessPartnerRole/EditBusinessPartnerRole.vue";
 import Documents from "@/components/document/Documents.vue";
 import CreateDocument from "@/components/document/CreateDocument.vue";
+import CreateSalesOrder from "@/components/document/CreateSalesOrder.vue";
+import CreateProductApprove from "@/components/document/CreateProductApprove.vue";
 import ProcessDocument from "@/components/document/ProcessDocument.vue";
-import EditDocument from "@/components/document/EditDocument.vue";
 import Stock from "@/components/stock/Stock.vue";
 
 const routes = [
@@ -147,7 +148,8 @@ const routes = [
     {path: '/ui/postingRules/edit/:id', component: EditPostingRule, meta: {title: 'Edit Posting Rule'}},
     {path: '/ui/documents', component: Documents, meta: {title: 'Documents'}},
     {path: '/ui/documents/create', component: CreateDocument, meta: {title: 'Create Document'}},
-    {path: '/ui/documents/edit/:id', component: EditDocument, meta: {title: 'Edit Document'}},
+    {path: '/ui/documents/create/sales-order', component: CreateSalesOrder, meta: {title: 'Create Sales Order'}},
+    {path: '/ui/documents/create/product-approve', component: CreateProductApprove, meta: {title: 'Create Product Approve'}},
     {path: '/ui/documents/process/:id', component: ProcessDocument, meta: {title: 'Document Process'}},
     {path: '/ui/businessPartnerRoles', component: BusinessPartnerRoles, meta: {title: 'Business Partner Roles'}},
     {path: '/ui/businessPartnerRoles/create', component: CreateBusinessPartnerRole, meta: {title: 'Create Business Partner Role'}},

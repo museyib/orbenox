@@ -17,6 +17,10 @@ const props = defineProps({
     type: Number,
     required: false
   },
+  showPricing: {
+    type: Boolean,
+    default: true
+  },
   products: {
     type: Array,
     required: true
@@ -140,10 +144,10 @@ watch(
     <td class="cell cell-number">
       <input v-model="line.quantity" :disabled="props.disabled" min="0" step="0.0001" type="number" name="quantity"/>
     </td>
-    <td class="cell cell-number">
+    <td v-if="props.showPricing" class="cell cell-number">
       <input v-model="line.unitPrice" :disabled="props.disabled" min="0" step="0.0001" type="number" name="unitPrice"/>
     </td>
-    <td class="cell cell-number">
+    <td v-if="props.showPricing" class="cell cell-number">
       <input v-model="line.discountRatio" :disabled="props.disabled" min="0" step="0.01" type="number" name="discountRatio"/>
     </td>
     <td class="cell cell-remove">

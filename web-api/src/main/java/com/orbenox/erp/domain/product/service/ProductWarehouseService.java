@@ -72,7 +72,7 @@ public class ProductWarehouseService {
         List<ProductWarehouseItem> items = productWarehouseRepository.getItemsByProductId(request.getProductId());
         SimpleProductItem product = items.isEmpty()
                 ? productRepository.getSimpleItemById(request.getProductId())
-                : items.get(0).getProduct();
+                : items.getFirst().getProduct();
         data.setProduct(product);
         data.setWarehouses(items);
         return data;

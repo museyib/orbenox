@@ -4,7 +4,7 @@ import com.orbenox.erp.enums.ApprovalStatus;
 import com.orbenox.erp.enums.DocumentStatus;
 import com.orbenox.erp.exception.BusinessRuleException;
 import com.orbenox.erp.localization.LocalizationService;
-import com.orbenox.erp.transaction.command.CreateDocumentCommand;
+import com.orbenox.erp.transaction.command.CreateSalesOrderCommand;
 import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.policy.approval.ApprovalPolicy;
 import com.orbenox.erp.transaction.policy.post.DocumentPostPolicy;
@@ -12,11 +12,14 @@ import com.orbenox.erp.transaction.repository.DocumentRepository;
 import com.orbenox.erp.transaction.resolver.PolicyResolver;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+
+import static com.orbenox.erp.config.CacheConfig.CacheNames.PRODUCT_WAREHOUSES;
 
 @Service
 @RequiredArgsConstructor
-public class DocumentActionServiceImpl implements DocumentActionService {
+public class SalesOrderActionService implements DocumentActionService<CreateSalesOrderCommand> {
 
     private final DocumentRepository documentRepo;
     private final DocumentService documentService;
@@ -25,8 +28,8 @@ public class DocumentActionServiceImpl implements DocumentActionService {
     private final LocalizationService i18n;
 
     @Override
-    public Document createDraft(CreateDocumentCommand command) {
-        return documentService.createDocument(command);
+    public Document createDraft(CreateSalesOrderCommand command) {
+        return documentService.createSalesOrder(command);
     }
 
     @Override
@@ -63,6 +66,7 @@ public class DocumentActionServiceImpl implements DocumentActionService {
 
     @Override
     @Transactional
+    @CacheEvict(value = PRODUCT_WAREHOUSES, allEntries = true)
     public void post(Long documentId) {
         Document doc = documentRepo.findById(documentId).orElseThrow();
         ApprovalPolicy approvalPolicy = approvalPolicyResolver.resolve(doc.getType());

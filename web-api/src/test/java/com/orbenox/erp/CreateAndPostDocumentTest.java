@@ -11,7 +11,8 @@ import com.orbenox.erp.domain.warehouse.Warehouse;
 import com.orbenox.erp.domain.warehouse.WarehouseRepository;
 import com.orbenox.erp.enums.DocumentStatus;
 import com.orbenox.erp.exception.BusinessRuleException;
-import com.orbenox.erp.transaction.command.CreateDocumentCommand;
+import com.orbenox.erp.transaction.command.CreateProductApproveCommand;
+import com.orbenox.erp.transaction.command.CreateSalesOrderCommand;
 import com.orbenox.erp.transaction.command.ProductLineCommand;
 import com.orbenox.erp.transaction.entity.*;
 import com.orbenox.erp.transaction.policy.approval.ApprovalPolicy;
@@ -54,7 +55,9 @@ public class CreateAndPostDocumentTest {
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15");
 
     @Autowired
-    DocumentActionService documentActionService;
+    DocumentActionService<CreateSalesOrderCommand> salesOrderActionService;
+    @Autowired
+    DocumentActionService<CreateProductApproveCommand> productApproveActionService;
     @Autowired
     TransactionTypeRepository transactionTypeRepo;
     @Autowired
@@ -70,8 +73,6 @@ public class CreateAndPostDocumentTest {
     private Warehouse warehouse;
     private Long priceListId;
 
-    private Long approveTypeId;
-    private Long salesOrderTypeId;
     private Long partnerId;
 
     @Autowired
@@ -98,13 +99,11 @@ public class CreateAndPostDocumentTest {
 
     @BeforeEach
     public void createEntities() {
-        approveTypeId = transactionTypeRepo.findByCode("PRODUCT_APPROVE").getId();
-        salesOrderTypeId = transactionTypeRepo.findByCode("SALES_ORDER").getId();
-        partnerId = businessPartnerRepository.findAll().get(0).getId();
-        priceListId = priceListRepository.findAll().get(0).getId();
+        partnerId = businessPartnerRepository.findAll().getFirst().getId();
+        priceListId = priceListRepository.findAll().getFirst().getId();
 
-        product = productRepo.findAll().get(0);
-        warehouse = warehouseRepo.findAll().get(0);
+        product = productRepo.findAll().getFirst();
+        warehouse = warehouseRepo.findAll().getFirst();
     }
 
     @Test
@@ -115,26 +114,23 @@ public class CreateAndPostDocumentTest {
                 BigDecimal.TEN,
                 BigDecimal.ONE,
                 BigDecimal.ZERO);
-        CreateDocumentCommand cmd = new CreateDocumentCommand(
+        CreateProductApproveCommand cmd = new CreateProductApproveCommand(
                 LocalDate.now(),
-                approveTypeId,
                 "Test",
                 null,
-                null,
                 priceListId,
-                null,
                 warehouse.getId(),
                 List.of(lineCommand));
 
-        Document document = documentActionService.createDraft(cmd);
+        Document document = productApproveActionService.createDraft(cmd);
 
-        documentActionService.submit(document.getId());
-        documentActionService.post(document.getId());
+        productApproveActionService.submit(document.getId());
+        productApproveActionService.post(document.getId());
 
         List<StockMovement> stockMovements = stockMovementRepo.findByDocumentId(document.getId());
 
         assertEquals(1, stockMovements.size());
-        assertEquals(BigDecimal.TEN, stockMovements.get(0).getQuantity());
+        assertEquals(BigDecimal.TEN, stockMovements.getFirst().getQuantity());
         StockBalance stockBalance = stockBalanceRepo.findByProductAndWarehouse(product, warehouse).orElseGet(StockBalance::new);
         assertEquals(0, stockBalance.getQuantity().compareTo(BigDecimal.TEN));
     }
@@ -149,21 +145,19 @@ public class CreateAndPostDocumentTest {
                 BigDecimal.TEN,
                 BigDecimal.ONE,
                 BigDecimal.valueOf(50.0));
-        CreateDocumentCommand cmd = new CreateDocumentCommand(
+        CreateSalesOrderCommand cmd = new CreateSalesOrderCommand(
                 LocalDate.now(),
-                salesOrderTypeId,
                 "Sales order",
                 partnerId,
                 "CASH",
                 priceListId,
                 warehouse.getId(),
-                null,
                 List.of(lineCommand));
-        Document document = documentActionService.createDraft(cmd);
+        Document document = salesOrderActionService.createDraft(cmd);
 
-        documentActionService.submit(document.getId());
-        documentActionService.approve(document.getId());
-        documentActionService.post(document.getId());
+        salesOrderActionService.submit(document.getId());
+        salesOrderActionService.approve(document.getId());
+        salesOrderActionService.post(document.getId());
 
         assertEquals(1, stockMovementRepo.countByDocumentId(document.getId()));
 
@@ -194,22 +188,20 @@ public class CreateAndPostDocumentTest {
                 BigDecimal.TWO,
                 BigDecimal.ONE,
                 BigDecimal.ONE);
-        CreateDocumentCommand cmd = new CreateDocumentCommand(
+        CreateSalesOrderCommand cmd = new CreateSalesOrderCommand(
                 LocalDate.now(),
-                salesOrderTypeId,
                 "Insufficient stock",
                 partnerId,
                 "CASH",
                 priceListId,
                 warehouse.getId(),
-                null,
                 List.of(lineCommand));
-        Document document = documentActionService.createDraft(cmd);
+        Document document = salesOrderActionService.createDraft(cmd);
 
-        documentActionService.submit(document.getId());
+        salesOrderActionService.submit(document.getId());
         BusinessRuleException exception = assertThrows(
                 BusinessRuleException.class,
-                () -> documentActionService.post(document.getId()));
+                () -> salesOrderActionService.post(document.getId()));
 
         assertTrue(exception.getMessage().contains("Insufficient stock quantity"));
         assertEquals(0, stockBalanceRepo.findByProductAndWarehouse(product, warehouse).orElseThrow().getQuantity().compareTo(BigDecimal.ONE));
@@ -347,15 +339,15 @@ public class CreateAndPostDocumentTest {
                 .compareTo(BigDecimal.TWO));
     }
 
-    private StockBalance seedStockBalance(BigDecimal quantity) {
-        return seedStockBalance(warehouse, product, quantity);
+    private void seedStockBalance(BigDecimal quantity) {
+        seedStockBalance(warehouse, product, quantity);
     }
 
-    private StockBalance seedStockBalance(Warehouse warehouse, BigDecimal quantity) {
-        return seedStockBalance(warehouse, product, quantity);
+    private void seedStockBalance(Warehouse warehouse, BigDecimal quantity) {
+        seedStockBalance(warehouse, product, quantity);
     }
 
-    private StockBalance seedStockBalance(Warehouse warehouse, Product stockProduct, BigDecimal quantity) {
+    private void seedStockBalance(Warehouse warehouse, Product stockProduct, BigDecimal quantity) {
         StockBalance stockBalance = stockBalanceRepo.findByProductAndWarehouse(stockProduct, warehouse).orElseGet(() -> {
             StockBalance sb = new StockBalance();
             sb.setProduct(stockProduct);
@@ -364,7 +356,7 @@ public class CreateAndPostDocumentTest {
         });
         stockBalance.setQuantity(quantity);
         stockBalance.setReservedQuantity(BigDecimal.ZERO);
-        return stockBalanceRepo.saveAndFlush(stockBalance);
+        stockBalanceRepo.saveAndFlush(stockBalance);
     }
 
     private StockBalance reloadStockBalance(Product stockProduct, Warehouse stockWarehouse) {
@@ -399,18 +391,16 @@ public class CreateAndPostDocumentTest {
 
     private Document createSubmittedSalesOrder(Warehouse sourceWarehouse, BigDecimal quantity, BigDecimal discountRatio) {
         ProductLineCommand lineCommand = line(product, quantity, discountRatio);
-        CreateDocumentCommand cmd = new CreateDocumentCommand(
+        CreateSalesOrderCommand cmd = new CreateSalesOrderCommand(
                 LocalDate.now(),
-                salesOrderTypeId,
                 "Concurrent sales order",
                 partnerId,
                 "CASH",
                 priceListId,
                 sourceWarehouse.getId(),
-                null,
                 List.of(lineCommand));
-        Document document = documentActionService.createDraft(cmd);
-        documentActionService.submit(document.getId());
+        Document document = salesOrderActionService.createDraft(cmd);
+        salesOrderActionService.submit(document.getId());
         return document;
     }
 
@@ -419,18 +409,15 @@ public class CreateAndPostDocumentTest {
     }
 
     private Document createSubmittedProductApprove(Warehouse targetWarehouse, List<ProductLineCommand> lines) {
-        CreateDocumentCommand cmd = new CreateDocumentCommand(
+        CreateProductApproveCommand cmd = new CreateProductApproveCommand(
                 LocalDate.now(),
-                approveTypeId,
                 "Concurrent product approve",
                 null,
-                null,
                 priceListId,
-                null,
                 targetWarehouse.getId(),
                 lines);
-        Document document = documentActionService.createDraft(cmd);
-        documentActionService.submit(document.getId());
+        Document document = productApproveActionService.createDraft(cmd);
+        productApproveActionService.submit(document.getId());
         return document;
     }
 
@@ -455,7 +442,7 @@ public class CreateAndPostDocumentTest {
                     ready.countDown();
                     assertTrue(start.await(10, TimeUnit.SECONDS), "Start signal timed out");
                     try {
-                        documentActionService.post(document.getId());
+                        salesOrderActionService.post(document.getId());
                         return PostAttemptResult.success(document.getId());
                     } catch (Exception e) {
                         Throwable rootCause = rootCause(e);

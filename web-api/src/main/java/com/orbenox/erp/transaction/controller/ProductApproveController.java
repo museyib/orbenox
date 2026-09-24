@@ -1,13 +1,13 @@
 package com.orbenox.erp.transaction.controller;
 
 import com.orbenox.erp.common.Response;
-import com.orbenox.erp.IdempotencyService;
+import com.orbenox.erp.transaction.idempotency.IdempotencyService;
 import com.orbenox.erp.localization.LocalizationService;
-import com.orbenox.erp.transaction.command.CreateDocumentCommand;
+import com.orbenox.erp.transaction.command.CreateProductApproveCommand;
 import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.projection.DocumentItem;
 import com.orbenox.erp.transaction.repository.DocumentRepository;
-import com.orbenox.erp.transaction.service.DocumentActionService;
+import com.orbenox.erp.transaction.service.ProductApproveActionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/api/productApproves")
 @RequiredArgsConstructor
 public class ProductApproveController {
-    private final DocumentActionService documentActionService;
+    private final ProductApproveActionService documentActionService;
     private final DocumentRepository documentRepository;
     private final LocalizationService i18n;
     private final IdempotencyService idempotencyService;
@@ -39,7 +39,7 @@ public class ProductApproveController {
     @PreAuthorize("hasPermission('PRODUCT_APPROVE', 'CREATE')")
     @PostMapping
     public ResponseEntity<Response<DocumentItem>> create(@RequestHeader("Idempotency-Key") String key,
-                                                         @RequestBody CreateDocumentCommand command) {
+                                                         @RequestBody CreateProductApproveCommand command) {
         Document document = documentActionService.createDraft(command);
         DocumentItem item = getItemOrThrow(document.getId());
         Response<DocumentItem> response = Response.successData(item);

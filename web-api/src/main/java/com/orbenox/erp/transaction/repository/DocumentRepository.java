@@ -17,9 +17,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
                 d.description as description,
                 d.documentStatus as documentStatus,
                 d.approvalStatus as approvalStatus,
-                t.id as typeId,
-                t.code as typeCode,
-                t.name as typeName
+                t as typeItem
             FROM Document d
             JOIN d.type t
             ORDER BY d.id DESC

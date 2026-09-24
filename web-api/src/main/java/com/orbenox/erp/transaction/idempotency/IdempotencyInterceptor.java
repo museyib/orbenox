@@ -1,4 +1,4 @@
-package com.orbenox.erp;
+package com.orbenox.erp.transaction.idempotency;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import tools.jackson.databind.json.JsonMapper;
 
-import static com.orbenox.erp.IdempotentRecord.Status.COMPLETED;
-import static com.orbenox.erp.IdempotentRecord.Status.PROCESSING;
+import static com.orbenox.erp.transaction.idempotency.IdempotentRecord.Status.COMPLETED;
+import static com.orbenox.erp.transaction.idempotency.IdempotentRecord.Status.PROCESSING;
 
 @Component
 @RequiredArgsConstructor
@@ -41,7 +41,10 @@ public class IdempotencyInterceptor implements HandlerInterceptor {
             } else if (COMPLETED.equals(record.getStatus())) {
                 response.setStatus(record.getResponseStatus());
                 response.setContentType("application/json");
-                response.getWriter().write(jsonMapper.writeValueAsString(record.getResponseBody()));
+                Object responseBody = record.getResponseBody();
+                response.getWriter().write(responseBody instanceof String json
+                        ? json
+                        : jsonMapper.writeValueAsString(responseBody));
                 return false;
             }
         }
