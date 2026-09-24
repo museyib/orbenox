@@ -23,6 +23,13 @@ export async function apiRequest(url, method, body = null, idempotencyKey = null
     return response.json();
 }
 
+export function createIdempotencyKey() {
+    if (globalThis.crypto?.randomUUID) {
+        return globalThis.crypto.randomUUID();
+    }
+    return `${Date.now()}-${globalThis.crypto.getRandomValues(new Uint32Array(4)).join('-')}`;
+}
+
 export function refreshToken(success, failure) {
     localStorage.removeItem('token');
     const data = {

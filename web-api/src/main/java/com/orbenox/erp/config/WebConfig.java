@@ -1,7 +1,7 @@
 package com.orbenox.erp.config;
 
 
-import com.orbenox.erp.IdempotencyInterceptor;
+import com.orbenox.erp.transaction.idempotency.IdempotencyInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

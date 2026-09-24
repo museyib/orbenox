@@ -6,6 +6,7 @@ import Toolbar from "@/components/Toolbar.vue";
 import MainLayout from "@/components/MainLayout.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import InfoBar from "@/components/InfoBar.vue";
+import {documentEndpoint, documentTypeCode} from "@/components/document/documentApi.js";
 
 const info = ref("");
 const infoType = ref('');
@@ -20,7 +21,7 @@ const filteredDocuments = computed(() => {
     const number = String(d.documentNo || "").toLowerCase();
     const status = String(d.documentStatus || "").toLowerCase();
     const approval = String(d.approvalStatus || "").toLowerCase();
-    const type = String(d.typeCode || d.typeName || "").toLowerCase();
+    const type = String(documentTypeCode(d) || d.typeName || "").toLowerCase();
     return number.includes(q) || status.includes(q) || approval.includes(q) || type.includes(q);
   });
 });
@@ -49,15 +50,7 @@ function openProcess(documentId) {
   router.push("/ui/documents/process/" + documentId);
 }
 
-function editDocument(documentId) {
-  router.push("/ui/documents/edit/" + documentId);
-}
-
 function canSubmit(doc) {
-  return doc.documentStatus === "DRAFT";
-}
-
-function canEdit(doc) {
   return doc.documentStatus === "DRAFT";
 }
 
@@ -83,7 +76,10 @@ function canCancel(doc) {
 }
 
 function runAction(documentId, action) {
-  apiRequest(`/api/documents/${documentId}/${action}`, "POST").then(response => {
+  const document = documents.value.find(item => item.id === documentId);
+  const endpoint = documentEndpoint(documentTypeCode(document));
+  if (!endpoint) return;
+  apiRequest(`${endpoint}/${documentId}/${action}`, "POST").then(response => {
     if (response.code === 200) {
       init();
     } else if (response.code === 401) {
@@ -129,12 +125,11 @@ onMounted(() => init());
             <td class="mono">{{ document.id }}</td>
             <td>{{ document.documentNo }}</td>
             <td>{{ document.documentDate }}</td>
-            <td>{{ document.typeCode || document.typeName }}</td>
+            <td>{{ documentTypeCode(document) || document.typeName || document.typeItem?.name }}</td>
             <td>{{ document.documentStatus }}</td>
             <td>{{ document.approvalStatus }}</td>
             <td class="actions-col">
               <button class="btn btn-sm" @click="openProcess(document.id)">{{ $t("process") }}</button>
-              <button v-if="canEdit(document)" class="btn btn-sm" @click="editDocument(document.id)">{{ $t("edit") }}</button>
               <button v-if="canSubmit(document)" class="btn btn-sm" @click="runAction(document.id, 'submit')">{{ $t("submit") }}</button>
               <button v-if="canApprove(document)" class="btn btn-sm" @click="runAction(document.id, 'approve')">{{ $t("approve") }}</button>
               <button v-if="canReject(document)" class="btn btn-sm btn-danger" @click="runAction(document.id, 'reject')">{{ $t("reject") }}</button>
@@ -154,4 +149,3 @@ onMounted(() => init());
     <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
-

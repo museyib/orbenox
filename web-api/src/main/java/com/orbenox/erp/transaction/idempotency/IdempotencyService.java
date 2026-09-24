@@ -1,13 +1,14 @@
-package com.orbenox.erp;
+package com.orbenox.erp.transaction.idempotency;
 
 import lombok.RequiredArgsConstructor;
+import tools.jackson.databind.json.JsonMapper;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
-import static com.orbenox.erp.IdempotentRecord.Status.COMPLETED;
-import static com.orbenox.erp.IdempotentRecord.Status.PROCESSING;
+import static com.orbenox.erp.transaction.idempotency.IdempotentRecord.Status.COMPLETED;
+import static com.orbenox.erp.transaction.idempotency.IdempotentRecord.Status.PROCESSING;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class IdempotencyService {
     private static final long TTL_HOURS = 24;
 
     private final RedisTemplate<String, Object> redisTemplate;
+    private final JsonMapper jsonMapper;
 
     public boolean tryLock(String key) {
         IdempotentRecord record = new IdempotentRecord();
@@ -32,7 +34,7 @@ public class IdempotencyService {
     public void complete(String key, Object responseBody, int status) {
         IdempotentRecord record = new IdempotentRecord();
         record.setStatus(COMPLETED);
-        record.setResponseBody(responseBody);
+        record.setResponseBody(jsonMapper.writeValueAsString(responseBody));
         record.setResponseStatus(status);
 
         redisTemplate.opsForValue().set(key, record, Duration.ofHours(TTL_HOURS));

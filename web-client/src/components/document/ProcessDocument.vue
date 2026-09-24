@@ -5,6 +5,7 @@ import {useRoute, useRouter} from "vue-router";
 import MainLayout from "@/components/MainLayout.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import InfoBar from "@/components/InfoBar.vue";
+import {documentEndpoint, documentTypeCode} from "@/components/document/documentApi.js";
 
 const route = useRoute();
 const router = useRouter();
@@ -61,7 +62,9 @@ function init() {
 }
 
 function runAction(action) {
-  apiRequest(`/api/documents/${route.params.id}/${action}`, "POST").then(response => {
+  const endpoint = documentEndpoint(documentTypeCode(documentData.value));
+  if (!endpoint) return;
+  apiRequest(`${endpoint}/${route.params.id}/${action}`, "POST").then(response => {
     if (response.code === 200) {
       init();
     } else if (response.code === 401) {
@@ -86,7 +89,7 @@ onMounted(() => init());
     <section v-if="documentData" class="card">
       <p><strong>{{ $t("documentNumber") }}:</strong> {{ documentData.documentNo }}</p>
       <p><strong>{{ $t("documentDate") }}:</strong> {{ documentData.documentDate }}</p>
-      <p><strong>{{ $t("transactionType.title") }}:</strong> {{ documentData.typeCode || documentData.typeName }}</p>
+      <p><strong>{{ $t("transactionType.title") }}:</strong> {{ documentTypeCode(documentData) || documentData.typeName || documentData.typeItem?.name }}</p>
       <p><strong>{{ $t("documentStatus") }}:</strong> {{ documentData.documentStatus }}</p>
       <p><strong>{{ $t("approvalStatus") }}:</strong> {{ documentData.approvalStatus }}</p>
       <p><strong>{{ $t("description") }}:</strong> {{ documentData.description }}</p>
@@ -110,4 +113,3 @@ onMounted(() => init());
     <InfoBar :info="info" :type="infoType"/>
   </MainLayout>
 </template>
-

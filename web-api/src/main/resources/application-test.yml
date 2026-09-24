@@ -14,5 +14,5 @@ eureka:
     enabled: false
 
 app:
-  jwtSecretKey: "test-jwt-secret-key-for-integration-tests"
-  jwtExpiration: "86400000"
+  jwtSecretKey: "${JWT_SECRET_KEY:0e1156ac32b34087c0fc3da6b5cc015e1d86f013acdfc1bbbed78940f1d8c81d}"
+  jwtExpiration: "${JWT_EXPIRATION:86400000}"

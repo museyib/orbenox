@@ -1,17 +1,12 @@
 package com.orbenox.erp.transaction.controller;
 
-import com.orbenox.erp.IdempotencyService;
 import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
-import com.orbenox.erp.transaction.command.CreateDocumentCommand;
-import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.projection.DocumentData;
 import com.orbenox.erp.transaction.projection.DocumentItem;
 import com.orbenox.erp.transaction.projection.ProductLineItem;
 import com.orbenox.erp.transaction.repository.DocumentRepository;
 import com.orbenox.erp.transaction.repository.ProductLineRepository;
-import com.orbenox.erp.transaction.service.DocumentActionService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,11 +18,9 @@ import java.util.List;
 @RequestMapping("/api/documents")
 @RequiredArgsConstructor
 public class DocumentController {
-    private final DocumentActionService documentActionService;
     private final DocumentRepository documentRepo;
     private final ProductLineRepository productLineRepo;
     private final LocalizationService i18n;
-    private final IdempotencyService idempotencyService;
 
     @PreAuthorize("hasPermission('DOCUMENT', 'READ')")
     @GetMapping
@@ -42,59 +35,6 @@ public class DocumentController {
         List<ProductLineItem> productLines = productLineRepo.getItemsByDocumentId(doc.getId());
         DocumentData data = new DocumentData(doc, productLines);
         return ResponseEntity.ok(Response.successData(data));
-    }
-
-    @PreAuthorize("hasPermission('DOCUMENT', 'CREATE')")
-    @PostMapping
-    public ResponseEntity<Response<DocumentItem>> create(@RequestHeader("Idempotency-Key") String key,
-                                                         @RequestBody @Valid CreateDocumentCommand command) {
-        Document document = documentActionService.createDraft(command);
-        DocumentItem documentItem = getItemOrThrow(document.getId());
-        Response<DocumentItem> response = Response.successData(documentItem);
-        idempotencyService.complete(key, response, 200);
-        return ResponseEntity.ok(response);
-    }
-
-    @PreAuthorize("hasPermission('DOCUMENT', 'SUBMIT')")
-    @PostMapping("/{id}/submit")
-    public ResponseEntity<Response<DocumentItem>> submit(@PathVariable Long id) {
-        documentActionService.submit(id);
-        return ResponseEntity.ok(Response.successData(getItemOrThrow(id)));
-    }
-
-    @PreAuthorize("hasPermission('DOCUMENT', 'APPROVE')")
-    @PostMapping("/{id}/approve")
-    public ResponseEntity<Response<DocumentItem>> approve(@PathVariable Long id) {
-        documentActionService.approve(id);
-        return ResponseEntity.ok(Response.successData(getItemOrThrow(id)));
-    }
-
-    @PreAuthorize("hasPermission('DOCUMENT', 'POST')")
-    @PostMapping("/{id}/post")
-    public ResponseEntity<Response<DocumentItem>> post(@PathVariable Long id) {
-        documentActionService.post(id);
-        return ResponseEntity.ok(Response.successData(getItemOrThrow(id)));
-    }
-
-    @PreAuthorize("hasPermission('DOCUMENT', 'REJECT')")
-    @PostMapping("/{id}/reject")
-    public ResponseEntity<Response<DocumentItem>> reject(@PathVariable Long id) {
-        documentActionService.reject(id);
-        return ResponseEntity.ok(Response.successData(getItemOrThrow(id)));
-    }
-
-    @PreAuthorize("hasPermission('DOCUMENT', 'CLOSE')")
-    @PostMapping("/{id}/close")
-    public ResponseEntity<Response<DocumentItem>> close(@PathVariable Long id) {
-        documentActionService.close(id);
-        return ResponseEntity.ok(Response.successData(getItemOrThrow(id)));
-    }
-
-    @PreAuthorize("hasPermission('DOCUMENT', 'CANCEL')")
-    @PostMapping("/{id}/cancel")
-    public ResponseEntity<Response<DocumentItem>> cancel(@PathVariable Long id) {
-        documentActionService.cancel(id);
-        return ResponseEntity.ok(Response.successData(getItemOrThrow(id)));
     }
 
     private DocumentItem getItemOrThrow(Long id) {

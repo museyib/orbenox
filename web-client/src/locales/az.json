@@ -107,13 +107,16 @@
   "document": {
     "title": "Sənəd",
     "new": "Yeni sənəd",
+    "salesOrder": {"new": "Satış sifarişi yarat"},
+    "productApprove": {"new": "Məhsul qəbulu yarat"},
     "edit": "Sənəd düzəlişi",
     "process": "Sənəd prosesi",
     "updated": "Sənəd yeniləndi",
     "editLocked": "Düzəliş yalnız qaralama sənədlər üçün mümkündür",
     "validationDateType": "Tarix və sənəd tipi məcburidir",
     "validationLines": "Hər sətirdə məhsul və miqdar > 0 olmalıdır",
-    "validationCommercial": "Kommersiya əməliyyatı üçün partnyor və qiymət tələb olunur"
+    "validationCommercial": "Satış sifarişi üçün partnyor, qiymət siyahısı və çıxış anbarı tələb olunur",
+    "validationWarehouse": "Anbar seçilməlidir"
   },
   "account": {
     "title": "Hesab",

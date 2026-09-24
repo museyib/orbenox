@@ -107,13 +107,16 @@
   "document": {
     "title": "Document",
     "new": "New document",
+    "salesOrder": {"new": "Create sales order"},
+    "productApprove": {"new": "Create product approve"},
     "edit": "Edit document",
     "process": "Document process",
     "updated": "Document updated",
     "editLocked": "Editing is available only for drafts",
     "validationDateType": "Date and transaction type are required",
     "validationLines": "Each line requires product and quantity > 0",
-    "validationCommercial": "Commercial transaction requires partner and price list"
+    "validationCommercial": "Sales order requires partner, price list, and source warehouse",
+    "validationWarehouse": "A warehouse is required"
   },
   "account": {
     "title": "Account",
