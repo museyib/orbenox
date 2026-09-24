@@ -12,7 +12,7 @@ public class IdempotentRecord implements Serializable {
     private Object responseBody;
     private int responseStatus;
 
-    enum Status {
+    public enum Status {
         PROCESSING,COMPLETED,FAILED
     }
 }
