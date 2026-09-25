@@ -74,7 +74,7 @@ public class IdempotencyAspect {
                     throw new BusinessRuleException("Request is already being processed.");
                 } else if (COMPLETED.equals(existingRecord.getStatus())) {
                     JsonNode body = jsonMapper.readTree(existingRecord.getResponseBody());
-                    return ResponseEntity.status(OK)
+                    return ResponseEntity.status(existingRecord.getResponseStatus())
                             .contentType(MediaType.APPLICATION_JSON)
                             .body(body);
                 }
