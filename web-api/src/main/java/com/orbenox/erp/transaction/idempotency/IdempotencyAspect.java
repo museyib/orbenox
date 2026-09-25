@@ -88,7 +88,7 @@ public class IdempotencyAspect {
 
             ResponseEntity<?> response = (ResponseEntity<?>) result;
 
-            idempotencyService.complete(key, OK.value(), currentRequestHash, response.getBody());
+            idempotencyService.complete(key, response.getStatusCode().value(), currentRequestHash, response.getBody());
 
             return result;
         } catch (Exception e) {
