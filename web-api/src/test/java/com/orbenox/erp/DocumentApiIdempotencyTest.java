@@ -30,7 +30,9 @@ import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;
@@ -47,9 +49,7 @@ import java.util.concurrent.TimeUnit;
 import static com.orbenox.erp.transaction.idempotency.IdempotentRecord.Status.COMPLETED;
 import static com.orbenox.erp.transaction.idempotency.IdempotentRecord.Status.PROCESSING;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -93,9 +93,10 @@ class DocumentApiIdempotencyTest {
             idempotencyState.complete(
                     invocation.getArgument(0),
                     invocation.getArgument(1),
-                    jsonMapper.writeValueAsString(invocation.getArgument(2)));
+                    invocation.getArgument(2),
+                    jsonMapper.writeValueAsString(invocation.getArgument(3)));
             return null;
-        }).when(idempotencyService).complete(anyString(), anyString(), any());
+        }).when(idempotencyService).complete(anyString(), anyInt(), anyString(), any());
     }
 
     @Test
@@ -165,14 +166,14 @@ class DocumentApiIdempotencyTest {
                         .header("Idempotency-Key", IDEMPOTENCY_KEY)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(documentCreateJsonWithDifferentBody()))
-                .andExpect(status().isInternalServerError())
+                .andExpect(status().isConflict())
                 .andReturn();
 
         assertEquals(DOCUMENT_ID, responseDocumentId(first, "$.data.id"));
-        assertEquals(500, second.getResponse().getStatus());
+        assertEquals(409, second.getResponse().getStatus());
         verify(salesOrderActionService, times(1)).createDraft(any());
         verify(documentRepository, times(1)).getItemByIdAndType(DOCUMENT_ID, 2L);
-        verify(idempotencyService, times(1)).complete(anyString(), anyString(), any());
+        verify(idempotencyService, times(1)).complete(anyString(), anyInt(), anyString(), any());
     }
 
     @Test
@@ -250,7 +251,7 @@ class DocumentApiIdempotencyTest {
 
         verify(salesOrderActionService, times(1)).createDraft(any());
         verify(documentRepository, times(1)).getItemByIdAndType(DOCUMENT_ID, 2L);
-        verify(idempotencyService, times(1)).complete(anyString(), anyString(), any());
+        verify(idempotencyService, times(1)).complete(anyString(), anyInt(), anyString(), any());
     }
 
     @Test
@@ -261,13 +262,16 @@ class DocumentApiIdempotencyTest {
                 localizationService));
         stubSuccessfulProductApproveCreate();
 
-        mockMvc.perform(post("/api/productApproves")
+        MvcResult first = mockMvc.perform(post("/api/productApproves")
                         .header("Idempotency-Key", IDEMPOTENCY_KEY)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(productApproveCreateJson()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.id").value((int) DOCUMENT_ID));
+                .andExpect(jsonPath("$.data.id").value((int) DOCUMENT_ID))
+                .andReturn();
+
+        assertEquals(200, first.getResponse().getStatus());
 
         MvcResult second = mockMvc.perform(post("/api/productApproves")
                         .header("Idempotency-Key", IDEMPOTENCY_KEY)
@@ -277,6 +281,18 @@ class DocumentApiIdempotencyTest {
                 .andReturn();
 
         assertEquals(200, second.getResponse().getStatus());
+
+        JsonNode expected = jsonMapper.readTree(
+                first.getResponse().getContentAsString()
+        );
+
+        JsonNode actual = jsonMapper.readTree(
+                second.getResponse().getContentAsString()
+        );
+
+        assertEquals(expected, actual);
+
+        verify(productApproveActionService, times(1)).createDraft(any());
     }
 
     @Test
@@ -299,12 +315,12 @@ class DocumentApiIdempotencyTest {
                         .header("Idempotency-Key", IDEMPOTENCY_KEY)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(productApproveCreateJsonWithDifferentBody()))
-                .andExpect(status().isInternalServerError())
+                .andExpect(status().isConflict())
                 .andReturn();
 
-        assertEquals(500, second.getResponse().getStatus());
+        assertEquals(409, second.getResponse().getStatus());
         verify(productApproveActionService, times(1)).createDraft(any());
-        verify(idempotencyService, times(1)).complete(anyString(), anyString(), any());
+        verify(idempotencyService, times(1)).complete(anyString(), anyInt(), anyString(), any());
     }
 
     private MockMvc createMockMvc(Object controller) {
@@ -438,11 +454,12 @@ class DocumentApiIdempotencyTest {
             return records.putIfAbsent(key, processing) == null;
         }
 
-        private void complete(String key, String requestHash, String responseBody) {
+        private void complete(String key, int responseStatus, String requestHash, String responseBody) {
             IdempotentRecord completed = new IdempotentRecord();
             completed.setStatus(COMPLETED);
             completed.setRequestHash(requestHash);
             completed.setResponseBody(responseBody);
+            completed.setResponseStatus(responseStatus);
             records.put(key, completed);
         }
 
