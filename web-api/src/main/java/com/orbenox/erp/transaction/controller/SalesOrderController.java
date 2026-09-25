@@ -1,10 +1,10 @@
 package com.orbenox.erp.transaction.controller;
 
 import com.orbenox.erp.common.Response;
-import com.orbenox.erp.transaction.idempotency.IdempotencyService;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.command.CreateSalesOrderCommand;
 import com.orbenox.erp.transaction.entity.Document;
+import com.orbenox.erp.transaction.idempotency.Idempotent;
 import com.orbenox.erp.transaction.projection.DocumentItem;
 import com.orbenox.erp.transaction.repository.DocumentRepository;
 import com.orbenox.erp.transaction.service.SalesOrderActionService;
@@ -22,7 +22,6 @@ public class SalesOrderController {
     private final SalesOrderActionService documentActionService;
     private final DocumentRepository documentRepository;
     private final LocalizationService i18n;
-    private final IdempotencyService idempotencyService;
 
     @PreAuthorize("hasPermission('SALES_ORDER', 'READ')")
     @GetMapping
@@ -38,12 +37,11 @@ public class SalesOrderController {
 
     @PreAuthorize("hasPermission('SALES_ORDER', 'CREATE')")
     @PostMapping
-    public ResponseEntity<Response<DocumentItem>> create(@RequestHeader("Idempotency-Key") String key,
-                                                         @RequestBody CreateSalesOrderCommand command) {
+    @Idempotent
+    public ResponseEntity<Response<DocumentItem>> create(@RequestBody CreateSalesOrderCommand command) {
         Document document = documentActionService.createDraft(command);
         DocumentItem item = getItemOrThrow(document.getId());
         Response<DocumentItem> response = Response.successData(item);
-        idempotencyService.complete(key, response, 200);
         return ResponseEntity.ok(response);
     }
 
