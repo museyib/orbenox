@@ -7,8 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
-import static com.orbenox.erp.transaction.idempotency.IdempotentRecord.Status.COMPLETED;
-import static com.orbenox.erp.transaction.idempotency.IdempotentRecord.Status.PROCESSING;
+import static com.orbenox.erp.transaction.idempotency.IdempotentRecord.Status.*;
 
 @Service
 @RequiredArgsConstructor
@@ -18,9 +17,10 @@ public class IdempotencyService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final JsonMapper jsonMapper;
 
-    public boolean tryLock(String key) {
+    public boolean tryLock(String key, String requestHash) {
         IdempotentRecord record = new IdempotentRecord();
         record.setStatus(PROCESSING);
+        record.setRequestHash(requestHash);
 
         Boolean success = redisTemplate.opsForValue().setIfAbsent(key, record, Duration.ofHours(TTL_HOURS));
 
@@ -31,11 +31,17 @@ public class IdempotencyService {
         return (IdempotentRecord) redisTemplate.opsForValue().get(key);
     }
 
-    public void complete(String key, Object responseBody, int status) {
+    public void complete(String key, Object responseBody) {
         IdempotentRecord record = new IdempotentRecord();
         record.setStatus(COMPLETED);
         record.setResponseBody(jsonMapper.writeValueAsString(responseBody));
-        record.setResponseStatus(status);
+
+        redisTemplate.opsForValue().set(key, record, Duration.ofHours(TTL_HOURS));
+    }
+
+    public void fail(String key) {
+        IdempotentRecord record = new IdempotentRecord();
+        record.setStatus(FAILED);
 
         redisTemplate.opsForValue().set(key, record, Duration.ofHours(TTL_HOURS));
     }

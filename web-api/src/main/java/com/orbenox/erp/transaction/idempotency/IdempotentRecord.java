@@ -9,6 +9,7 @@ import java.io.Serializable;
 @Getter
 public class IdempotentRecord implements Serializable {
     private Status status;
+    private String requestHash;
     private Object responseBody;
     private int responseStatus;
 

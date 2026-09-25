@@ -7,27 +7,27 @@ import com.orbenox.erp.domain.transactiontype.SimpleTransactionTypeItem;
 import com.orbenox.erp.domain.warehouse.WarehouseItem;
 import com.orbenox.erp.enums.ApprovalStatus;
 import com.orbenox.erp.enums.DocumentStatus;
+import com.orbenox.erp.exception.GlobalExceptionHandler;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.controller.ProductApproveController;
 import com.orbenox.erp.transaction.controller.SalesOrderController;
 import com.orbenox.erp.transaction.entity.Document;
-import com.orbenox.erp.transaction.idempotency.IdempotencyInterceptor;
 import com.orbenox.erp.transaction.idempotency.IdempotencyService;
+import com.orbenox.erp.transaction.idempotency.IdempotencyAspect;
 import com.orbenox.erp.transaction.idempotency.IdempotentRecord;
 import com.orbenox.erp.transaction.projection.DocumentItem;
 import com.orbenox.erp.transaction.repository.DocumentRepository;
-import com.orbenox.erp.transaction.repository.ProductLineRepository;
 import com.orbenox.erp.transaction.service.ProductApproveActionService;
 import com.orbenox.erp.transaction.service.SalesOrderActionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
+import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -73,14 +73,11 @@ class DocumentApiIdempotencyTest {
     @Mock
     private DocumentRepository documentRepository;
     @Mock
-    private ProductLineRepository productLineRepository;
-    @Mock
     private LocalizationService localizationService;
 
     private JsonMapper jsonMapper;
     private InMemoryIdempotencyState idempotencyState;
     private IdempotencyService idempotencyService;
-    private IdempotencyInterceptor idempotencyInterceptor;
     private DocumentItem documentItem;
 
     @BeforeEach
@@ -88,47 +85,44 @@ class DocumentApiIdempotencyTest {
         jsonMapper = new JsonMapper();
         idempotencyState = new InMemoryIdempotencyState();
         idempotencyService = Mockito.mock(IdempotencyService.class);
-        idempotencyInterceptor = new IdempotencyInterceptor(idempotencyService, jsonMapper);
         documentItem = new StubDocumentItem(DOCUMENT_ID, "DOC-001");
 
         lenient().when(idempotencyService.getRecord(anyString()))
                 .thenAnswer(invocation -> idempotencyState.get(invocation.getArgument(0)));
-        lenient().when(idempotencyService.tryLock(anyString()))
+        lenient().when(idempotencyService.tryLock(anyString(), anyString()))
                 .thenAnswer(invocation -> idempotencyState.tryLock(invocation.getArgument(0)));
         lenient().doAnswer(invocation -> {
             idempotencyState.complete(
                     invocation.getArgument(0),
-                    invocation.getArgument(1),
-                    invocation.getArgument(2));
+                    invocation.getArgument(1));
             return null;
-        }).when(idempotencyService).complete(anyString(), any(), ArgumentMatchers.anyInt());
+        }).when(idempotencyService).complete(anyString(), any());
     }
 
     @Test
-    void documentsCreate_withoutIdempotencyKey_shouldReturnBadRequest() throws Exception {
+    void documentsCreate_withoutIdempotencyKey_shouldProceed() throws Exception {
+        stubSuccessfulSalesOrderCreate();
         MockMvc mockMvc = createMockMvc(new SalesOrderController(
                 salesOrderActionService,
                 documentRepository,
-                localizationService,
-                idempotencyService));
+                localizationService));
 
         MvcResult result = mockMvc.perform(post("/api/salesOrder")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(salesOrderCreateJson()))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isOk())
                 .andReturn();
 
-        assertEquals("Missing Idempotency-Key header", result.getResponse().getErrorMessage());
-        verify(salesOrderActionService, never()).createDraft(any());
+        assertEquals(DOCUMENT_ID, responseDocumentId(result, "$.data.id"));
+        verify(salesOrderActionService, times(1)).createDraft(any());
     }
 
     @Test
-    void documentsCreate_sameKeyTwice_shouldCreateOnceAndReplayStoredBody() throws Exception {
+    void documentsCreate_sameKeyTwice_shouldCreateOnceAndRejectDuplicate() throws Exception {
         MockMvc mockMvc = createMockMvc(new SalesOrderController(
                 salesOrderActionService,
                 documentRepository,
-                localizationService,
-                idempotencyService));
+                localizationService));
         stubSuccessfulSalesOrderCreate();
 
         MvcResult first = mockMvc.perform(post("/api/salesOrder")
@@ -144,25 +138,22 @@ class DocumentApiIdempotencyTest {
                         .header("Idempotency-Key", IDEMPOTENCY_KEY)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(salesOrderCreateJson()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.id").value((int) DOCUMENT_ID))
+                .andExpect(status().isBadRequest())
                 .andReturn();
 
         assertEquals(DOCUMENT_ID, responseDocumentId(first, "$.data.id"));
-        assertEquals(DOCUMENT_ID, responseDocumentId(second, "$.data.id"));
+        assertEquals(400, second.getResponse().getStatus());
         verify(salesOrderActionService, times(1)).createDraft(any());
         verify(documentRepository, times(1)).getItemByIdAndType(DOCUMENT_ID, 2L);
-        verify(idempotencyService, times(1)).complete(anyString(), any(), ArgumentMatchers.anyInt());
+        verify(idempotencyService, times(1)).complete(anyString(), any());
     }
 
     @Test
-    void documentsCreate_sameKeyWithDifferentBody_shouldReplayFirstStoredResponse() throws Exception {
+    void documentsCreate_sameKeyWithDifferentBody_shouldRejectDuplicate() throws Exception {
         MockMvc mockMvc = createMockMvc(new SalesOrderController(
                 salesOrderActionService,
                 documentRepository,
-                localizationService,
-                idempotencyService));
+                localizationService));
         stubSuccessfulSalesOrderCreate();
 
         MvcResult first = mockMvc.perform(post("/api/salesOrder")
@@ -178,16 +169,14 @@ class DocumentApiIdempotencyTest {
                         .header("Idempotency-Key", IDEMPOTENCY_KEY)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(documentCreateJsonWithDifferentBody()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.id").value((int) DOCUMENT_ID))
+                .andExpect(status().isBadRequest())
                 .andReturn();
 
         assertEquals(DOCUMENT_ID, responseDocumentId(first, "$.data.id"));
-        assertEquals(DOCUMENT_ID, responseDocumentId(second, "$.data.id"));
+        assertEquals(400, second.getResponse().getStatus());
         verify(salesOrderActionService, times(1)).createDraft(any());
         verify(documentRepository, times(1)).getItemByIdAndType(DOCUMENT_ID, 2L);
-        verify(idempotencyService, times(1)).complete(anyString(), any(), ArgumentMatchers.anyInt());
+        verify(idempotencyService, times(1)).complete(anyString(), any());
     }
 
     @Test
@@ -197,8 +186,7 @@ class DocumentApiIdempotencyTest {
         MockMvc mockMvc = createMockMvc(new SalesOrderController(
                 salesOrderActionService,
                 documentRepository,
-                localizationService,
-                idempotencyService));
+                localizationService));
         Document document = new Document();
         document.setId(DOCUMENT_ID);
         document.setDocumentNo("DOC-001");
@@ -231,7 +219,7 @@ class DocumentApiIdempotencyTest {
                                 .andReturn()
                                 .getResponse()
                                 .getStatus();
-                        if (statusCode == 409) {
+                        if (statusCode == 400) {
                             conflictsObserved.countDown();
                         }
                         return statusCode;
@@ -250,7 +238,7 @@ class DocumentApiIdempotencyTest {
                     int statusCode = future.get(10, TimeUnit.SECONDS);
                     if (statusCode == 200) {
                         okCount++;
-                    } else if (statusCode == 409) {
+                    } else if (statusCode == 400) {
                         conflictCount++;
                     }
                 }
@@ -266,16 +254,15 @@ class DocumentApiIdempotencyTest {
 
         verify(salesOrderActionService, times(1)).createDraft(any());
         verify(documentRepository, times(1)).getItemByIdAndType(DOCUMENT_ID, 2L);
-        verify(idempotencyService, times(1)).complete(anyString(), any(), ArgumentMatchers.anyInt());
+        verify(idempotencyService, times(1)).complete(anyString(), any());
     }
 
     @Test
-    void productApproveCreate_sameKeyTwice_shouldReplayCompletedResponse() throws Exception {
+    void productApproveCreate_sameKeyTwice_shouldRejectDuplicate() throws Exception {
         MockMvc mockMvc = createMockMvc(new ProductApproveController(
                 productApproveActionService,
                 documentRepository,
-                localizationService,
-                idempotencyService));
+                localizationService));
         stubSuccessfulProductApproveCreate();
 
         mockMvc.perform(post("/api/productApproves")
@@ -290,23 +277,21 @@ class DocumentApiIdempotencyTest {
                         .header("Idempotency-Key", IDEMPOTENCY_KEY)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(productApproveCreateJson()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value((int) DOCUMENT_ID))
+                .andExpect(status().isBadRequest())
                 .andReturn();
 
-        assertEquals(DOCUMENT_ID, responseDocumentId(second, "$.data.id"));
+        assertEquals(400, second.getResponse().getStatus());
         verify(productApproveActionService, times(1)).createDraft(any());
-        verify(idempotencyService, times(1)).complete(anyString(), any(), ArgumentMatchers.anyInt());
+        verify(idempotencyService, times(1)).complete(anyString(), any());
         assertSame(COMPLETED, idempotencyState.statusOf(IDEMPOTENCY_KEY));
     }
 
     @Test
-    void productApproveCreate_sameKeyWithDifferentBody_shouldReplayFirstResponse() throws Exception {
+    void productApproveCreate_sameKeyWithDifferentBody_shouldRejectDuplicate() throws Exception {
         MockMvc mockMvc = createMockMvc(new ProductApproveController(
                 productApproveActionService,
                 documentRepository,
-                localizationService,
-                idempotencyService));
+                localizationService));
         stubSuccessfulProductApproveCreate();
 
         mockMvc.perform(post("/api/productApproves")
@@ -321,19 +306,21 @@ class DocumentApiIdempotencyTest {
                         .header("Idempotency-Key", IDEMPOTENCY_KEY)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(productApproveCreateJsonWithDifferentBody()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value((int) DOCUMENT_ID))
+                .andExpect(status().isBadRequest())
                 .andReturn();
 
-        assertEquals(DOCUMENT_ID, responseDocumentId(second, "$.data.id"));
+        assertEquals(400, second.getResponse().getStatus());
         verify(productApproveActionService, times(1)).createDraft(any());
-        verify(idempotencyService, times(1)).complete(anyString(), any(), ArgumentMatchers.anyInt());
+        verify(idempotencyService, times(1)).complete(anyString(), any());
         assertSame(COMPLETED, idempotencyState.statusOf(IDEMPOTENCY_KEY));
     }
 
     private MockMvc createMockMvc(Object controller) {
-        return MockMvcBuilders.standaloneSetup(controller)
-                .addInterceptors(idempotencyInterceptor)
+        AspectJProxyFactory proxyFactory = new AspectJProxyFactory(controller);
+        proxyFactory.addAspect(new IdempotencyAspect(idempotencyService));
+        Object proxiedController = proxyFactory.getProxy();
+        return MockMvcBuilders.standaloneSetup(proxiedController)
+                .setControllerAdvice(new GlobalExceptionHandler(localizationService))
                 .setMessageConverters(new JacksonJsonHttpMessageConverter(jsonMapper))
                 .build();
     }
@@ -458,11 +445,10 @@ class DocumentApiIdempotencyTest {
             return records.putIfAbsent(key, processing) == null;
         }
 
-        private void complete(String key, Object responseBody, int status) {
+        private void complete(String key, Object responseBody) {
             IdempotentRecord completed = new IdempotentRecord();
             completed.setStatus(COMPLETED);
             completed.setResponseBody(responseBody);
-            completed.setResponseStatus(status);
             records.put(key, completed);
         }
 
