@@ -7,7 +7,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -45,15 +44,18 @@ public class IdempotencyAspect {
             return joinPoint.proceed();
         }
 
-        String currentRequestHash = "";
         Object bodyArg = Arrays.stream(joinPoint.getArgs())
                 .filter(arg -> arg instanceof Fingerprintable)
                 .findFirst()
                 .orElse(null);
 
+        String currentRequestHash = "";
+
         if (bodyArg instanceof Fingerprintable fingerprintable) {
-            currentRequestHash = DigestUtils.sha256Hex(fingerprintable.getFingerprintFields().toString());
+            currentRequestHash = DigestUtils.sha256Hex(jsonMapper.writeValueAsString(fingerprintable));
+            key = fingerprintable.tag() + ":" + key;
         }
+
 
         boolean locked = idempotencyService.tryLock(key, currentRequestHash);
 
@@ -66,10 +68,9 @@ public class IdempotencyAspect {
                 }
 
                 if (PROCESSING.equals(existingRecord.getStatus())) {
-                    throw new BusinessRuleException("Request is already being processed or has completed");
+                    throw new BusinessRuleException("Request is already being processed.");
                 } else if (COMPLETED.equals(existingRecord.getStatus())) {
-                    Class<?> returnType = ((MethodSignature) joinPoint.getSignature()).getReturnType();
-                    return jsonMapper.readValue((String) existingRecord.getResponseBody(), returnType);
+                    return joinPoint.proceed();
                 }
             }
 

@@ -14,10 +14,7 @@ public record CreateProductApproveCommand(
         List<ProductLineCommand> lines
 ) implements DocumentCommand, Fingerprintable {
     @Override
-    public Object getFingerprintFields() {
-        String line = lines.stream()
-                .map(productLineCommand -> productLineCommand.getFingerprintFields().toString())
-                .reduce("", (a, b) -> a + b);
-        return String.format("%s-%s-%s-%s-%s-%s", documentDate, description, paymentMethod, priceListId, targetWarehouseId, line);
+    public String tag() {
+        return "PRODUCT_APPROVE";
     }
 }
