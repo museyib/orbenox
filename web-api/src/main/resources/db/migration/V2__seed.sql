@@ -69,7 +69,9 @@ VALUES ('LOOKUP', 'Baxış', 'system'),
        ('BUSINESS_PARTNER', 'Biznes partnyorlar', 'system'),
        ('POSTING_RULE', 'Hesab uçot qaydaları', 'system'),
        ('BUSINESS_PARTNER_ROLE', 'Biznes partnyor rolları', 'system'),
-       ('STOCK_BALANCE', 'Anbar qalıqları', 'system');
+       ('STOCK_BALANCE', 'Anbar qalıqları', 'system'),
+       ('PRODUCT_APPROVE', 'Anbara mal qəbulu', 'system'),
+       ('SALES_ORDER', 'Satış', 'system');
 
 INSERT INTO resource_action (resource_id, action, created_by)
 VALUES ((SELECT id FROM resource WHERE code = 'LOOKUP'), 'READ', 'system'),
@@ -181,7 +183,27 @@ VALUES ((SELECT id FROM resource WHERE code = 'LOOKUP'), 'READ', 'system'),
        ((SELECT id FROM resource WHERE code = 'BUSINESS_PARTNER_ROLE'), 'CREATE', 'system'),
        ((SELECT id FROM resource WHERE code = 'BUSINESS_PARTNER_ROLE'), 'UPDATE', 'system'),
        ((SELECT id FROM resource WHERE code = 'BUSINESS_PARTNER_ROLE'), 'DELETE', 'system'),
-       ((SELECT id FROM resource WHERE code = 'STOCK_BALANCE'), 'READ', 'system');
+       ((SELECT id FROM resource WHERE code = 'STOCK_BALANCE'), 'READ', 'system'),
+       ((SELECT id FROM resource WHERE code = 'PRODUCT_APPROVE'), 'READ', 'system'),
+       ((SELECT id FROM resource WHERE code = 'PRODUCT_APPROVE'), 'CREATE', 'system'),
+       ((SELECT id FROM resource WHERE code = 'PRODUCT_APPROVE'), 'UPDATE', 'system'),
+       ((SELECT id FROM resource WHERE code = 'PRODUCT_APPROVE'), 'DELETE', 'system'),
+       ((SELECT id FROM resource WHERE code = 'PRODUCT_APPROVE'), 'APPROVE', 'system'),
+       ((SELECT id FROM resource WHERE code = 'PRODUCT_APPROVE'), 'SUBMIT', 'system'),
+       ((SELECT id FROM resource WHERE code = 'PRODUCT_APPROVE'), 'POST', 'system'),
+       ((SELECT id FROM resource WHERE code = 'PRODUCT_APPROVE'), 'REJECT', 'system'),
+       ((SELECT id FROM resource WHERE code = 'PRODUCT_APPROVE'), 'CLOSE', 'system'),
+       ((SELECT id FROM resource WHERE code = 'PRODUCT_APPROVE'), 'CANCEL', 'system'),
+       ((SELECT id FROM resource WHERE code = 'SALES_ORDER'), 'READ', 'system'),
+       ((SELECT id FROM resource WHERE code = 'SALES_ORDER'), 'CREATE', 'system'),
+       ((SELECT id FROM resource WHERE code = 'SALES_ORDER'), 'UPDATE', 'system'),
+       ((SELECT id FROM resource WHERE code = 'SALES_ORDER'), 'DELETE', 'system'),
+       ((SELECT id FROM resource WHERE code = 'SALES_ORDER'), 'APPROVE', 'system'),
+       ((SELECT id FROM resource WHERE code = 'SALES_ORDER'), 'SUBMIT', 'system'),
+       ((SELECT id FROM resource WHERE code = 'SALES_ORDER'), 'POST', 'system'),
+       ((SELECT id FROM resource WHERE code = 'SALES_ORDER'), 'REJECT', 'system'),
+       ((SELECT id FROM resource WHERE code = 'SALES_ORDER'), 'CLOSE', 'system'),
+       ((SELECT id FROM resource WHERE code = 'SALES_ORDER'), 'CANCEL', 'system');
 
 INSERT INTO account(code, name, account_type, created_by)
 VALUES ('1000', 'Cash', 'ASSET', 'system'),

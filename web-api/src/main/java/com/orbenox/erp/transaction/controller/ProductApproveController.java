@@ -27,7 +27,7 @@ public class ProductApproveController {
     @PreAuthorize("hasPermission('PRODUCT_APPROVE', 'READ')")
     @GetMapping
     public ResponseEntity<Response<List<DocumentItem>>> getAll() {
-        return ResponseEntity.ok(Response.successData(documentRepository.getAllItems()));
+        return ResponseEntity.ok(Response.successData(documentRepository.getItemsByType(1L)));
     }
 
     @PreAuthorize("hasPermission('PRODUCT_APPROVE', 'READ')")
