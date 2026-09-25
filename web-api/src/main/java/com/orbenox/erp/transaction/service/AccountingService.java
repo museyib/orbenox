@@ -39,6 +39,9 @@ public class AccountingService implements ContextService {
     private void applyPostingRule(PostingRule rule, Document doc, JournalEntry je) {
         BigDecimal amount = amountResolver.resolve(rule, doc);
 
+        if (amount.compareTo(BigDecimal.ZERO) == 0)
+            return;
+
         JournalLine debit = new JournalLine();
         debit.setJournalEntry(je);
         debit.setAccount(rule.getDebitAccount());
