@@ -17,6 +17,9 @@ public record CreateSalesOrderCommand(
 
     @Override
     public Object getFingerprintFields() {
-        return String.format("%s-%s-%s-%s-%s-%s", documentDate, description, partnerId, paymentMethod, priceListId, sourceWarehouseId);
+        String line = lines.stream()
+                .map(productLineCommand -> productLineCommand.getFingerprintFields().toString())
+                .reduce("", (a, b) -> a + b);
+        return String.format("%s-%s-%s-%s-%s-%s-%s", documentDate, description, partnerId, paymentMethod, priceListId, sourceWarehouseId, line);
     }
 }
