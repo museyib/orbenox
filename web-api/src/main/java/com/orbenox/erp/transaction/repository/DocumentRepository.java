@@ -59,4 +59,26 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
             WHERE d.id = :id
             """)
     DocumentItem getItemById(@Param("id") Long id);
+
+    @Query("""
+            SELECT d.id as id,
+                d.documentNo as documentNo,
+                d.documentDate as documentDate,
+                d.description as description,
+                d.documentStatus as documentStatus,
+                d.approvalStatus as approvalStatus,
+                t as typeItem,
+                ws as sourceWarehouse,
+                wt as targetWarehouse,
+                p as businessPartner,
+                pl as priceList
+            FROM Document d
+            LEFT JOIN d.type t ON d.type.id = :typeId
+            LEFT JOIN d.stockContext.sourceWarehouse ws
+            LEFT JOIN d.stockContext.targetWarehouse wt
+            LEFT JOIN d.commercialContext.partner p
+            LEFT JOIN d.commercialContext.priceList pl
+            WHERE d.id = :id
+            """)
+    DocumentItem getItemByIdAndType(@Param("id") Long id, @Param("typeId") Long typeId);
 }

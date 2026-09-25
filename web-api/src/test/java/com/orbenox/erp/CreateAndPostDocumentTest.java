@@ -221,7 +221,7 @@ public class CreateAndPostDocumentTest {
             documents.add(createSubmittedSalesOrder(isolatedWarehouse, BigDecimal.ONE, BigDecimal.ONE));
         }
 
-        List<PostAttemptResult> results = postConcurrently(documents);
+        List<PostAttemptResult> results = postConcurrently(documents, salesOrderActionService);
 
         long successCount = results.stream().filter(PostAttemptResult::success).count();
         long movementCount = documents.stream().mapToLong(doc -> stockMovementRepo.countByDocumentId(doc.getId())).sum();
@@ -251,7 +251,7 @@ public class CreateAndPostDocumentTest {
             documents.add(createSubmittedProductApprove(isolatedWarehouse, BigDecimal.ONE));
         }
 
-        List<PostAttemptResult> results = postConcurrently(documents);
+        List<PostAttemptResult> results = postConcurrently(documents, productApproveActionService);
 
         long successCount = results.stream().filter(PostAttemptResult::success).count();
         long movementCount = documents.stream().mapToLong(doc -> stockMovementRepo.countByDocumentId(doc.getId())).sum();
@@ -276,7 +276,7 @@ public class CreateAndPostDocumentTest {
                 createSubmittedProductApprove(isolatedWarehouse, BigDecimal.ONE),
                 createSubmittedProductApprove(isolatedWarehouse, BigDecimal.ONE));
 
-        List<PostAttemptResult> results = postConcurrently(documents);
+        List<PostAttemptResult> results = postConcurrently(documents, productApproveActionService);
 
         long successCount = results.stream().filter(PostAttemptResult::success).count();
         long movementCount = documents.stream().mapToLong(doc -> stockMovementRepo.countByDocumentId(doc.getId())).sum();
@@ -318,7 +318,7 @@ public class CreateAndPostDocumentTest {
                         line(secondProduct, BigDecimal.ONE, BigDecimal.ZERO),
                         line(product, BigDecimal.ONE, BigDecimal.ZERO)));
 
-        List<PostAttemptResult> results = postConcurrently(List.of(documentA, documentB));
+        List<PostAttemptResult> results = postConcurrently(List.of(documentA, documentB), productApproveActionService);
 
         long successCount = results.stream().filter(PostAttemptResult::success).count();
         long movementCount = stockMovementRepo.countByDocumentId(documentA.getId()) + stockMovementRepo.countByDocumentId(documentB.getId());
@@ -429,7 +429,9 @@ public class CreateAndPostDocumentTest {
                 discountRatio);
     }
 
-    private List<PostAttemptResult> postConcurrently(List<Document> documents) throws Exception {
+    private List<PostAttemptResult> postConcurrently(
+            List<Document> documents,
+            DocumentActionService<?> actionService) throws Exception {
         int threadCount = documents.size();
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         CountDownLatch ready = new CountDownLatch(threadCount);
@@ -442,7 +444,7 @@ public class CreateAndPostDocumentTest {
                     ready.countDown();
                     assertTrue(start.await(10, TimeUnit.SECONDS), "Start signal timed out");
                     try {
-                        salesOrderActionService.post(document.getId());
+                        actionService.post(document.getId());
                         return PostAttemptResult.success(document.getId());
                     } catch (Exception e) {
                         Throwable rootCause = rootCause(e);

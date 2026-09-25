@@ -90,7 +90,7 @@ public class ProductApproveController {
     }
 
     private DocumentItem getItemOrThrow(Long id) {
-        DocumentItem item = documentRepository.getItemById(id);
+        DocumentItem item = documentRepository.getItemByIdAndType(id, 1L);
         if (item == null) {
             throw new IllegalArgumentException(i18n.msg("error.document.notFound", id));
         }

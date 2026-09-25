@@ -44,7 +44,9 @@ public class StockService implements ContextService {
                     .thenComparing(operation -> operation.direction));
 
             for (StockOperation operation : operations) {
-                createMovement(doc, operation.product(), operation.warehouse(), operation.quantity());
+                BigDecimal signedQuantity = operation.quantity()
+                        .multiply(BigDecimal.valueOf(operation.direction()));
+                createMovement(doc, operation.product(), operation.warehouse(), signedQuantity);
             }
         }
     }
@@ -65,7 +67,7 @@ public class StockService implements ContextService {
         int affected;
 
         if (quantity.compareTo(BigDecimal.ZERO) < 0) {
-            affected = stockBalanceRepo.decreaseQuantity(product.getId(), warehouse.getId(), quantity);
+            affected = stockBalanceRepo.decreaseQuantity(product.getId(), warehouse.getId(), quantity.abs());
         } else if (quantity.compareTo(BigDecimal.ZERO) > 0) {
             affected = stockBalanceRepo.increaseQuantity(product.getId(), warehouse.getId(), quantity);
         } else {

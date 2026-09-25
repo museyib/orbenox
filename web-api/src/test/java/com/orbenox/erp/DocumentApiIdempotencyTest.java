@@ -152,7 +152,7 @@ class DocumentApiIdempotencyTest {
         assertEquals(DOCUMENT_ID, responseDocumentId(first, "$.data.id"));
         assertEquals(DOCUMENT_ID, responseDocumentId(second, "$.data.id"));
         verify(salesOrderActionService, times(1)).createDraft(any());
-        verify(documentRepository, times(1)).getItemById(DOCUMENT_ID);
+        verify(documentRepository, times(1)).getItemByIdAndType(DOCUMENT_ID, 2L);
         verify(idempotencyService, times(1)).complete(anyString(), any(), ArgumentMatchers.anyInt());
     }
 
@@ -186,7 +186,7 @@ class DocumentApiIdempotencyTest {
         assertEquals(DOCUMENT_ID, responseDocumentId(first, "$.data.id"));
         assertEquals(DOCUMENT_ID, responseDocumentId(second, "$.data.id"));
         verify(salesOrderActionService, times(1)).createDraft(any());
-        verify(documentRepository, times(1)).getItemById(DOCUMENT_ID);
+        verify(documentRepository, times(1)).getItemByIdAndType(DOCUMENT_ID, 2L);
         verify(idempotencyService, times(1)).complete(anyString(), any(), ArgumentMatchers.anyInt());
     }
 
@@ -215,7 +215,7 @@ class DocumentApiIdempotencyTest {
             assertTrue(releaseCreate.await(10, TimeUnit.SECONDS), "Timed out while waiting to release createDraft");
             return document;
         });
-        when(documentRepository.getItemById(anyLong())).thenReturn(documentItem);
+        when(documentRepository.getItemByIdAndType(anyLong(), Mockito.eq(2L))).thenReturn(documentItem);
 
         try (ExecutorService executor = Executors.newFixedThreadPool(requestCount)) {
             List<Future<Integer>> futures = new ArrayList<>();
@@ -265,7 +265,7 @@ class DocumentApiIdempotencyTest {
         }
 
         verify(salesOrderActionService, times(1)).createDraft(any());
-        verify(documentRepository, times(1)).getItemById(DOCUMENT_ID);
+        verify(documentRepository, times(1)).getItemByIdAndType(DOCUMENT_ID, 2L);
         verify(idempotencyService, times(1)).complete(anyString(), any(), ArgumentMatchers.anyInt());
     }
 
@@ -345,7 +345,7 @@ class DocumentApiIdempotencyTest {
         document.setDocumentDate(LocalDate.now());
 
         when(salesOrderActionService.createDraft(any())).thenReturn(document);
-        when(documentRepository.getItemById(anyLong())).thenReturn(documentItem);
+        when(documentRepository.getItemByIdAndType(anyLong(), Mockito.eq(2L))).thenReturn(documentItem);
     }
 
     private void stubSuccessfulProductApproveCreate() {
@@ -355,7 +355,7 @@ class DocumentApiIdempotencyTest {
         document.setDocumentDate(LocalDate.now());
 
         when(productApproveActionService.createDraft(any())).thenReturn(document);
-        when(documentRepository.getItemById(anyLong())).thenReturn(documentItem);
+        when(documentRepository.getItemByIdAndType(anyLong(), Mockito.eq(1L))).thenReturn(documentItem);
     }
 
     private long responseDocumentId(MvcResult result, String jsonPath) throws Exception {
@@ -367,13 +367,11 @@ class DocumentApiIdempotencyTest {
         return """
                 {
                   "documentDate": "2026-09-18",
-                  "typeId": 2,
                   "description": "Idempotent generic document",
                   "partnerId": 1,
                   "paymentMethod": "CASH",
                   "priceListId": 1,
                   "sourceWarehouseId": 1,
-                  "targetWarehouseId": null,
                   "lines": [
                     {
                       "productId": 1,
@@ -390,12 +388,9 @@ class DocumentApiIdempotencyTest {
         return """
                 {
                   "documentDate": "2026-09-18",
-                  "typeId": 1,
                   "description": "Idempotent product approve",
-                  "partnerId": null,
                   "paymentMethod": null,
                   "priceListId": 1,
-                  "sourceWarehouseId": null,
                   "targetWarehouseId": 1,
                   "lines": [
                     {
@@ -413,13 +408,11 @@ class DocumentApiIdempotencyTest {
         return """
                 {
                   "documentDate": "2026-09-19",
-                  "typeId": 2,
                   "description": "Idempotent generic document changed body",
                   "partnerId": 2,
                   "paymentMethod": "CARD",
                   "priceListId": 2,
                   "sourceWarehouseId": 2,
-                  "targetWarehouseId": null,
                   "lines": [
                     {
                       "productId": 2,
@@ -436,12 +429,9 @@ class DocumentApiIdempotencyTest {
         return """
                 {
                   "documentDate": "2026-09-19",
-                  "typeId": 1,
                   "description": "Idempotent product approve changed body",
-                  "partnerId": null,
                   "paymentMethod": null,
                   "priceListId": 2,
-                  "sourceWarehouseId": null,
                   "targetWarehouseId": 2,
                   "lines": [
                     {

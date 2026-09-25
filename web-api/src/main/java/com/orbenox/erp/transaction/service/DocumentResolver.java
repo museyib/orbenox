@@ -18,7 +18,7 @@ public class DocumentResolver {
         Document doc = documentRepo.findById(documentId).orElseThrow();
 
         if (!doc.getType().getCode().equals(documentType))
-            throw new BusinessRuleException(i18n.msg("error.document.invalidIdForSalesOrderType", documentId));
+            throw new BusinessRuleException(i18n.msg("error.document.invalidIdForSpecifiedType", documentId));
 
         return doc;
     }
