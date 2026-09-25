@@ -10,7 +10,8 @@ import java.io.Serializable;
 public class IdempotentRecord implements Serializable {
     private Status status;
     private String requestHash;
-    private Object responseBody;
+    private String responseBody;
+    private int responseStatus;
 
     public enum Status {
         PROCESSING,COMPLETED,FAILED
