@@ -31,6 +31,20 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
                 d.description as description,
                 d.documentStatus as documentStatus,
                 d.approvalStatus as approvalStatus,
+                t as typeItem
+            FROM Document d
+            JOIN d.type t ON d.type.id = :typeId
+            ORDER BY d.id DESC
+            """)
+    List<DocumentItem> getItemsByType(@Param("typeId") Long typeId);
+
+    @Query("""
+            SELECT d.id as id,
+                d.documentNo as documentNo,
+                d.documentDate as documentDate,
+                d.description as description,
+                d.documentStatus as documentStatus,
+                d.approvalStatus as approvalStatus,
                 t as typeItem,
                 ws as sourceWarehouse,
                 wt as targetWarehouse,

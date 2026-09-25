@@ -27,7 +27,7 @@ public class SalesOrderController {
     @PreAuthorize("hasPermission('SALES_ORDER', 'READ')")
     @GetMapping
     public ResponseEntity<Response<List<DocumentItem>>> getAll() {
-        return ResponseEntity.ok(Response.successData(documentRepository.getAllItems()));
+        return ResponseEntity.ok(Response.successData(documentRepository.getItemsByType(2L)));
     }
 
     @PreAuthorize("hasPermission('SALES_ORDER', 'READ')")
