@@ -31,18 +31,16 @@ public class IdempotencyService {
         return (IdempotentRecord) redisTemplate.opsForValue().get(key);
     }
 
-    public void complete(String key, Object responseBody) {
+    public void complete(String key, String requestHash, Object responseBody) {
         IdempotentRecord record = new IdempotentRecord();
         record.setStatus(COMPLETED);
+        record.setRequestHash(requestHash);
         record.setResponseBody(jsonMapper.writeValueAsString(responseBody));
 
         redisTemplate.opsForValue().set(key, record, Duration.ofHours(TTL_HOURS));
     }
 
-    public void fail(String key) {
-        IdempotentRecord record = new IdempotentRecord();
-        record.setStatus(FAILED);
-
-        redisTemplate.opsForValue().set(key, record, Duration.ofHours(TTL_HOURS));
+    public void evict(String key) {
+        redisTemplate.delete(key);
     }
 }
