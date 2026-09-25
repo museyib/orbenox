@@ -20,10 +20,12 @@ public class AmountResolver {
                     .map(ProductLine::getDiscount)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             case TOTAL -> doc.getProductLines().stream()
-                    .map(l -> l.getUnitPrice()
-                            .multiply(l.getQuantity())
-                            .subtract(BigDecimal.valueOf(100).subtract(l.getDiscount())
-                                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP)))
+                    .filter(l -> l.getUnitPrice().compareTo(BigDecimal.ZERO) > 0)
+                    .map(l -> {
+                        var firstAmount = l.getUnitPrice().multiply(l.getQuantity());
+                        var discount = BigDecimal.valueOf(100).subtract(l.getDiscount()).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+                        return firstAmount.multiply(discount);
+                    })
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
         };
     }
