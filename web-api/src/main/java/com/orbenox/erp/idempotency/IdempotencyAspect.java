@@ -1,6 +1,5 @@
 package com.orbenox.erp.idempotency;
 
-import com.orbenox.erp.outbox.OutboxEvent;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -13,7 +12,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 import static com.orbenox.erp.common.Utilities.isBlank;
 
@@ -53,14 +51,7 @@ public class IdempotencyAspect {
             key = fingerprintable.tag() + ":" + key;
         }
 
-        OutboxEvent outboxEvent = new OutboxEvent();
-        outboxEvent.setEventType(idempotentConfig.eventType());
-        outboxEvent.setAggregateType(idempotentConfig.aggregateType());
-        outboxEvent.setAggregateId(UUID.randomUUID().toString());
-        outboxEvent.setPayload(jsonMapper.writeValueAsString(bodyArg));
-        outboxEvent.setStatus("PENDING");
-
-        return idempotencyExecutor.execute(key, currentRequestHash, outboxEvent, () -> {
+        return idempotencyExecutor.execute(key, currentRequestHash, () -> {
             try {
                 return joinPoint.proceed();
             } catch (RuntimeException e) {

@@ -17,6 +17,7 @@ public class ProductLine {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Document document;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

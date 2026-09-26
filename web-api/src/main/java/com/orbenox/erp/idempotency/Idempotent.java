@@ -9,6 +9,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Idempotent {
     String headerName() default "Idempotency-Key";
-    String eventType();
-    String aggregateType();
 }

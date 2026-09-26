@@ -18,6 +18,7 @@ public class JournalEntry {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Document document;
 
     @Column(nullable = false)

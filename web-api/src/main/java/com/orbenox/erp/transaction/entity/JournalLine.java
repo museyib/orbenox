@@ -24,6 +24,7 @@ public class JournalLine {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private JournalEntry journalEntry;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
