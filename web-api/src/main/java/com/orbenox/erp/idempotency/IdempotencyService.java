@@ -1,11 +1,11 @@
-package com.orbenox.erp.transaction.idempotency;
+package com.orbenox.erp.idempotency;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.json.JsonMapper;
 import org.springframework.stereotype.Service;
 
-import static com.orbenox.erp.transaction.idempotency.IdempotentRecord.Status.*;
+import static com.orbenox.erp.idempotency.IdempotentRecord.Status.*;
 
 @Service
 @RequiredArgsConstructor

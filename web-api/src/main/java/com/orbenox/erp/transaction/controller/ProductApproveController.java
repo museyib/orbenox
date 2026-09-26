@@ -4,7 +4,7 @@ import com.orbenox.erp.common.Response;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.command.CreateProductApproveCommand;
 import com.orbenox.erp.transaction.entity.Document;
-import com.orbenox.erp.transaction.idempotency.Idempotent;
+import com.orbenox.erp.idempotency.Idempotent;
 import com.orbenox.erp.transaction.projection.DocumentItem;
 import com.orbenox.erp.transaction.repository.DocumentRepository;
 import com.orbenox.erp.transaction.service.ProductApproveActionService;
@@ -37,7 +37,7 @@ public class ProductApproveController {
 
     @PreAuthorize("hasPermission('PRODUCT_APPROVE', 'CREATE')")
     @PostMapping
-    @Idempotent
+    @Idempotent(eventType = "CREATE", aggregateType = "PRODUCT_APPROVE")
     public ResponseEntity<Response<DocumentItem>> create(@RequestBody CreateProductApproveCommand command) {
         Document document = documentActionService.createDraft(command);
         DocumentItem item = getItemOrThrow(document.getId());

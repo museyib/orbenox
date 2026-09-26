@@ -1,6 +1,11 @@
 package com.orbenox.erp;
 
 import com.jayway.jsonpath.JsonPath;
+import com.orbenox.erp.exception.BusinessRuleException;
+import com.orbenox.erp.outbox.OutboxEvent;
+import com.orbenox.erp.outbox.OutboxEventService;
+import org.mockito.ArgumentCaptor;
+import static org.mockito.Mockito.never;
 import com.orbenox.erp.domain.businesspartner.BusinessPartnerItem;
 import com.orbenox.erp.domain.price.SimplePriceListItem;
 import com.orbenox.erp.domain.transactiontype.SimpleTransactionTypeItem;
@@ -12,10 +17,10 @@ import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.controller.ProductApproveController;
 import com.orbenox.erp.transaction.controller.SalesOrderController;
 import com.orbenox.erp.transaction.entity.Document;
-import com.orbenox.erp.transaction.idempotency.IdempotencyExecutor;
-import com.orbenox.erp.transaction.idempotency.IdempotencyService;
-import com.orbenox.erp.transaction.idempotency.IdempotencyAspect;
-import com.orbenox.erp.transaction.idempotency.IdempotentRecord;
+import com.orbenox.erp.idempotency.IdempotencyExecutor;
+import com.orbenox.erp.idempotency.IdempotencyService;
+import com.orbenox.erp.idempotency.IdempotencyAspect;
+import com.orbenox.erp.idempotency.IdempotentRecord;
 import com.orbenox.erp.transaction.projection.DocumentItem;
 import com.orbenox.erp.transaction.repository.DocumentRepository;
 import com.orbenox.erp.transaction.service.ProductApproveActionService;
@@ -46,8 +51,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import static com.orbenox.erp.transaction.idempotency.IdempotentRecord.Status.COMPLETED;
-import static com.orbenox.erp.transaction.idempotency.IdempotentRecord.Status.PROCESSING;
+import static com.orbenox.erp.idempotency.IdempotentRecord.Status.COMPLETED;
+import static com.orbenox.erp.idempotency.IdempotentRecord.Status.PROCESSING;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
@@ -75,6 +80,7 @@ class DocumentApiIdempotencyTest {
     private JsonMapper jsonMapper;
     private InMemoryIdempotencyState idempotencyState;
     private IdempotencyService idempotencyService;
+    private OutboxEventService outboxEventService;
     private IdempotencyExecutor idempotencyExecutor;
     private DocumentItem documentItem;
 
@@ -83,7 +89,8 @@ class DocumentApiIdempotencyTest {
         jsonMapper = new JsonMapper();
         idempotencyState = new InMemoryIdempotencyState();
         idempotencyService = Mockito.mock(IdempotencyService.class);
-        idempotencyExecutor = new IdempotencyExecutor(idempotencyService, jsonMapper);
+        outboxEventService = Mockito.mock(OutboxEventService.class);
+        idempotencyExecutor = new IdempotencyExecutor(idempotencyService, outboxEventService, jsonMapper);
         documentItem = new StubDocumentItem(DOCUMENT_ID, "DOC-001");
 
         lenient().when(idempotencyService.getRecord(anyString()))
@@ -323,6 +330,78 @@ class DocumentApiIdempotencyTest {
         assertEquals(409, second.getResponse().getStatus());
         verify(productApproveActionService, times(1)).createDraft(any());
         verify(idempotencyService, times(1)).complete(anyString(), anyInt(), anyString(), any());
+    }
+
+
+    @Test
+    void salesOrderCreate_withSuccess_shouldCreateAndSaveOutboxEvent() throws Exception {
+        MockMvc mockMvc = createMockMvc(new SalesOrderController(
+                salesOrderActionService,
+                documentRepository,
+                localizationService));
+        stubSuccessfulSalesOrderCreate();
+
+        mockMvc.perform(post("/api/salesOrder")
+                        .header("Idempotency-Key", IDEMPOTENCY_KEY)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(salesOrderCreateJson()))
+                .andExpect(status().isOk());
+
+        ArgumentCaptor<OutboxEvent> eventCaptor = ArgumentCaptor.forClass(OutboxEvent.class);
+        verify(outboxEventService, times(1)).save(eventCaptor.capture());
+
+        OutboxEvent captured = eventCaptor.getValue();
+        assertNotNull(captured);
+        assertEquals("CREATE", captured.getEventType());
+        assertEquals("SALES_ORDER", captured.getAggregateType());
+        assertNotNull(captured.getAggregateId());
+        assertEquals("PENDING", captured.getStatus());
+        assertNotNull(captured.getPayload());
+        assertTrue(captured.getPayload().contains("Idempotent generic document"));
+    }
+
+    @Test
+    void productApproveCreate_withSuccess_shouldCreateAndSaveOutboxEvent() throws Exception {
+        MockMvc mockMvc = createMockMvc(new ProductApproveController(
+                productApproveActionService,
+                documentRepository,
+                localizationService));
+        stubSuccessfulProductApproveCreate();
+
+        mockMvc.perform(post("/api/productApproves")
+                        .header("Idempotency-Key", IDEMPOTENCY_KEY)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(productApproveCreateJson()))
+                .andExpect(status().isOk());
+
+        ArgumentCaptor<OutboxEvent> eventCaptor = ArgumentCaptor.forClass(OutboxEvent.class);
+        verify(outboxEventService, times(1)).save(eventCaptor.capture());
+
+        OutboxEvent captured = eventCaptor.getValue();
+        assertNotNull(captured);
+        assertEquals("CREATE", captured.getEventType());
+        assertEquals("PRODUCT_APPROVE", captured.getAggregateType());
+        assertNotNull(captured.getAggregateId());
+        assertEquals("PENDING", captured.getStatus());
+        assertNotNull(captured.getPayload());
+        assertTrue(captured.getPayload().contains("Idempotent product approve"));
+    }
+
+    @Test
+    void salesOrderCreate_whenActionThrowsException_shouldNotSaveOutboxEvent() throws Exception {
+        MockMvc mockMvc = createMockMvc(new SalesOrderController(
+                salesOrderActionService,
+                documentRepository,
+                localizationService));
+        when(salesOrderActionService.createDraft(any())).thenThrow(new BusinessRuleException("Order creation failed"));
+
+        mockMvc.perform(post("/api/salesOrder")
+                        .header("Idempotency-Key", IDEMPOTENCY_KEY)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(salesOrderCreateJson()))
+                .andExpect(status().isBadRequest());
+
+        verify(outboxEventService, never()).save(any());
     }
 
     private MockMvc createMockMvc(Object controller) {

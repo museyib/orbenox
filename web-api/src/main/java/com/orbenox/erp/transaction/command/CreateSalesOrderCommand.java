@@ -1,6 +1,6 @@
 package com.orbenox.erp.transaction.command;
 
-import com.orbenox.erp.transaction.idempotency.Fingerprintable;
+import com.orbenox.erp.idempotency.Fingerprintable;
 
 import java.time.LocalDate;
 import java.util.List;

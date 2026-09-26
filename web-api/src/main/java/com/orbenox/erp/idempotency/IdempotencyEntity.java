@@ -1,4 +1,4 @@
-package com.orbenox.erp.transaction.idempotency;
+package com.orbenox.erp.idempotency;
 
 import com.orbenox.erp.common.entity.BaseEntity;
 import jakarta.persistence.Entity;
@@ -15,5 +15,5 @@ public class IdempotencyEntity extends BaseEntity {
     private String status;
     private String requestHash;
     private String responseBody;
-    private int responseStatus;
+    private Integer responseStatus;
 }

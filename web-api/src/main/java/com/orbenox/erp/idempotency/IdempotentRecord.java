@@ -1,4 +1,4 @@
-package com.orbenox.erp.transaction.idempotency;
+package com.orbenox.erp.idempotency;
 
 import lombok.Getter;
 import lombok.Setter;
