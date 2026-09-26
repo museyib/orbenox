@@ -1,5 +1,6 @@
 package com.orbenox.erp.outbox;
 
+import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,6 +12,8 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Long> 
     List<OutboxEvent> findAllByStatus(String status);
 
     @Modifying
-    @Query("UPDATE OutboxEvent e SET e.status = :status WHERE e.id = :id")
+    @Query("UPDATE OutboxEvent e SET e.status = :status, e.publishedAt = now() WHERE e.id = :id")
     void updateStatus(@Param("id") Long id, @Param("status") String status);
+
+    List<OutboxEvent> findAllByStatusOrderByCreatedAt(String status, Limit limit);
 }
