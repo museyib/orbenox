@@ -4,6 +4,7 @@ import com.orbenox.erp.enums.ApprovalStatus;
 import com.orbenox.erp.enums.DocumentStatus;
 import com.orbenox.erp.exception.BusinessRuleException;
 import com.orbenox.erp.localization.LocalizationService;
+import com.orbenox.erp.outbox.OutboxEventService;
 import com.orbenox.erp.transaction.command.CreateProductApproveCommand;
 import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.policy.approval.ApprovalPolicy;
@@ -26,10 +27,13 @@ public class ProductApproveActionService implements DocumentActionService<Create
     private final PolicyResolver<DocumentPostPolicy> documentPostPolicyResolver;
     private final LocalizationService i18n;
     private final DocumentResolver documentResolver;
+    private final OutboxEventService outboxEventService;
 
     @Override
     public Document createDraft(CreateProductApproveCommand command) {
-        return documentService.createProductApprove(command);
+        Document productApprove = documentService.createProductApprove(command);
+        outboxEventService.createOutboxEvent(productApprove, "PRODUCT_APPROVE_CREATED", TRANSACTION_TYPE);
+        return productApprove;
     }
 
     @Override

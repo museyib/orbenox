@@ -33,8 +33,7 @@ public class SalesOrderActionService implements DocumentActionService<CreateSale
     @Override
     public Document createDraft(CreateSalesOrderCommand command) {
         Document salesOrder = documentService.createSalesOrder(command);
-
-        outboxEventService.createOutboxEvent(salesOrder, "CREATE", TRANSACTION_TYPE);
+        outboxEventService.createOutboxEvent(salesOrder, "SALES_ORDER_CREATED", TRANSACTION_TYPE);
         return salesOrder;
     }
 
