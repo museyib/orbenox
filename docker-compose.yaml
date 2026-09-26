@@ -72,6 +72,14 @@ services:
     depends_on:
       - postgres
       - redis
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: shop-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
 volumes:
   postgres_data:

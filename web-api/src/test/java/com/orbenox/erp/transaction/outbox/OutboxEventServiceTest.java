@@ -75,19 +75,19 @@ public class OutboxEventServiceTest {
         transactionTemplate.execute(status -> {
             document.setType(transactionTypeRepository.findByCode("SALES_ORDER"));
             documentRepository.save(document);
-            outboxEventService.createOutboxEvent(document, "CREATE", "SALES_ORDER");
+            outboxEventService.createOutboxEvent(document, "SALES_ORDER_CREATED", "SALES_ORDER");
             return null;
         });
 
         assertThat(document.getId()).isNotNull();
         OutboxEvent loaded = outboxEventRepository.findAll().stream()
-                .filter(event -> document.getDocumentNo().equals(event.getAggregateId()))
+                .filter(event -> document.getId().toString().equals(event.getAggregateId()))
                 .findFirst()
                 .orElseThrow();
-        assertThat(loaded.getEventType()).isEqualTo("CREATE");
+        assertThat(loaded.getEventType()).isEqualTo("SALES_ORDER_CREATED");
         assertThat(loaded.getAggregateType()).isEqualTo("SALES_ORDER");
-        assertThat(loaded.getAggregateId()).isEqualTo(document.getDocumentNo());
-        assertThat(loaded.getPayload()).contains(document.getDocumentNo());
+        assertThat(loaded.getAggregateId()).isEqualTo(document.getId().toString());
+        assertThat(loaded.getPayload()).contains(document.getId().toString());
         assertThat(loaded.getStatus()).isEqualTo("PENDING");
         assertThat(loaded.getCreatedAt()).isNotNull();
         assertThat(loaded.getPublishedAt()).isNull();
@@ -100,7 +100,7 @@ public class OutboxEventServiceTest {
         assertThatThrownBy(() -> transactionTemplate.execute(status -> {
             document.setType(transactionTypeRepository.findByCode("SALES_ORDER"));
             documentRepository.save(document);
-            outboxEventService.createOutboxEvent(document, "CREATE", "SALES_ORDER");
+            outboxEventService.createOutboxEvent(document, "SALES_ORDER_CREATED", "SALES_ORDER");
             throw new RuntimeException("Simulated transaction failure");
         })).isInstanceOf(RuntimeException.class)
            .hasMessage("Simulated transaction failure");
