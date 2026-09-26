@@ -14,8 +14,8 @@ public interface IdempotencyRepository extends JpaRepository<IdempotencyEntity, 
 
     @Modifying
     @Query(value = """
-            INSERT INTO idempotency_record(idempotency_key, status, requestHash)
-            VALUES (:key, :requestHash, :responseBody)
+            INSERT INTO idempotency_record(idempotency_key, status, request_hash)
+            VALUES (:key, :status, :requestHash)
             ON CONFLICT DO NOTHING""",
             nativeQuery = true)
     int createIdempotency(@Param("key") String key,
