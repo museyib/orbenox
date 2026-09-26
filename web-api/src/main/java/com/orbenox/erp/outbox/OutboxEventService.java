@@ -18,7 +18,7 @@ public class OutboxEventService {
         OutboxEvent outboxEvent = new OutboxEvent();
         outboxEvent.setEventType(eventType);
         outboxEvent.setAggregateType(aggregateType);
-        outboxEvent.setAggregateId(document.getDocumentNo());
+        outboxEvent.setAggregateId(document.getId().toString());
         outboxEvent.setPayload(jsonMapper.writeValueAsString(document));
         outboxEvent.setStatus("PENDING");
         outboxEventRepository.save(outboxEvent);
