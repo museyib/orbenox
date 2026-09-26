@@ -23,9 +23,9 @@ public class OutboxPublisher {
         List<OutboxEvent> pending = outboxEventRepository.findAllByStatus("PENDING");
 
         pending.forEach(event -> {
+            rabbitTemplate.convertAndSend("outbox-exchange", "outbox-routing-key", event);
             outboxEventRepository.updateStatus(event.getId(), "PUBLISHED");
             log.info("Event with id {} published", event.getId());
-            rabbitTemplate.convertAndSend("outbox-exchange", "outbox-routing-key", event);
         });
     }
 }
