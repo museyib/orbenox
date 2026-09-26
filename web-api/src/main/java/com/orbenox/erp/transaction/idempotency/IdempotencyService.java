@@ -1,6 +1,8 @@
 package com.orbenox.erp.transaction.idempotency;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.json.JsonMapper;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,23 +21,25 @@ public class IdempotencyService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final JsonMapper jsonMapper;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public boolean tryLock(String key, String requestHash) {
-        IdempotentRecord record = new IdempotentRecord();
-        record.setStatus(PROCESSING);
-        record.setRequestHash(requestHash);
-
-        Boolean success = redisTemplate.opsForValue().setIfAbsent(key, record, Duration.ofHours(TTL_HOURS));
-
-        if (Boolean.TRUE.equals(success)) {
+        try {
             IdempotencyEntity entity = new IdempotencyEntity();
             entity.setIdempotencyKey(key);
             entity.setStatus(PROCESSING.name());
             entity.setRequestHash(requestHash);
-            idempotencyRepository.save(entity);
-            return true;
-        }
+            idempotencyRepository.saveAndFlush(entity);
 
-        return false;
+            IdempotentRecord record = new IdempotentRecord();
+            record.setStatus(PROCESSING);
+            record.setRequestHash(requestHash);
+
+            redisTemplate.opsForValue().set(key, record, Duration.ofHours(TTL_HOURS));
+
+            return true;
+        } catch (DataIntegrityViolationException e) {
+            return false;
+        }
     }
 
     public IdempotentRecord getRecord(String key) {
@@ -50,19 +54,20 @@ public class IdempotencyService {
                     record.setRequestHash(entity.getRequestHash());
                     record.setResponseStatus(entity.getResponseStatus());
                     record.setResponseBody(entity.getResponseBody());
+
+                    redisTemplate.opsForValue().set(key, record, Duration.ofHours(TTL_HOURS));
                     return record;
                 })
                 .orElse(null);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void complete(String key, int responseStatus, String requestHash, Object responseBody) {
         String jsonBody = jsonMapper.writeValueAsString(responseBody);
 
         idempotencyRepository.findByIdempotencyKey(key)
                 .ifPresent(entity -> {
                     entity.setStatus(COMPLETED.name());
-                    entity.setRequestHash(requestHash);
                     entity.setResponseStatus(responseStatus);
                     entity.setResponseBody(jsonBody);
                     idempotencyRepository.save(entity);
@@ -77,7 +82,7 @@ public class IdempotencyService {
         redisTemplate.opsForValue().set(key, record, Duration.ofHours(TTL_HOURS));
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void evict(String key) {
         redisTemplate.delete(key);
         idempotencyRepository.deleteByIdempotencyKey(key);

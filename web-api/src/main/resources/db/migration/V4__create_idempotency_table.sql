@@ -6,7 +6,7 @@ CREATE TABLE idempotency_record
     idempotency_key VARCHAR(100) NOT NULL,
     status          VARCHAR(255) NOT NULL,
     request_hash    VARCHAR(255),
-    response_body   VARCHAR(255),
+    response_body   TEXT,
     response_status INT,
     created_at      TIMESTAMP DEFAULT now(),
     updated_at      TIMESTAMP,
