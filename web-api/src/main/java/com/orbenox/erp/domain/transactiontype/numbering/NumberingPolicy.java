@@ -16,6 +16,7 @@ public class NumberingPolicy {
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "type_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private TransactionType type;
 
     @Column(nullable = false)

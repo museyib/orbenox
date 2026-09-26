@@ -10,8 +10,6 @@ import static com.orbenox.erp.idempotency.IdempotentRecord.Status.*;
 @Service
 @RequiredArgsConstructor
 public class IdempotencyService {
-    private static final long TTL_HOURS = 24;
-
     private final IdempotencyRepository idempotencyRepository;
     private final JsonMapper jsonMapper;
 

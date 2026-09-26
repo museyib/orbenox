@@ -4,6 +4,7 @@ import com.orbenox.erp.enums.ApprovalStatus;
 import com.orbenox.erp.enums.DocumentStatus;
 import com.orbenox.erp.exception.BusinessRuleException;
 import com.orbenox.erp.localization.LocalizationService;
+import com.orbenox.erp.outbox.OutboxEventService;
 import com.orbenox.erp.transaction.command.CreateSalesOrderCommand;
 import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.policy.approval.ApprovalPolicy;
@@ -27,10 +28,14 @@ public class SalesOrderActionService implements DocumentActionService<CreateSale
     private final PolicyResolver<DocumentPostPolicy> documentPostPolicyResolver;
     private final LocalizationService i18n;
     private final DocumentResolver documentResolver;
+    private final OutboxEventService outboxEventService;
 
     @Override
     public Document createDraft(CreateSalesOrderCommand command) {
-        return documentService.createSalesOrder(command);
+        Document salesOrder = documentService.createSalesOrder(command);
+
+        outboxEventService.createOutboxEvent(salesOrder, "CREATE", TRANSACTION_TYPE);
+        return salesOrder;
     }
 
     @Override

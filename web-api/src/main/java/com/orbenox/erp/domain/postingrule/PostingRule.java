@@ -20,6 +20,7 @@ public class PostingRule {
     private Integer sequence;
 
     @ManyToOne(optional = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private TransactionType type;
 
     @ManyToOne(optional = false)

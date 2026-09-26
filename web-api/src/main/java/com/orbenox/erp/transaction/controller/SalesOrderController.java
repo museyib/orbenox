@@ -37,7 +37,7 @@ public class SalesOrderController {
 
     @PreAuthorize("hasPermission('SALES_ORDER', 'CREATE')")
     @PostMapping
-    @Idempotent(eventType = "CREATE", aggregateType = "SALES_ORDER")
+    @Idempotent
     public ResponseEntity<Response<DocumentItem>> create(@RequestBody CreateSalesOrderCommand command) {
         Document document = documentActionService.createDraft(command);
         DocumentItem item = getItemOrThrow(document.getId());

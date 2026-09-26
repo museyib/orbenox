@@ -37,7 +37,7 @@ public class ProductApproveController {
 
     @PreAuthorize("hasPermission('PRODUCT_APPROVE', 'CREATE')")
     @PostMapping
-    @Idempotent(eventType = "CREATE", aggregateType = "PRODUCT_APPROVE")
+    @Idempotent
     public ResponseEntity<Response<DocumentItem>> create(@RequestBody CreateProductApproveCommand command) {
         Document document = documentActionService.createDraft(command);
         DocumentItem item = getItemOrThrow(document.getId());

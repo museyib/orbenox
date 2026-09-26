@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
+@Table(name = "outbox_event")
 @EntityListeners(AuditingEntityListener.class)
 public class OutboxEvent {
     @Id

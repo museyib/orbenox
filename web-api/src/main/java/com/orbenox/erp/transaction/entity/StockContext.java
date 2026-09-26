@@ -16,6 +16,7 @@ public class StockContext {
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "document_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Document document;
 
     @ManyToOne(fetch = FetchType.LAZY)
