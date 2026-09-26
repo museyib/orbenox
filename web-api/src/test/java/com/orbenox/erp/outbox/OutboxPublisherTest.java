@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.domain.Limit;
 
 import java.util.List;
 
@@ -33,12 +34,12 @@ class OutboxPublisherTest {
     void publishEvents_whenPendingEventsExist_shouldMarkEachAsPublished() {
         OutboxEvent firstEvent = eventWithId(1L);
         OutboxEvent secondEvent = eventWithId(2L);
-        when(outboxEventRepository.findAllByStatus("PENDING"))
+        when(outboxEventRepository.findAllByStatusOrderByCreatedAt("PENDING", Limit.of(10)))
                 .thenReturn(List.of(firstEvent, secondEvent));
 
         outboxPublisher.publishEvents();
 
-        verify(outboxEventRepository).findAllByStatus("PENDING");
+        verify(outboxEventRepository).findAllByStatusOrderByCreatedAt("PENDING", Limit.of(10));
         verify(outboxEventRepository).updateStatus(1L, "PUBLISHED");
         verify(outboxEventRepository).updateStatus(2L, "PUBLISHED");
         verify(rabbitTemplate).convertAndSend("outbox-exchange", "outbox-routing-key", firstEvent);
@@ -49,11 +50,11 @@ class OutboxPublisherTest {
 
     @Test
     void publishEvents_whenNoPendingEventsExist_shouldNotUpdateAnyEvent() {
-        when(outboxEventRepository.findAllByStatus("PENDING")).thenReturn(List.of());
+        when(outboxEventRepository.findAllByStatusOrderByCreatedAt("PENDING", Limit.of(10))).thenReturn(List.of());
 
         outboxPublisher.publishEvents();
 
-        verify(outboxEventRepository).findAllByStatus("PENDING");
+        verify(outboxEventRepository).findAllByStatusOrderByCreatedAt("PENDING", Limit.of(10));
         verify(outboxEventRepository, never()).updateStatus(anyLong(), anyString());
         verifyNoMoreInteractions(outboxEventRepository);
         verifyNoInteractions(rabbitTemplate);
