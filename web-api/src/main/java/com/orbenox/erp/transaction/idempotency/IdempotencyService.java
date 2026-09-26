@@ -2,7 +2,6 @@ package com.orbenox.erp.transaction.idempotency;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.json.JsonMapper;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,25 +20,21 @@ public class IdempotencyService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final JsonMapper jsonMapper;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public boolean tryLock(String key, String requestHash) {
-        try {
-            IdempotencyEntity entity = new IdempotencyEntity();
-            entity.setIdempotencyKey(key);
-            entity.setStatus(PROCESSING.name());
-            entity.setRequestHash(requestHash);
-            idempotencyRepository.saveAndFlush(entity);
 
-            IdempotentRecord record = new IdempotentRecord();
-            record.setStatus(PROCESSING);
-            record.setRequestHash(requestHash);
+        int affected = idempotencyRepository.createIdempotency(key, PROCESSING.name(), requestHash);
 
+        IdempotentRecord record = new IdempotentRecord();
+        record.setStatus(PROCESSING);
+        record.setRequestHash(requestHash);
+
+        if (affected > 0) {
             redisTemplate.opsForValue().set(key, record, Duration.ofHours(TTL_HOURS));
-
             return true;
-        } catch (DataIntegrityViolationException e) {
-            return false;
         }
+
+        return false;
     }
 
     public IdempotentRecord getRecord(String key) {
@@ -61,7 +56,7 @@ public class IdempotencyService {
                 .orElse(null);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void complete(String key, int responseStatus, String requestHash, Object responseBody) {
         String jsonBody = jsonMapper.writeValueAsString(responseBody);
 
@@ -82,7 +77,7 @@ public class IdempotencyService {
         redisTemplate.opsForValue().set(key, record, Duration.ofHours(TTL_HOURS));
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void evict(String key) {
         redisTemplate.delete(key);
         idempotencyRepository.deleteByIdempotencyKey(key);

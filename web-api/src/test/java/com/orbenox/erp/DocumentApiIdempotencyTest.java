@@ -12,6 +12,7 @@ import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.controller.ProductApproveController;
 import com.orbenox.erp.transaction.controller.SalesOrderController;
 import com.orbenox.erp.transaction.entity.Document;
+import com.orbenox.erp.transaction.idempotency.IdempotencyExecutor;
 import com.orbenox.erp.transaction.idempotency.IdempotencyService;
 import com.orbenox.erp.transaction.idempotency.IdempotencyAspect;
 import com.orbenox.erp.transaction.idempotency.IdempotentRecord;
@@ -30,7 +31,6 @@ import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
@@ -75,6 +75,7 @@ class DocumentApiIdempotencyTest {
     private JsonMapper jsonMapper;
     private InMemoryIdempotencyState idempotencyState;
     private IdempotencyService idempotencyService;
+    private IdempotencyExecutor idempotencyExecutor;
     private DocumentItem documentItem;
 
     @BeforeEach
@@ -82,6 +83,7 @@ class DocumentApiIdempotencyTest {
         jsonMapper = new JsonMapper();
         idempotencyState = new InMemoryIdempotencyState();
         idempotencyService = Mockito.mock(IdempotencyService.class);
+        idempotencyExecutor = Mockito.mock(IdempotencyExecutor.class);
         documentItem = new StubDocumentItem(DOCUMENT_ID, "DOC-001");
 
         lenient().when(idempotencyService.getRecord(anyString()))
@@ -325,7 +327,7 @@ class DocumentApiIdempotencyTest {
 
     private MockMvc createMockMvc(Object controller) {
         AspectJProxyFactory proxyFactory = new AspectJProxyFactory(controller);
-        proxyFactory.addAspect(new IdempotencyAspect(idempotencyService, jsonMapper));
+        proxyFactory.addAspect(new IdempotencyAspect(idempotencyExecutor, jsonMapper));
         Object proxiedController = proxyFactory.getProxy();
         return MockMvcBuilders.standaloneSetup(proxiedController)
                 .setControllerAdvice(new GlobalExceptionHandler(localizationService))
