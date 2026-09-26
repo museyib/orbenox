@@ -83,7 +83,7 @@ class DocumentApiIdempotencyTest {
         jsonMapper = new JsonMapper();
         idempotencyState = new InMemoryIdempotencyState();
         idempotencyService = Mockito.mock(IdempotencyService.class);
-        idempotencyExecutor = Mockito.mock(IdempotencyExecutor.class);
+        idempotencyExecutor = new IdempotencyExecutor(idempotencyService, jsonMapper);
         documentItem = new StubDocumentItem(DOCUMENT_ID, "DOC-001");
 
         lenient().when(idempotencyService.getRecord(anyString()))
