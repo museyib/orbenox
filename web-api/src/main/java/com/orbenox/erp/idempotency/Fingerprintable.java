@@ -1,4 +1,4 @@
-package com.orbenox.erp.transaction.idempotency;
+package com.orbenox.erp.idempotency;
 
 public interface Fingerprintable {
     String tag();

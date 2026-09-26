@@ -1,7 +1,9 @@
-package com.orbenox.erp.transaction.idempotency;
+package com.orbenox.erp.idempotency;
 
 import com.orbenox.erp.exception.BusinessRuleException;
 import com.orbenox.erp.exception.IdempotencyException;
+import com.orbenox.erp.outbox.OutboxEvent;
+import com.orbenox.erp.outbox.OutboxEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,18 +13,20 @@ import org.springframework.util.function.ThrowingSupplier;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
-import static com.orbenox.erp.transaction.idempotency.IdempotentRecord.Status.COMPLETED;
-import static com.orbenox.erp.transaction.idempotency.IdempotentRecord.Status.PROCESSING;
+import static com.orbenox.erp.idempotency.IdempotentRecord.Status.COMPLETED;
+import static com.orbenox.erp.idempotency.IdempotentRecord.Status.PROCESSING;
 
 @Service
 @RequiredArgsConstructor
 public class IdempotencyExecutor {
     private final IdempotencyService idempotencyService;
+    private final OutboxEventService outboxEventService;
     private final JsonMapper jsonMapper;
 
     @Transactional
     public Object execute(String key,
                           String requestHash,
+                          OutboxEvent outboxEvent,
                           ThrowingSupplier<Object> operation) {
 
 
@@ -55,6 +59,7 @@ public class IdempotencyExecutor {
         ResponseEntity<?> response = (ResponseEntity<?>) result;
 
         idempotencyService.complete(key, response.getStatusCode().value(), requestHash, response.getBody());
+        outboxEventService.save(outboxEvent);
 
         return result;
     }
