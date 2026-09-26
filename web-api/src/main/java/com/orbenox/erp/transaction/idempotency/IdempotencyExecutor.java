@@ -23,7 +23,7 @@ public class IdempotencyExecutor {
     @Transactional
     public Object execute(String key,
                           String requestHash,
-                          ThrowingSupplier<Object> operation) throws Exception {
+                          ThrowingSupplier<Object> operation) {
 
 
         boolean locked = idempotencyService.tryLock(key, requestHash);
@@ -49,17 +49,13 @@ public class IdempotencyExecutor {
             throw new IdempotencyException("Concurrent request processing error.");
         }
 
-        try {
-            Object result = operation.get();
 
-            ResponseEntity<?> response = (ResponseEntity<?>) result;
+        Object result = operation.get();
 
-            idempotencyService.complete(key, response.getStatusCode().value(), requestHash, response.getBody());
+        ResponseEntity<?> response = (ResponseEntity<?>) result;
 
-            return result;
-        } catch (Exception e) {
-            idempotencyService.evict(key);
-            throw new Exception(e);
-        }
+        idempotencyService.complete(key, response.getStatusCode().value(), requestHash, response.getBody());
+
+        return result;
     }
 }
