@@ -25,6 +25,8 @@ public class EventConsumer {
             int affected = inboxEventRepository.createInboxEvent("event_consumer", eventMessage.eventId());
             if (affected > 0) {
                 log.info("Message received: {}", message);
+            } else {
+                log.warn("Event {} already processed", eventMessage.eventId());
             }
         } catch (JsonProcessingException e) {
             log.error("Error processing message: {}", message, e);

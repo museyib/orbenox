@@ -30,8 +30,7 @@ public class OutboxPublisher {
                     event.getAggregateType(),
                     event.getAggregateId(),
                     event.getAggregateVersion(),
-                    event.getPayload(),
-                    "");
+                    event.getPayload());
             rabbitTemplate.convertAndSend("outbox-exchange", "outbox-routing-key", eventMessage);
             outboxEventRepository.updateStatus(event.getId(), "PUBLISHED");
             log.info("Event with id {} published", event.getId());
