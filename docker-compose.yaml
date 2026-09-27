@@ -13,7 +13,7 @@ services:
 
   redis:
     image: redis:latest
-    container_name: shop-redis
+    container_name: redis
     ports:
       - "6379:6379"
     volumes:
@@ -75,11 +75,38 @@ services:
       - rabbitmq
 
   rabbitmq:
-    image: rabbitmq:latest
-    container_name: shop-rabbitmq
+    image: rabbitmq:management
+    container_name: rabbitmq
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5673:5672"
+      - "15673:15672"
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    environment:
+      USER: admin
+      PASSWORD: admin
+
+  event-publisher:
+    build:
+      context: ./event-publisher
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://postgres:5432/orbenox
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
 volumes:
   postgres_data:

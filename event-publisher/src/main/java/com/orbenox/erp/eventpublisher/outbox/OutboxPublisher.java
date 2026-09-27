@@ -1,4 +1,4 @@
-package com.orbenox.erp.outbox;
+package com.orbenox.erp.eventpublisher.outbox;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
