@@ -25,8 +25,8 @@ spring:
                   - '*'
                 allowCredentials: true
           routes:
-            - id: user-service-route
-              uri: http://web-api:8090
+            - id: web-api-route
+              uri: lb://web-api
               predicates:
                 - Path=/api/**
 
