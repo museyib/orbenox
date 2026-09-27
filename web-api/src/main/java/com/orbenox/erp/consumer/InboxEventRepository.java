@@ -14,6 +14,6 @@ public interface InboxEventRepository extends JpaRepository<InboxEvent, Long> {
             VALUES (:consumerName, :eventId, CURRENT_TIMESTAMP)
             ON CONFLICT DO NOTHING""",
             nativeQuery = true)
-    void createInboxEvent(@Param("consumerName") String consumerName,
+    int createInboxEvent(@Param("consumerName") String consumerName,
                           @Param("eventId") Long eventId);
 }
