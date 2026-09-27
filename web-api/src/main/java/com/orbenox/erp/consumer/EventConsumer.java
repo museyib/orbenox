@@ -3,6 +3,7 @@ package com.orbenox.erp.consumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.orbenox.erp.outbox.OutboxEvent;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -17,6 +18,7 @@ public class EventConsumer {
     private final ObjectMapper jsonMapper;
 
     @RabbitListener(queues = "outbox-queue")
+    @Transactional
     public void processEvent(String message) {
         try {
             OutboxEvent outboxEvent = jsonMapper.readValue(message, OutboxEvent.class);
