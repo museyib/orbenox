@@ -67,6 +67,8 @@ services:
       SPRING_DATA_REDIS_HOST: redis
       EUREKA_DEFAULT_ZONE: ${EUREKA_DEFAULT_ZONE}
       EUREKA_PREFER_IP_ADDRESS: ${EUREKA_PREFER_IP_ADDRESS}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
     ports:
       - "8090"
     depends_on:
@@ -86,9 +88,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
-    environment:
-      USER: admin
-      PASSWORD: admin
 
   event-publisher:
     build:
