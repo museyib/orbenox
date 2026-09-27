@@ -73,7 +73,6 @@ services:
       - "8090"
     depends_on:
       - postgres
-      - redis
       - rabbitmq
 
   rabbitmq:
@@ -101,8 +100,6 @@ services:
       SPRING_RABBITMQ_PORT: 5672
     depends_on:
       postgres:
-        condition: service_started
-      redis:
         condition: service_started
       rabbitmq:
         condition: service_healthy
