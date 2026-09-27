@@ -6,7 +6,6 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "outbox_event")
 @EntityListeners(AuditingEntityListener.class)
-public class OutboxEvent implements Serializable {
+public class OutboxEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
