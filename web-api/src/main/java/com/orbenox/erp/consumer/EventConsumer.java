@@ -2,7 +2,7 @@ package com.orbenox.erp.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.orbenox.erp.outbox.OutboxEvent;
+import com.orbenox.erp.outbox.EventMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +21,14 @@ public class EventConsumer {
     @Transactional
     public void processEvent(String message) {
         try {
-            OutboxEvent outboxEvent = jsonMapper.readValue(message, OutboxEvent.class);
-            int affected = inboxEventRepository.createInboxEvent("event_consumer", outboxEvent.getId());
+            EventMessage eventMessage = jsonMapper.readValue(message, EventMessage.class);
+            int affected = inboxEventRepository.createInboxEvent("event_consumer", eventMessage.eventId());
             if (affected > 0) {
                 log.info("Message received: {}", message);
             }
         } catch (JsonProcessingException e) {
             log.error("Error processing message: {}", message, e);
+            throw new RuntimeException(e);
         }
     }
 }

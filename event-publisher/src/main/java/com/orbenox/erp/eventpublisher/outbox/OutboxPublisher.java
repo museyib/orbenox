@@ -24,7 +24,15 @@ public class OutboxPublisher {
         List<OutboxEvent> pending = outboxEventRepository.findAllByStatusOrderByCreatedAt("PENDING", Limit.of(10));
 
         pending.forEach(event -> {
-            rabbitTemplate.convertAndSend("outbox-exchange", "outbox-routing-key", event);
+            EventMessage eventMessage = new EventMessage(
+                    event.getId(),
+                    event.getEventType(),
+                    event.getAggregateType(),
+                    event.getAggregateId(),
+                    event.getAggregateVersion(),
+                    event.getPayload(),
+                    "");
+            rabbitTemplate.convertAndSend("outbox-exchange", "outbox-routing-key", eventMessage);
             outboxEventRepository.updateStatus(event.getId(), "PUBLISHED");
             log.info("Event with id {} published", event.getId());
         });
