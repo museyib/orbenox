@@ -32,7 +32,7 @@ class EventConsumerTest {
     @Test
     void processEvent_shouldRecordEventIdForValidMessage() throws Exception {
         String message = objectMapper.writeValueAsString(new EventMessage(
-                42L, "ORDER_CREATED", "Order", "order-1", "1", "{}", "{}"));
+                42L, "ORDER_CREATED", "Order", "order-1", "1", "{}"));
         when(inboxEventRepository.createInboxEvent("event_consumer", 42L)).thenReturn(1);
 
         eventConsumer.processEvent(message);
@@ -43,7 +43,7 @@ class EventConsumerTest {
     @Test
     void processEvent_shouldIgnoreDuplicateEventWhenAlreadyRecorded() throws Exception {
         String message = objectMapper.writeValueAsString(new EventMessage(
-                42L, "ORDER_CREATED", "Order", "order-1", "1", "{}", "{}"));
+                42L, "ORDER_CREATED", "Order", "order-1", "1", "{}"));
         when(inboxEventRepository.createInboxEvent("event_consumer", 42L)).thenReturn(0);
 
         eventConsumer.processEvent(message);

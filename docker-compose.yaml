@@ -58,7 +58,7 @@ services:
     build:
       context: ./web-api
     deploy:
-      replicas: 2
+      replicas: 3
     environment:
       SPRING_PROFILES_ACTIVE: dev
       DB_URL: jdbc:postgresql://postgres:5432/orbenox
