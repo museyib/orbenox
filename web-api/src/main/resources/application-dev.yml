@@ -31,9 +31,6 @@ spring:
       repositories:
         enabled: false
 
-server:
-  port: "${SERVER_PORT:8090}"
-
 springdoc:
   swagger-ui:
     disable-swagger-default-url: true

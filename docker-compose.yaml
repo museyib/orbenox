@@ -69,8 +69,6 @@ services:
       EUREKA_PREFER_IP_ADDRESS: ${EUREKA_PREFER_IP_ADDRESS}
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_PORT: 5672
-    ports:
-      - "8090"
     depends_on:
       - postgres
       - rabbitmq
