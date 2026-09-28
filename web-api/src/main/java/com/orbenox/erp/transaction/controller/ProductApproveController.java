@@ -1,10 +1,10 @@
 package com.orbenox.erp.transaction.controller;
 
 import com.orbenox.erp.common.Response;
+import com.orbenox.erp.commonidempotency.idempotency.Idempotent;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.command.CreateProductApproveCommand;
 import com.orbenox.erp.transaction.entity.Document;
-import com.orbenox.erp.idempotency.Idempotent;
 import com.orbenox.erp.transaction.projection.DocumentItem;
 import com.orbenox.erp.transaction.repository.DocumentRepository;
 import com.orbenox.erp.transaction.service.ProductApproveActionService;

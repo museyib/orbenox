@@ -1,4 +1,5 @@
-package com.orbenox.erp.idempotency;
+package com.orbenox.erp.commonidempotency.idempotency;
+
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +13,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Arrays;
-
-import static com.orbenox.erp.common.Utilities.isBlank;
 
 @Aspect
 @Component
@@ -60,5 +59,9 @@ public class IdempotencyAspect {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    private boolean isBlank(String key) {
+        return key == null || key.isBlank();
     }
 }

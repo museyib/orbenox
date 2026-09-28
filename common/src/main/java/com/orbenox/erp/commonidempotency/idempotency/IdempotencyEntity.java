@@ -1,4 +1,4 @@
-package com.orbenox.erp.idempotency;
+package com.orbenox.erp.commonidempotency.idempotency;
 
 import com.orbenox.erp.common.entity.BaseEntity;
 import jakarta.persistence.Entity;

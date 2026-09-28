@@ -1,5 +1,6 @@
-package com.orbenox.erp.idempotency;
+package com.orbenox.erp.commonidempotency.idempotency;
 
+import com.orbenox.erp.idempotency.IdempotencyEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
