@@ -15,10 +15,3 @@ spring:
       pool-name: OrbenoxHikariPool
   rabbitmq:
     port: 5673
-
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_DEFAULT_ZONE:http://eureka-service:8761/eureka/}
-  instance:
-    prefer-ip-address: ${EUREKA_PREFER_IP_ADDRESS:true}

@@ -1,7 +1,5 @@
-package com.orbenox.erp.common.idempotency;
+package com.orbenox.erp.idempotency;
 
-import com.orbenox.erp.common.exception.BusinessRuleException;
-import com.orbenox.erp.common.exception.IdempotencyException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +9,8 @@ import org.springframework.util.function.ThrowingSupplier;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
-import static com.orbenox.erp.common.idempotency.IdempotentRecord.Status.COMPLETED;
-import static com.orbenox.erp.common.idempotency.IdempotentRecord.Status.PROCESSING;
+import static com.orbenox.erp.idempotency.IdempotencyRecord.Status.COMPLETED;
+import static com.orbenox.erp.idempotency.IdempotencyRecord.Status.PROCESSING;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +27,7 @@ public class IdempotencyExecutor {
         boolean locked = idempotencyService.tryLock(key, requestHash);
 
         if (!locked) {
-            IdempotentRecord existingRecord = idempotencyService.getRecord(key);
+            IdempotencyRecord existingRecord = idempotencyService.getRecord(key);
 
             if (existingRecord != null) {
                 if (!requestHash.equals(existingRecord.getRequestHash())) {
@@ -37,7 +35,7 @@ public class IdempotencyExecutor {
                 }
 
                 if (PROCESSING.equals(existingRecord.getStatus())) {
-                    throw new BusinessRuleException("Request is already being processed.");
+                    throw new IdempotencyException("Request is already being processed.");
                 } else if (COMPLETED.equals(existingRecord.getStatus())) {
                     JsonNode body = jsonMapper.readTree(existingRecord.getResponseBody());
                     return ResponseEntity.status(existingRecord.getResponseStatus())

@@ -1,6 +1,5 @@
 package com.orbenox.erp.stockservice.service;
 
-import com.orbenox.erp.common.idempotency.Idempotent;
 import com.orbenox.erp.stockservice.entity.Document;
 import com.orbenox.erp.stockservice.entity.ProductLine;
 import com.orbenox.erp.stockservice.entity.StockContext;
@@ -25,7 +24,6 @@ public class StockService {
     private final StockMovementRepository stockMovementRepo;
     private final StockBalanceRepository stockBalanceRepo;
 
-    @Idempotent
     public void post(Document doc) {
         StockContext sc = doc.getStockContext();
 

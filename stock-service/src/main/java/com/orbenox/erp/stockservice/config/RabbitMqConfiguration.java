@@ -17,7 +17,7 @@ public class RabbitMqConfiguration {
 
     @Bean
     public Queue outboxQueue() {
-        return new Queue("outbox-queue");
+        return new Queue("stock-queue");
     }
 
     @Bean

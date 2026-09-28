@@ -1,12 +1,12 @@
 package com.orbenox.erp.stockservice.consumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 @RequiredArgsConstructor
@@ -15,9 +15,9 @@ public class EventConsumer {
     private static final String CONSUMER_NAME = "stock-service";
 
     private final InboxEventRepository inboxEventRepository;
-    private final ObjectMapper jsonMapper;
+    private final JsonMapper jsonMapper;
 
-    @RabbitListener(queues = "outbox-queue")
+    @RabbitListener(queues = "stock-queue")
     @Transactional
     public void processEvent(String message) {
         try {
@@ -28,7 +28,7 @@ public class EventConsumer {
             } else {
                 log.warn("Event {} already processed", eventMessage.eventId());
             }
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error("Error processing message: {}", message, e);
             throw new RuntimeException(e);
         }

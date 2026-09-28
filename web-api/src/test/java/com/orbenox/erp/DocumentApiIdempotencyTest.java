@@ -4,7 +4,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.orbenox.erp.common.idempotency.IdempotencyAspect;
 import com.orbenox.erp.common.idempotency.IdempotencyExecutor;
 import com.orbenox.erp.common.idempotency.IdempotencyService;
-import com.orbenox.erp.common.idempotency.IdempotentRecord;
+import com.orbenox.erp.common.idempotency.IdempotencyRecord;
 import com.orbenox.erp.domain.businesspartner.BusinessPartnerItem;
 import com.orbenox.erp.domain.price.SimplePriceListItem;
 import com.orbenox.erp.domain.transactiontype.SimpleTransactionTypeItem;
@@ -46,8 +46,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import static com.orbenox.erp.common.idempotency.IdempotentRecord.Status.COMPLETED;
-import static com.orbenox.erp.common.idempotency.IdempotentRecord.Status.PROCESSING;
+import static com.orbenox.erp.common.idempotency.IdempotencyRecord.Status.COMPLETED;
+import static com.orbenox.erp.common.idempotency.IdempotencyRecord.Status.PROCESSING;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
@@ -197,7 +197,7 @@ class DocumentApiIdempotencyTest {
         CountDownLatch releaseCreate = new CountDownLatch(1);
         CountDownLatch conflictsObserved = new CountDownLatch(requestCount - 1);
 
-        when(salesOrderActionService.createDraft(any())).thenAnswer(invocation -> {
+        when(salesOrderActionService.createDraft(any())).thenAnswer(_ -> {
             firstRequestEnteredCreate.countDown();
             assertTrue(releaseCreate.await(10, TimeUnit.SECONDS), "Timed out while waiting to release createDraft");
             return document;
@@ -443,21 +443,21 @@ class DocumentApiIdempotencyTest {
     }
 
     private static final class InMemoryIdempotencyState {
-        private final Map<String, IdempotentRecord> records = new ConcurrentHashMap<>();
+        private final Map<String, IdempotencyRecord> records = new ConcurrentHashMap<>();
 
-        private IdempotentRecord get(String key) {
+        private IdempotencyRecord get(String key) {
             return records.get(key);
         }
 
         private boolean tryLock(String key, String requestHash) {
-            IdempotentRecord processing = new IdempotentRecord();
+            IdempotencyRecord processing = new IdempotencyRecord();
             processing.setStatus(PROCESSING);
             processing.setRequestHash(requestHash);
             return records.putIfAbsent(key, processing) == null;
         }
 
         private void complete(String key, int responseStatus, String requestHash, String responseBody) {
-            IdempotentRecord completed = new IdempotentRecord();
+            IdempotencyRecord completed = new IdempotencyRecord();
             completed.setStatus(COMPLETED);
             completed.setRequestHash(requestHash);
             completed.setResponseBody(responseBody);
@@ -465,8 +465,8 @@ class DocumentApiIdempotencyTest {
             records.put(key, completed);
         }
 
-        private IdempotentRecord.Status statusOf(String key) {
-            IdempotentRecord record = records.get(key);
+        private IdempotencyRecord.Status statusOf(String key) {
+            IdempotencyRecord record = records.get(key);
             return record == null ? null : record.getStatus();
         }
     }

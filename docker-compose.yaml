@@ -106,7 +106,23 @@ services:
     build:
       context: ./event-publisher
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://postgres:5432/orbenox
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+    depends_on:
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
+
+  stock-service:
+    build:
+      context: ./stock-service
+    environment:
       DB_URL: jdbc:postgresql://postgres:5432/orbenox
       DB_USERNAME: postgres
       DB_PASSWORD: postgres

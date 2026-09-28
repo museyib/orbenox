@@ -1,7 +1,7 @@
 package com.orbenox.erp.transaction.controller;
 
 import com.orbenox.erp.common.Response;
-import com.orbenox.erp.common.idempotency.Idempotent;
+import com.orbenox.erp.idempotency.Idempotent;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.command.CreateSalesOrderCommand;
 import com.orbenox.erp.transaction.entity.Document;
@@ -61,6 +61,7 @@ public class SalesOrderController {
 
     @PreAuthorize("hasPermission('SALES_ORDER', 'POST')")
     @PostMapping("/{id}/post")
+    @Idempotent
     public ResponseEntity<Response<DocumentItem>> post(@PathVariable Long id) {
         documentActionService.post(id);
         return ResponseEntity.ok(Response.successData(getItemOrThrow(id)));

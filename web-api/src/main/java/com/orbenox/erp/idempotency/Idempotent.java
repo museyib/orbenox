@@ -1,4 +1,4 @@
-package com.orbenox.erp.common.idempotency;
+package com.orbenox.erp.idempotency;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

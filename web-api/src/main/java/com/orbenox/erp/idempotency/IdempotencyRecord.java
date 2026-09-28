@@ -1,4 +1,4 @@
-package com.orbenox.erp.common.idempotency;
+package com.orbenox.erp.idempotency;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -36,7 +36,10 @@ public class IdempotencyRecord {
     private String updatedBy;
 
     private String idempotencyKey;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     private String requestHash;
     private String responseBody;
     private Integer responseStatus;
@@ -51,5 +54,9 @@ public class IdempotencyRecord {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public enum Status {
+        PROCESSING,COMPLETED,FAILED
     }
 }

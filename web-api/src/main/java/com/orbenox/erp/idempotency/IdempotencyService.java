@@ -1,12 +1,12 @@
-package com.orbenox.erp.common.idempotency;
+package com.orbenox.erp.idempotency;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.json.JsonMapper;
 
-import static com.orbenox.erp.common.idempotency.IdempotentRecord.Status.COMPLETED;
-import static com.orbenox.erp.common.idempotency.IdempotentRecord.Status.PROCESSING;
+import static com.orbenox.erp.idempotency.IdempotencyRecord.Status.COMPLETED;
+import static com.orbenox.erp.idempotency.IdempotencyRecord.Status.PROCESSING;
 
 @Service
 @RequiredArgsConstructor
@@ -22,19 +22,8 @@ public class IdempotencyService {
         return affected > 0;
     }
 
-    public IdempotentRecord getRecord(String key) {
-
-        return idempotencyRepository.findByIdempotencyKey(key)
-                .map(entity -> {
-                    IdempotentRecord record = new IdempotentRecord();
-                    record.setStatus(IdempotentRecord.Status.valueOf(entity.getStatus()));
-                    record.setRequestHash(entity.getRequestHash());
-                    record.setResponseStatus(entity.getResponseStatus());
-                    record.setResponseBody(entity.getResponseBody());
-
-                    return record;
-                })
-                .orElse(null);
+    public IdempotencyRecord getRecord(String key) {
+        return idempotencyRepository.findByIdempotencyKey(key).orElse(null);
     }
 
     @Transactional
@@ -43,7 +32,7 @@ public class IdempotencyService {
 
         idempotencyRepository.findByIdempotencyKey(key)
                 .ifPresent(entity -> {
-                    entity.setStatus(COMPLETED.name());
+                    entity.setStatus(COMPLETED);
                     entity.setRequestHash(requestHash);
                     entity.setResponseStatus(responseStatus);
                     entity.setResponseBody(jsonBody);
