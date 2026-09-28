@@ -1,6 +1,5 @@
-package com.orbenox.erp.commonidempotency.idempotency;
+package com.orbenox.erp.common.idempotency;
 
-import com.orbenox.erp.idempotency.IdempotencyEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -8,10 +7,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface IdempotencyRepository extends JpaRepository<IdempotencyEntity, Long> {
-    Optional<IdempotencyEntity> findByIdempotencyKey(String idempotencyKey);
-
-    void deleteByIdempotencyKey(String idempotencyKey);
+public interface IdempotencyRepository extends JpaRepository<IdempotencyRecord, Long> {
+    Optional<IdempotencyRecord> findByIdempotencyKey(String idempotencyKey);
 
     @Modifying
     @Query(value = """

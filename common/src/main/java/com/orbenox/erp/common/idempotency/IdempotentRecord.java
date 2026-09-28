@@ -1,4 +1,4 @@
-package com.orbenox.erp.commonidempotency.idempotency;
+package com.orbenox.erp.common.idempotency;
 
 import lombok.Getter;
 import lombok.Setter;

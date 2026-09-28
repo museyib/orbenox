@@ -1,10 +1,10 @@
-package com.orbenox.erp.commonidempotency;
+package com.orbenox.erp.common;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CommonIdempotencyApplicationTests {
+class CommonApplicationTests {
 
     @Test
     void contextLoads() {

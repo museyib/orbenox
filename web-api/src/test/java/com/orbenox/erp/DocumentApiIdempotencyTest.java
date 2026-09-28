@@ -1,6 +1,10 @@
 package com.orbenox.erp;
 
 import com.jayway.jsonpath.JsonPath;
+import com.orbenox.erp.common.idempotency.IdempotencyAspect;
+import com.orbenox.erp.common.idempotency.IdempotencyExecutor;
+import com.orbenox.erp.common.idempotency.IdempotencyService;
+import com.orbenox.erp.common.idempotency.IdempotentRecord;
 import com.orbenox.erp.domain.businesspartner.BusinessPartnerItem;
 import com.orbenox.erp.domain.price.SimplePriceListItem;
 import com.orbenox.erp.domain.transactiontype.SimpleTransactionTypeItem;
@@ -12,10 +16,6 @@ import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.controller.ProductApproveController;
 import com.orbenox.erp.transaction.controller.SalesOrderController;
 import com.orbenox.erp.transaction.entity.Document;
-import com.orbenox.erp.idempotency.IdempotencyExecutor;
-import com.orbenox.erp.idempotency.IdempotencyService;
-import com.orbenox.erp.idempotency.IdempotencyAspect;
-import com.orbenox.erp.idempotency.IdempotentRecord;
 import com.orbenox.erp.transaction.projection.DocumentItem;
 import com.orbenox.erp.transaction.repository.DocumentRepository;
 import com.orbenox.erp.transaction.service.ProductApproveActionService;
@@ -46,8 +46,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import static com.orbenox.erp.idempotency.IdempotentRecord.Status.COMPLETED;
-import static com.orbenox.erp.idempotency.IdempotentRecord.Status.PROCESSING;
+import static com.orbenox.erp.common.idempotency.IdempotentRecord.Status.COMPLETED;
+import static com.orbenox.erp.common.idempotency.IdempotentRecord.Status.PROCESSING;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;

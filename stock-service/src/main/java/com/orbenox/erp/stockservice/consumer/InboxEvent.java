@@ -1,5 +1,6 @@
 package com.orbenox.erp.stockservice.consumer;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 

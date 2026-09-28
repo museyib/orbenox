@@ -1,7 +1,7 @@
 package com.orbenox.erp.transaction.controller;
 
 import com.orbenox.erp.common.Response;
-import com.orbenox.erp.commonidempotency.idempotency.Idempotent;
+import com.orbenox.erp.common.idempotency.Idempotent;
 import com.orbenox.erp.localization.LocalizationService;
 import com.orbenox.erp.transaction.command.CreateSalesOrderCommand;
 import com.orbenox.erp.transaction.entity.Document;

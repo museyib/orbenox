@@ -1,6 +1,6 @@
 package com.orbenox.erp.stockservice.service;
 
-import com.orbenox.erp.idempotency.Idempotent;
+import com.orbenox.erp.common.idempotency.Idempotent;
 import com.orbenox.erp.stockservice.entity.Document;
 import com.orbenox.erp.stockservice.entity.ProductLine;
 import com.orbenox.erp.stockservice.entity.StockContext;

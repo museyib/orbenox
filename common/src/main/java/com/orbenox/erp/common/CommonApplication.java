@@ -1,13 +1,13 @@
-package com.orbenox.erp.commonidempotency;
+package com.orbenox.erp.common;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CommonIdempotencyApplication {
+public class CommonApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CommonIdempotencyApplication.class, args);
+        SpringApplication.run(CommonApplication.class, args);
     }
 
 }
