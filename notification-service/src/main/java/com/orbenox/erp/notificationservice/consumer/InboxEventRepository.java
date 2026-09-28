@@ -1,4 +1,5 @@
-package com.orbenox.erp.consumer;
+package com.orbenox.erp.notificationservice.consumer;
+
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

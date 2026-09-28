@@ -1,4 +1,4 @@
-package com.orbenox.erp.consumer;
+package com.orbenox.erp.notificationservice.consumer;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -136,6 +136,24 @@ services:
     networks:
       - backend
 
+
+  notification-service:
+    build:
+      context: ./notification-service
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/orbenox
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+    depends_on:
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
+
 volumes:
   postgres_data:
   redis_data:

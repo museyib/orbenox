@@ -31,7 +31,12 @@ public class OutboxPublisher {
                     event.getAggregateId(),
                     event.getAggregateVersion(),
                     event.getPayload());
-            rabbitTemplate.convertAndSend("outbox-exchange", "outbox-routing-key", eventMessage);
+            String queueName = "";
+            if (event.getEventType().endsWith("POSTED"))
+                queueName = "stock-queue";
+            else if (event.getEventType().endsWith("CREATED"))
+                queueName = "notification-queue";
+            rabbitTemplate.convertAndSend(queueName, eventMessage);
             outboxEventRepository.updateStatus(event.getId(), "PUBLISHED");
             log.info("Event with id {} published", event.getId());
         });

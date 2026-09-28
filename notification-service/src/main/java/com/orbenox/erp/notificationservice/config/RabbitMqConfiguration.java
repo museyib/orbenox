@@ -1,4 +1,4 @@
-package com.orbenox.erp.config;
+package com.orbenox.erp.notificationservice.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -17,7 +17,7 @@ public class RabbitMqConfiguration {
 
     @Bean
     public Queue outboxQueue() {
-        return new Queue("outbox-queue");
+        return new Queue("notification-queue");
     }
 
     @Bean
