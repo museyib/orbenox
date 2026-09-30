@@ -8,5 +8,5 @@ export function documentEndpoint(typeCode) {
 }
 
 export function documentTypeCode(document) {
-  return document?.typeCode || document?.typeItem?.code || "";
+  return document?.typeCode || document?.type?.code || "";
 }

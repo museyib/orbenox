@@ -89,7 +89,7 @@ onMounted(() => init());
     <section v-if="documentData" class="card">
       <p><strong>{{ $t("documentNumber") }}:</strong> {{ documentData.documentNo }}</p>
       <p><strong>{{ $t("documentDate") }}:</strong> {{ documentData.documentDate }}</p>
-      <p><strong>{{ $t("transactionType.title") }}:</strong> {{ documentTypeCode(documentData) || documentData.typeName || documentData.typeItem?.name }}</p>
+      <p><strong>{{ $t("transactionType.title") }}:</strong> {{ documentTypeCode(documentData) || documentData.typeName || documentData.type?.name }}</p>
       <p><strong>{{ $t("documentStatus") }}:</strong> {{ documentData.documentStatus }}</p>
       <p><strong>{{ $t("approvalStatus") }}:</strong> {{ documentData.approvalStatus }}</p>
       <p><strong>{{ $t("description") }}:</strong> {{ documentData.description }}</p>

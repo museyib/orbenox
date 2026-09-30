@@ -34,7 +34,6 @@ public class DefaultDocumentPostPolicy implements DocumentPostPolicy {
             String aggregateType = document.getType().getCode();
             String eventType = aggregateType + "_POSTED";
             outboxEventService.createOutboxEvent(document, eventType, aggregateType);
-//            stockService.post(document);
         }
 
         if (document.getType().isCommercialAffected()) {

@@ -17,7 +17,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
                 d.description as description,
                 d.documentStatus as documentStatus,
                 d.approvalStatus as approvalStatus,
-                t as typeItem
+                t as type
             FROM Document d
             JOIN d.type t
             ORDER BY d.id DESC
@@ -31,7 +31,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
                 d.description as description,
                 d.documentStatus as documentStatus,
                 d.approvalStatus as approvalStatus,
-                t as typeItem
+                t as type
             FROM Document d
             JOIN d.type t ON d.type.id = :typeId
             ORDER BY d.id DESC
@@ -45,7 +45,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
                 d.description as description,
                 d.documentStatus as documentStatus,
                 d.approvalStatus as approvalStatus,
-                t as typeItem,
+                t as type,
                 ws as sourceWarehouse,
                 wt as targetWarehouse,
                 p as businessPartner,
@@ -67,7 +67,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
                 d.description as description,
                 d.documentStatus as documentStatus,
                 d.approvalStatus as approvalStatus,
-                t as typeItem,
+                t as type,
                 ws as sourceWarehouse,
                 wt as targetWarehouse,
                 p as businessPartner,

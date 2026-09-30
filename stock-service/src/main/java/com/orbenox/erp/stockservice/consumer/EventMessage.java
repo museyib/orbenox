@@ -4,7 +4,7 @@ public record EventMessage(
         Long eventId,
         String eventType,
         String aggregateType,
-        String aggregateId,
+        Long aggregateId,
         String aggregateVersion,
         String payload
 ) {

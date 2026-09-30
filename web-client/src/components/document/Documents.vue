@@ -78,6 +78,8 @@ function canCancel(doc) {
 function runAction(documentId, action) {
   const document = documents.value.find(item => item.id === documentId);
   const endpoint = documentEndpoint(documentTypeCode(document));
+  console.log(endpoint);
+  console.log(document);
   if (!endpoint) return;
   apiRequest(`${endpoint}/${documentId}/${action}`, "POST").then(response => {
     if (response.code === 200) {
@@ -125,7 +127,7 @@ onMounted(() => init());
             <td class="mono">{{ document.id }}</td>
             <td>{{ document.documentNo }}</td>
             <td>{{ document.documentDate }}</td>
-            <td>{{ documentTypeCode(document) || document.typeName || document.typeItem?.name }}</td>
+            <td>{{ documentTypeCode(document) || document.typeName || document.type?.name }}</td>
             <td>{{ document.documentStatus }}</td>
             <td>{{ document.approvalStatus }}</td>
             <td class="actions-col">

@@ -16,7 +16,7 @@ public interface DocumentItem {
     String getDescription();
     DocumentStatus getDocumentStatus();
     ApprovalStatus getApprovalStatus();
-    SimpleTransactionTypeItem getTypeItem();
+    SimpleTransactionTypeItem getType();
     Long getPartnerId();
     WarehouseItem getSourceWarehouse();
     WarehouseItem getTargetWarehouse();
