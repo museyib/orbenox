@@ -1,10 +1,9 @@
 package com.orbenox.erp.transaction.policy.post;
 
+import com.orbenox.erp.common.event.DocumentEvent;
 import com.orbenox.erp.domain.transactiontype.TransactionType;
-import com.orbenox.erp.event.EventResponse;
+import com.orbenox.erp.common.event.EventResponse;
 import com.orbenox.erp.exception.BusinessRuleException;
-import com.orbenox.erp.outbox.DocumentEvent;
-import com.orbenox.erp.outbox.OutboxEventService;
 import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.service.AccountingService;
 import com.orbenox.erp.transaction.service.CommercialService;
@@ -13,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.math.BigDecimal;
 
@@ -24,9 +22,7 @@ import java.math.BigDecimal;
 public class DefaultDocumentPostPolicy implements DocumentPostPolicy {
     private final AccountingService accountingService;
     private final CommercialService commercialService;
-    private final OutboxEventService outboxEventService;
     private final RabbitTemplate rabbitTemplate;
-    private final JsonMapper jsonMapper;
 
     @Override
     public boolean supports(TransactionType type) {
@@ -49,8 +45,11 @@ public class DefaultDocumentPostPolicy implements DocumentPostPolicy {
                     document.getDescription()
             );
 
-            EventResponse response = jsonMapper.readValue((String) rabbitTemplate.convertSendAndReceive("stock-queue", documentEvent), EventResponse.class);
-            log.info("Error processing message: {}", response);
+            EventResponse response = (EventResponse) rabbitTemplate.convertSendAndReceive("stock-queue", documentEvent);
+            if (response == null)
+                throw new BusinessRuleException("Stock service response is null");
+
+            log.info("Stock service response: {}", response.message());
             if (!response.success())
                 throw new BusinessRuleException(response.message());
         }

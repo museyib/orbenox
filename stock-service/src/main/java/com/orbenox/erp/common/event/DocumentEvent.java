@@ -1,4 +1,4 @@
-package com.orbenox.erp.stockservice.consumer;
+package com.orbenox.erp.common.event;
 
 public record DocumentEvent(
         Long id,

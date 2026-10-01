@@ -1,4 +1,4 @@
-package com.orbenox.erp.event;
+package com.orbenox.erp.common.event;
 
 public record EventResponse(
         boolean success,

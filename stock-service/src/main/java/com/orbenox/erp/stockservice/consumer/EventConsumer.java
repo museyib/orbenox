@@ -1,5 +1,7 @@
 package com.orbenox.erp.stockservice.consumer;
 
+import com.orbenox.erp.common.event.DocumentEvent;
+import com.orbenox.erp.common.event.EventResponse;
 import com.orbenox.erp.stockservice.service.StockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,14 +17,14 @@ public class EventConsumer {
     private final JsonMapper jsonMapper;
 
     @RabbitListener(queues = "stock-queue")
-    public String processEvent(DocumentEvent eventMessage) {
+    public EventResponse processEvent(DocumentEvent eventMessage) {
         try {
             log.info("Message received: {}", eventMessage);
             stockService.post(eventMessage.id());
-            return jsonMapper.writeValueAsString(new EventResponse(true, "OK"));
+            return new EventResponse(true, "Stock processed successfully");
         } catch (Exception e) {
             log.error("Error processing message: {}", eventMessage, e);
-            return jsonMapper.writeValueAsString(new EventResponse(false, e.getMessage()));
+            return new EventResponse(false, e.getMessage());
         }
     }
 }

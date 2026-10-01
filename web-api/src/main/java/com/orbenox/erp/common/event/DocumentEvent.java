@@ -1,4 +1,4 @@
-package com.orbenox.erp.outbox;
+package com.orbenox.erp.common.event;
 
 public record DocumentEvent(
         Long id,
