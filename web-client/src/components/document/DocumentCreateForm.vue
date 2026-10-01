@@ -107,6 +107,7 @@ function buildPayload() {
     lines: form.value.lines.map(line => ({
       productId: Number(line.product.id),
       quantity: Number(line.quantity),
+      unitId: Number(line.defaultUnit.id),
       unitPrice: isSalesOrder.value ? Number(line.unitPrice) : 0,
       discountRatio: isSalesOrder.value ? Number(line.discountRatio || 0) : 0
     }))

@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 
 public record ProductLineCommand (
         Long productId,
+        Long unitId,
         @Positive BigDecimal quantity,
         @Positive BigDecimal unitPrice,
         @Positive BigDecimal discountRatio

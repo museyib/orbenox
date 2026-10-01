@@ -560,6 +560,7 @@ CREATE TABLE product_line
     product_id  BIGINT REFERENCES product (id),
     unit_id     BIGINT REFERENCES unit (id),
     quantity    NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    posted_quantity    NUMERIC(20, 10) NOT NULL DEFAULT 0,
     unit_price  NUMERIC(20, 10) NOT NULL DEFAULT 0,
     discount    NUMERIC(20, 10) NOT NULL DEFAULT 0
 );
@@ -592,4 +593,42 @@ CREATE TABLE stock_balance
     free_quantity     NUMERIC(20, 10) GENERATED ALWAYS AS ( quantity - reserved_quantity ) STORED,
     UNIQUE (product_id, warehouse_id),
     CHECK ( quantity >= 0 )
+);
+
+CREATE TABLE idempotency_record
+(
+    id              BIGSERIAL PRIMARY KEY,
+    idempotency_key VARCHAR(100) NOT NULL,
+    status          VARCHAR(255) NOT NULL,
+    request_hash    VARCHAR(255),
+    response_body   TEXT,
+    response_status INT,
+    created_at      TIMESTAMP DEFAULT now(),
+    updated_at      TIMESTAMP,
+    created_by      VARCHAR(100),
+    updated_by      VARCHAR(100),
+    UNIQUE (idempotency_key)
+);
+
+CREATE TABLE outbox_event
+(
+    id                BIGSERIAL PRIMARY KEY,
+    event_type        VARCHAR(100) NOT NULL,
+    aggregate_type    VARCHAR(255) NOT NULL,
+    aggregate_id      VARCHAR(255),
+    aggregate_version VARCHAR(255),
+    payload           TEXT,
+    created_at        TIMESTAMP DEFAULT now(),
+    published_at      TIMESTAMP,
+    status            VARCHAR(100)
+);
+
+CREATE TABLE inbox_event
+(
+    id            BIGSERIAL PRIMARY KEY,
+    consumer_name VARCHAR(100) NOT NULL,
+    event_id      BIGINT       NOT NULL,
+    processed_at  TIMESTAMP DEFAULT now(),
+    CONSTRAINT uk_inbox_consumer_event
+        UNIQUE (consumer_name, event_id)
 );

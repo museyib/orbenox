@@ -18,6 +18,6 @@ public class RabbitMqConfiguration {
     @Bean
     public MessageConverter messageConverter(JsonMapper jsonMapper) {
         return new JacksonJsonMessageConverter(jsonMapper,
-                "com.orbenox.erp.common.event");
+                "com.orbenox.erp.messaging.event");
     }
 }

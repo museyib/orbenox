@@ -24,8 +24,11 @@ public class ProductLine {
     @Column(nullable = false)
     private BigDecimal quantity;
 
+    @Column(nullable = false)
+    private BigDecimal postedQuantity;
+
     @Column(name = "unit_id", nullable = false)
-    private Long unit;
+    private Long unitId;
 
     @Column(nullable = false)
     private BigDecimal unitPrice;
@@ -40,7 +43,7 @@ public class ProductLine {
                 ", document=" + document +
                 ", product=" + productId +
                 ", quantity=" + quantity +
-                ", unit=" + unit +
+                ", unit=" + unitId +
                 ", unitPrice=" + unitPrice +
                 ", discount=" + discount +
                 '}';

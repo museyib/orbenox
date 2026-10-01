@@ -33,11 +33,21 @@ public class StockService {
         if (sc != null) {
             List<StockOperation> operations = new ArrayList<>();
             for (ProductLine line : doc.getProductLines()) {
-                if (sc.getSourceWarehouseId() != null) {
-                    operations.add(new StockOperation(line.getProductId(), sc.getSourceWarehouseId(), line.getQuantity(), -1));
-                }
-                if (sc.getTargetWarehouseId() != null) {
-                    operations.add(new StockOperation(line.getProductId(), sc.getTargetWarehouseId(), line.getQuantity(), 1));
+                BigDecimal remaining = line.getQuantity().subtract(line.getPostedQuantity());
+                if (remaining.compareTo(BigDecimal.ZERO) > 0) {
+                    Long warehouseId = null;
+                    int direction = 0;
+
+                    if (sc.getSourceWarehouseId() != null) {
+                        warehouseId = sc.getSourceWarehouseId();
+                        direction = -1;
+                    } else if (sc.getTargetWarehouseId() != null) {
+                        warehouseId = sc.getTargetWarehouseId();
+                        direction = 1;
+                    }
+                    operations.add(new StockOperation(line.getProductId(), warehouseId, remaining, direction));
+
+                    line.setPostedQuantity(line.getPostedQuantity().add(remaining));
                 }
             }
 

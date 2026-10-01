@@ -76,7 +76,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                 p.code as code,
                 p.name as name,
                 p.description as description,
-                p.defaultBarcode as defaultBarcode
+                p.defaultBarcode as defaultBarcode,
+                p.defaultUnit as defaultUnit
             FROM Product p
             WHERE p.deleted = false AND p.enabled = true
             ORDER BY p.id""")
