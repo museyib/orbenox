@@ -84,9 +84,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessRuleException.class)
     public ResponseEntity<Response<String>> handleException(BusinessRuleException e) {
         int code = HttpStatus.BAD_REQUEST.value();
-        String message = MessageFormat.format("{0}: {1}", i18n.msg("error.validation"), getMessage(e));
+        String message = MessageFormat.format("{0}: {1}", i18n.msg("error.business"), getMessage(e));
         log.error(message);
-        return ResponseEntity.status(code).body(Response.errorMessage(code, message, "error.validation"));
+        return ResponseEntity.status(code).body(Response.errorMessage(code, message, "error.business"));
     }
 
     @ExceptionHandler(IdempotencyException.class)

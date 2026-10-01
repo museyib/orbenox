@@ -15,3 +15,11 @@ spring:
       pool-name: OrbenoxHikariPool
   rabbitmq:
     port: 5673
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 5s
+          max-retries: 3
+          max-interval: 10s
+          multiplier: 2

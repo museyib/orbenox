@@ -15,3 +15,5 @@ spring:
       pool-name: OrbenoxHikariPool
   rabbitmq:
     port: 5673
+    template:
+      reply-timeout: 5000

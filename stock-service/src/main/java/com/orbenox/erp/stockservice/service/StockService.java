@@ -5,6 +5,7 @@ import com.orbenox.erp.stockservice.entity.ProductLine;
 import com.orbenox.erp.stockservice.entity.StockContext;
 import com.orbenox.erp.stockservice.entity.StockMovement;
 import com.orbenox.erp.stockservice.exception.BusinessRuleException;
+import com.orbenox.erp.stockservice.repository.DocumentRepository;
 import com.orbenox.erp.stockservice.repository.StockBalanceRepository;
 import com.orbenox.erp.stockservice.repository.StockMovementRepository;
 import jakarta.transaction.Transactional;
@@ -23,8 +24,10 @@ public class StockService {
 
     private final StockMovementRepository stockMovementRepo;
     private final StockBalanceRepository stockBalanceRepo;
+    private final DocumentRepository documentRepository;
 
-    public void post(Document doc) {
+    public void post(Long documentId) {
+        Document doc = documentRepository.findById(documentId).orElseThrow();
         StockContext sc = doc.getStockContext();
 
         if (sc != null) {

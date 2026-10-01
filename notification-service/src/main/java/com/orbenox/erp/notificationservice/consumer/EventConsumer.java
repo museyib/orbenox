@@ -21,7 +21,7 @@ public class EventConsumer {
     public void processEvent(String message) {
         try {
             EventMessage eventMessage = jsonMapper.readValue(message, EventMessage.class);
-            int affected = inboxEventRepository.createInboxEvent("event_consumer", eventMessage.eventId());
+            int affected = inboxEventRepository.createInboxEvent("notification-service", eventMessage.eventId());
             if (affected > 0) {
                 log.info("Message received: {}", message);
             } else {
