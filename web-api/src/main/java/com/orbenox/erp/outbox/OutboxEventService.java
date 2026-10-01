@@ -1,6 +1,6 @@
 package com.orbenox.erp.outbox;
 
-import com.orbenox.erp.messaging.event.DocumentEvent;
+import com.orbenox.erp.messaging.command.PostDocumentCommand;
 import com.orbenox.erp.transaction.entity.Document;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class OutboxEventService {
 
     @Transactional
     public void createOutboxEvent(Document document, String eventType, String aggregateType) {
-        DocumentEvent documentEvent = new DocumentEvent(
+        PostDocumentCommand postDocumentCommand = new PostDocumentCommand(
                 document.getId(),
                 document.getDocumentNo(),
                 document.getDocumentDate().toString(),
@@ -28,7 +28,7 @@ public class OutboxEventService {
         outboxEvent.setEventType(eventType);
         outboxEvent.setAggregateType(aggregateType);
         outboxEvent.setAggregateId(document.getId().toString());
-        outboxEvent.setPayload(jsonMapper.writeValueAsString(documentEvent));
+        outboxEvent.setPayload(jsonMapper.writeValueAsString(postDocumentCommand));
         outboxEvent.setStatus("PENDING");
         outboxEventRepository.save(outboxEvent);
     }

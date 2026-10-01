@@ -16,8 +16,8 @@ public class RabbitMqConfiguration {
     }
 
     @Bean
-    public Queue outboxQueue() {
-        return QueueBuilder.durable("stock-queue")
+    public Queue stockPostQueue() {
+        return QueueBuilder.durable("stock.post")
                 .withArgument("x-dead-letter-exchange", "dlx")
                 .withArgument("x-dead-letter-routing-key", "dlx-routing-key")
                 .build();

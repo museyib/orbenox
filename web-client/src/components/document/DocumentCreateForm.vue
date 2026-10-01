@@ -107,7 +107,7 @@ function buildPayload() {
     lines: form.value.lines.map(line => ({
       productId: Number(line.product.id),
       quantity: Number(line.quantity),
-      unitId: Number(line.defaultUnit.id),
+      unitId: Number(line.product.defaultUnit.id),
       unitPrice: isSalesOrder.value ? Number(line.unitPrice) : 0,
       discountRatio: isSalesOrder.value ? Number(line.discountRatio || 0) : 0
     }))
@@ -205,6 +205,7 @@ onMounted(init);
             <tr>
               <th>{{ $t("code") }}</th>
               <th>{{ $t("name") }}</th>
+              <th>{{ $t("unit") }}</th>
               <th class="num-col">{{ $t("quantity") }}</th>
               <th v-if="isSalesOrder" class="num-col">{{ $t("price") }}</th>
               <th v-if="isSalesOrder" class="num-col">{{ $t("discountRatio") }}</th>

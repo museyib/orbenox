@@ -78,8 +78,6 @@ function canCancel(doc) {
 function runAction(documentId, action) {
   const document = documents.value.find(item => item.id === documentId);
   const endpoint = documentEndpoint(documentTypeCode(document));
-  console.log(endpoint);
-  console.log(document);
   if (!endpoint) return;
   apiRequest(`${endpoint}/${documentId}/${action}`, "POST").then(response => {
     if (response.code === 200) {

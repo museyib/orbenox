@@ -14,11 +14,13 @@ public interface ProductLineRepository extends JpaRepository<ProductLine, Long> 
     @Query("""
         SELECT l.id AS id,
             p AS product,
+            u AS defaultUnit,
             l.quantity AS quantity,
             l.unitPrice AS unitPrice,
             l.discount AS discount
         FROM ProductLine l
         LEFT JOIN l.product p
+        LEFT JOIN p.defaultUnit u
         WHERE l.document.id = :id
         """)
     List<ProductLineItem> getItemsByDocumentId(@Param("id") Long id);

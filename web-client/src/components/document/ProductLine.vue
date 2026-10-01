@@ -141,6 +141,9 @@ watch(
     <td class="cell cell-product">
       {{ activeProduct?.name || "-" }}
     </td>
+    <td class="cell cell-product">
+      {{ activeProduct?.defaultUnit?.id || "-" }}
+    </td>
     <td class="cell cell-number">
       <input v-model="line.quantity" :disabled="props.disabled" min="0" step="0.0001" type="number" name="quantity"/>
     </td>

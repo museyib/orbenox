@@ -85,7 +85,7 @@ public class SalesOrderActionService implements DocumentActionService<CreateSale
 
         documentPostPolicyResolver.resolve(doc.getType()).post(doc);
 
-        doc.setDocumentStatus(DocumentStatus.POSTED);
+        doc.setDocumentStatus(DocumentStatus.POSTING);
     }
 
     @Override
@@ -117,5 +117,11 @@ public class SalesOrderActionService implements DocumentActionService<CreateSale
             throw new BusinessRuleException(i18n.msg("error.document.postedCannotBeCancelled"));
 
         doc.setDocumentStatus(DocumentStatus.CANCELLED);
+    }
+
+    public void updateDocumentStatus(Long documentId, DocumentStatus documentStatus) {
+        Document doc = documentResolver.resolve(documentId, TRANSACTION_TYPE);
+
+        doc.setDocumentStatus(documentStatus);
     }
 }

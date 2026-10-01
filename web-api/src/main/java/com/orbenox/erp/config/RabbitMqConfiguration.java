@@ -1,6 +1,6 @@
 package com.orbenox.erp.config;
 
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -16,8 +16,20 @@ public class RabbitMqConfiguration {
     }
 
     @Bean
+    public Queue stockPostedQueue() {
+        return QueueBuilder.durable("stock.posted")
+                .withArgument("x-dead-letter-exchange", "dlx")
+                .withArgument("x-dead-letter-routing-key", "dlx-routing-key")
+                .build();
+    }
+
+    @Bean
+    public Binding outboxBinding(Queue outboxQueue, TopicExchange outboxExchange) {
+        return BindingBuilder.bind(outboxQueue).to(outboxExchange).with("outbox-routing-key");
+    }
+
+    @Bean
     public MessageConverter messageConverter(JsonMapper jsonMapper) {
-        return new JacksonJsonMessageConverter(jsonMapper,
-                "com.orbenox.erp.messaging.event");
+        return new JacksonJsonMessageConverter(jsonMapper);
     }
 }

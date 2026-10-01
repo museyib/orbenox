@@ -29,6 +29,7 @@ const filteredProducts = computed(() => {
   const term = searchTerm.value.trim().toLowerCase();
   if (!term) return props.products;
   return props.products.filter(p => {
+    const unitId = p.defaultUnit.id || "";
     const code = String(p.code || "").toLowerCase();
     const name = String(p.name || "").toLowerCase();
     return code.includes(term) || name.includes(term);
@@ -41,6 +42,7 @@ function setProduct(product) {
   props.line.productId = product.id;
   props.line.productCode = product.code;
   props.line.productName = product.name;
+  props.line.unitId = product.defaultUnit.id;
   props.onClose?.();
 }
 </script>

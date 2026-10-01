@@ -1,9 +1,7 @@
 package com.orbenox.erp.transaction.policy.post;
 
-import com.orbenox.erp.messaging.event.DocumentEvent;
+import com.orbenox.erp.messaging.command.PostDocumentCommand;
 import com.orbenox.erp.domain.transactiontype.TransactionType;
-import com.orbenox.erp.messaging.event.EventResponse;
-import com.orbenox.erp.exception.BusinessRuleException;
 import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.service.AccountingService;
 import com.orbenox.erp.transaction.service.CommercialService;
@@ -36,7 +34,7 @@ public class DefaultDocumentPostPolicy implements DocumentPostPolicy {
         }
 
         if (document.getType().isStockAffected()) {
-            DocumentEvent documentEvent = new DocumentEvent(
+            PostDocumentCommand postDocumentCommand = new PostDocumentCommand(
                     document.getId(),
                     document.getDocumentNo(),
                     document.getDocumentDate().toString(),
@@ -45,13 +43,7 @@ public class DefaultDocumentPostPolicy implements DocumentPostPolicy {
                     document.getDescription()
             );
 
-            EventResponse response = (EventResponse) rabbitTemplate.convertSendAndReceive("stock-queue", documentEvent);
-            if (response == null)
-                throw new BusinessRuleException("Stock service response is null");
-
-            log.info("Stock service response: {}", response.message());
-            if (!response.success())
-                throw new BusinessRuleException(response.message());
+            rabbitTemplate.convertAndSend("stock.post", postDocumentCommand);
         }
 
         if (document.getType().isCommercialAffected()) {

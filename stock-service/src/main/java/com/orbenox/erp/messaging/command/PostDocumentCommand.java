@@ -1,6 +1,6 @@
-package com.orbenox.erp.messaging.event;
+package com.orbenox.erp.messaging.command;
 
-public record DocumentEvent(
+public record PostDocumentCommand(
         Long id,
         String documentNo,
         String documentDate,

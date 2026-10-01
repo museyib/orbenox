@@ -1,7 +1,8 @@
 package com.orbenox.erp.messaging.event;
 
-public record EventResponse(
+public record StockUpdatedEvent(
         boolean success,
+        Long documentId,
         String message
 ) {
 }

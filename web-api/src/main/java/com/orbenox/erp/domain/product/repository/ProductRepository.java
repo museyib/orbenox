@@ -77,8 +77,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                 p.name as name,
                 p.description as description,
                 p.defaultBarcode as defaultBarcode,
-                p.defaultUnit as defaultUnit
+                p_defaultUnit as defaultUnit
             FROM Product p
+            LEFT JOIN p.defaultUnit as p_defaultUnit
             WHERE p.deleted = false AND p.enabled = true
             ORDER BY p.id""")
     List<SimpleProductItem> getEnabledItems();

@@ -5,6 +5,8 @@ import com.orbenox.erp.domain.price.PriceListRepository;
 import com.orbenox.erp.domain.product.entity.Product;
 import com.orbenox.erp.domain.product.repository.ProductRepository;
 import com.orbenox.erp.domain.transactiontype.TransactionType;
+import com.orbenox.erp.domain.unit.Unit;
+import com.orbenox.erp.domain.unit.UnitRepository;
 import com.orbenox.erp.domain.warehouse.Warehouse;
 import com.orbenox.erp.domain.warehouse.WarehouseRepository;
 import com.orbenox.erp.exception.BusinessRuleException;
@@ -31,6 +33,7 @@ public class ProductApproveDocumentCreatePolicy implements DocumentCreatePolicy<
     private final ProductRepository productRepository;
     private final WarehouseRepository warehouseRepository;
     private final StockContextRepository stockContextRepository;
+    private final UnitRepository unitRepository;
 
     @Override
     public boolean supports(TransactionType type) {
@@ -60,9 +63,11 @@ public class ProductApproveDocumentCreatePolicy implements DocumentCreatePolicy<
 
         for (ProductLineCommand lineCommand : command.lines()) {
             Product product = productRepository.getReferenceById(lineCommand.productId());
+            Unit unit = unitRepository.getReferenceById(lineCommand.unitId());
             ProductLine productLine = new ProductLine();
             productLine.setDocument(document);
             productLine.setProduct(product);
+            productLine.setUnit(unit);
             productLine.setQuantity(lineCommand.quantity());
             productLine.setUnitPrice(lineCommand.unitPrice());
             productLine.setDiscount(lineCommand.discountRatio());
