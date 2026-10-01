@@ -1,6 +1,6 @@
 package com.orbenox.erp.outbox;
 
-import com.orbenox.erp.common.event.DocumentEvent;
+import com.orbenox.erp.messaging.event.DocumentEvent;
 import com.orbenox.erp.transaction.entity.Document;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
