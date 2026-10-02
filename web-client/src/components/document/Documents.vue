@@ -72,7 +72,10 @@ function canClose(doc) {
 }
 
 function canCancel(doc) {
-  return doc.documentStatus !== "POSTED" && doc.documentStatus !== "CLOSED" && doc.documentStatus !== "CANCELLED";
+  return doc.documentStatus !== "POSTED" &&
+      doc.documentStatus !== "CLOSED" &&
+      doc.documentStatus !== "CANCELLED" &&
+      doc.documentStatus !== "POSTING";
 }
 
 function runAction(documentId, action) {

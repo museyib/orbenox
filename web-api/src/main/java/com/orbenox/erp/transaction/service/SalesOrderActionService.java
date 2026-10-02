@@ -118,10 +118,4 @@ public class SalesOrderActionService implements DocumentActionService<CreateSale
 
         doc.setDocumentStatus(DocumentStatus.CANCELLED);
     }
-
-    public void updateDocumentStatus(Long documentId, DocumentStatus documentStatus) {
-        Document doc = documentResolver.resolve(documentId, TRANSACTION_TYPE);
-
-        doc.setDocumentStatus(documentStatus);
-    }
 }

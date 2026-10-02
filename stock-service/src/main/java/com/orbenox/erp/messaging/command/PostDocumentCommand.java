@@ -6,6 +6,6 @@ public record PostDocumentCommand(
         String documentDate,
         String documentStatus,
         String approvalStatus,
-        String description
-) {
-}
+        String description,
+        String typeCode
+) { }

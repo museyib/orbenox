@@ -28,11 +28,13 @@ public class AccountingService implements ContextService {
         JournalEntry entry = new JournalEntry();
         entry.setDocument(doc);
         entry.setStatus(JournalStatus.POSTED);
-        journalEntryRepo.save(entry);
+        int affected = journalEntryRepo.save(doc.getId(), JournalStatus.POSTED.name());
 
-        Set<PostingRule> rules = doc.getType().getRules();
-        for (PostingRule rule : rules) {
-            applyPostingRule(rule, doc, entry);
+        if (affected > 1) {
+            Set<PostingRule> rules = doc.getType().getRules();
+            for (PostingRule rule : rules) {
+                applyPostingRule(rule, doc, entry);
+            }
         }
     }
 

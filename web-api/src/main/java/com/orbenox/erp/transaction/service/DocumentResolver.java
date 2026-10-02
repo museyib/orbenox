@@ -7,6 +7,8 @@ import com.orbenox.erp.transaction.repository.DocumentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
 public class DocumentResolver {
@@ -15,11 +17,11 @@ public class DocumentResolver {
     private final LocalizationService i18n;
 
     public Document resolve(Long documentId, String documentType) {
-        Document doc = documentRepo.findById(documentId).orElseThrow();
+        return documentRepo.findByIdAndTypeCode(documentId, documentType)
+                .orElseThrow(() -> new BusinessRuleException(i18n.msg("error.document.invalidIdForSpecifiedType", documentId)));
+    }
 
-        if (!doc.getType().getCode().equals(documentType))
-            throw new BusinessRuleException(i18n.msg("error.document.invalidIdForSpecifiedType", documentId));
-
-        return doc;
+    public Optional<Document> resolveOptional(Long documentId, String documentType) {
+        return documentRepo.findByIdAndTypeCode(documentId, documentType);
     }
 }

@@ -230,8 +230,8 @@ INSERT INTO product_group (code, name, description, created_by)
 VALUES ('GROUP_1', 'product_group 1', 'product_group 1', 'system');
 INSERT INTO product_category (code, name, description, created_by)
 VALUES ('CATEGORY_1', 'product_category 1', 'product_category 1', 'system');
-INSERT INTO product (code, name, description, default_barcode, created_by)
-VALUES ('P001', 'Product 1', 'Product 1', '123456789', 'system');
+INSERT INTO product (code, name, description, default_barcode, default_unit_id, brand_id, product_type_id, product_class_id, product_group_id, product_category_id, created_by)
+VALUES ('P001', 'Product 1', 'Product 1', '123456789', 1, 1, 1, 1, 1, 1, 'system');
 INSERT INTO warehouse (code, name, created_by)
 VALUES ('W001', 'warehouse 1', 'system');
 INSERT INTO product_price (product_id, price_list_id, unit_id, created_by, discount_ratio_limit)

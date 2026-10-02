@@ -22,12 +22,12 @@ public class EventConsumer {
         try {
             log.info("Message received: {}", command);
             stockService.post(command.id());
-            StockUpdatedEvent updatedEvent = new StockUpdatedEvent(true, command.id(), "Stock updated successfully");
+            StockUpdatedEvent updatedEvent = new StockUpdatedEvent(false, command.id(), command.typeCode(), "Stock updated successfully");
             rabbitTemplate.convertAndSend(queue, updatedEvent);
             log.info("Message sent: {}", updatedEvent);
         } catch (Exception e) {
             log.error("Error processing message: {}", command, e);
-            rabbitTemplate.convertAndSend(queue, new StockUpdatedEvent(false, command.id(), e.getMessage()));
+            rabbitTemplate.convertAndSend(queue, new StockUpdatedEvent(false, command.id(), command.typeCode(), e.getMessage()));
         }
     }
 }

@@ -87,7 +87,7 @@ public class ProductApproveActionService implements DocumentActionService<Create
 
         documentPostPolicyResolver.resolve(doc.getType()).post(doc);
 
-        doc.setDocumentStatus(DocumentStatus.POSTED);
+        doc.setDocumentStatus(DocumentStatus.POSTING);
     }
 
     @Override

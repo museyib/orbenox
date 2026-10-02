@@ -22,7 +22,7 @@ const actions = computed(() => {
     reject: doc.approvalStatus === "PENDING",
     post: doc.documentStatus === "IN_PROGRESS" && (doc.approvalStatus === "AUTO_APPROVED" || doc.approvalStatus === "APPROVED"),
     close: doc.documentStatus === "POSTED",
-    cancel: doc.documentStatus !== "POSTED" && doc.documentStatus !== "CLOSED" && doc.documentStatus !== "CANCELLED"
+    cancel: doc.documentStatus !== "POSTED" && doc.documentStatus !== "CLOSED" && doc.documentStatus !== "CANCELLED" && doc.documentStatus !== "POSTING"
   };
 });
 

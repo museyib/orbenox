@@ -535,8 +535,9 @@ CREATE TABLE journal_entry
 (
     id           BIGSERIAL PRIMARY KEY,
     document_id  BIGINT REFERENCES document (id),
-    posting_date TIMESTAMP NOT NULL,
-    status       VARCHAR(20)
+    posting_date TIMESTAMP NOT NULL DEFAULT now(),
+    status       VARCHAR(20),
+    UNIQUE (document_id)
 );
 
 CREATE TABLE journal_line

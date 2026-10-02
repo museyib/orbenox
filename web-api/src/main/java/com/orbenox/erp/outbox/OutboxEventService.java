@@ -22,7 +22,8 @@ public class OutboxEventService {
                 document.getDocumentDate().toString(),
                 document.getDocumentStatus().name(),
                 document.getApprovalStatus().name(),
-                document.getDescription()
+                document.getDescription(),
+                document.getType().getCode()
         );
         OutboxEvent outboxEvent = new OutboxEvent();
         outboxEvent.setEventType(eventType);

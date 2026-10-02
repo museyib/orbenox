@@ -40,7 +40,8 @@ public class DefaultDocumentPostPolicy implements DocumentPostPolicy {
                     document.getDocumentDate().toString(),
                     document.getDocumentStatus().name(),
                     document.getApprovalStatus().name(),
-                    document.getDescription()
+                    document.getDescription(),
+                    document.getType().getCode()
             );
 
             rabbitTemplate.convertAndSend("stock.post", postDocumentCommand);

@@ -4,6 +4,7 @@ import com.orbenox.erp.enums.JournalStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class JournalEntry {
     private Document document;
 
     @Column(nullable = false)
+    @CreatedDate
     private LocalDateTime postingDate;
 
     @Enumerated(EnumType.STRING)

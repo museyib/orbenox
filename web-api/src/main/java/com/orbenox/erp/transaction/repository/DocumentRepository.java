@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DocumentRepository extends JpaRepository<Document, Long> {
 
@@ -81,4 +82,6 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
             WHERE d.id = :id
             """)
     DocumentItem getItemByIdAndType(@Param("id") Long id, @Param("typeId") Long typeId);
+
+    Optional<Document> findByIdAndTypeCode(Long id, String typeCode);
 }
