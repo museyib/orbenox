@@ -24,6 +24,14 @@ public class EventConsumer {
         StockUpdatedEvent event = jsonMapper.readValue(eventMessage, StockUpdatedEvent.class);
 
         log.info("Message received: {}", event);
+
+
+        int affected = inboxEventRepository.createInboxEvent("stock-service", event.documentId());
+
+        if (affected == 0) {
+            log.warn("Event {} already processed", event.documentId());
+        }
+
         if (!event.success()) {
 
             documentPostingService.updateStatus(event.documentId(), event.typeCode(), DocumentStatus.IN_PROGRESS);
@@ -36,11 +44,5 @@ public class EventConsumer {
         documentPostingService.updateStatus(event.documentId(), event.typeCode(), DocumentStatus.POSTED);
 
         log.info("Document {} successfully posted", event.documentId());
-
-        int affected = inboxEventRepository.createInboxEvent("stock-service", event.documentId());
-
-        if (affected == 0) {
-            log.warn("Event {} already processed", event.documentId());
-        }
     }
 }

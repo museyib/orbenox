@@ -17,17 +17,30 @@ public class EventConsumer {
     private final StockService stockService;
     private final OutboxEventService outboxEventService;
 
-    @Transactional
     @RabbitListener(queues = "stock.post")
     public void processEvent(PostDocumentCommand command) {
         log.info("Message received: {}", command);
-        stockService.post(command.id());
-        StockUpdatedEvent stockUpdatedEvent = new StockUpdatedEvent(
-                true,
-                command.id(),
-                command.typeCode(),
-                "Stock updated successfully"
-        );
+        StockUpdatedEvent stockUpdatedEvent;
+
+        try {
+
+            stockService.post(command.id());
+            stockUpdatedEvent = new StockUpdatedEvent(
+                    true,
+                    command.id(),
+                    command.typeCode(),
+                    "Stock updated successfully"
+            );
+        } catch (Exception e) {
+            log.error("Error processing event: {}", e.getMessage());
+            stockUpdatedEvent = new StockUpdatedEvent(
+                    false,
+                    command.id(),
+                    command.typeCode(),
+                    e.getMessage()
+            );
+        }
         outboxEventService.createOutboxEvent(stockUpdatedEvent, command.typeCode() + "_POSTED", command.typeCode());
+        log.info("Stock updated event created: {}", stockUpdatedEvent);
     }
 }
