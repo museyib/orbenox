@@ -619,7 +619,7 @@ CREATE TABLE outbox_event
     aggregate_id      VARCHAR(255),
     aggregate_version VARCHAR(255),
     payload           TEXT,
-    created_at        TIMESTAMP DEFAULT now(),
+    created_at        TIMESTAMP NOT NULL DEFAULT now(),
     published_at      TIMESTAMP,
     status            VARCHAR(100),
     queue_name        VARCHAR(100)

@@ -20,29 +20,23 @@ public class EventConsumer {
     @Transactional
     @RabbitListener(queues = "stock.posted")
     public void processEvent(String eventMessage) {
-
         StockUpdatedEvent event = jsonMapper.readValue(eventMessage, StockUpdatedEvent.class);
 
         log.info("Message received: {}", event);
 
-
         int affected = inboxEventRepository.createInboxEvent("stock-service", event.documentId());
 
-        if (affected == 0) {
+        if (affected > 0) {
+            if (event.success()) {
+                documentPostingService.updateStatus(event.documentId(), event.typeCode(), DocumentStatus.POSTED);
+                log.info("Document {} successfully posted", event.documentId());
+            } else {
+                documentPostingService.updateStatus(event.documentId(), event.typeCode(), DocumentStatus.IN_PROGRESS);
+                log.error("Stock posting failed: {}", event.message());
+            }
+
+        } else {
             log.warn("Event {} already processed", event.documentId());
         }
-
-        if (!event.success()) {
-
-            documentPostingService.updateStatus(event.documentId(), event.typeCode(), DocumentStatus.IN_PROGRESS);
-
-            log.error("Stock posting failed: {}", event.message());
-
-            return;
-        }
-
-        documentPostingService.updateStatus(event.documentId(), event.typeCode(), DocumentStatus.POSTED);
-
-        log.info("Document {} successfully posted", event.documentId());
     }
 }

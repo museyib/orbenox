@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.json.JsonMapper;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 public class OutboxEventService {
@@ -23,7 +21,6 @@ public class OutboxEventService {
         outboxEvent.setAggregateId(event.documentId().toString());
         outboxEvent.setPayload(jsonMapper.writeValueAsString(event));
         outboxEvent.setStatus("PENDING");
-        outboxEvent.setCreatedAt(LocalDateTime.now());
         outboxEvent.setQueueName("stock.posted");
         outboxEventRepository.save(outboxEvent);
     }
