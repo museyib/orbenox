@@ -35,4 +35,6 @@ public class OutboxEvent {
     private LocalDateTime publishedAt;
 
     private String status;
+
+    private String queueName;
 }

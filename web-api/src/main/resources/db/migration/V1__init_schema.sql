@@ -556,14 +556,14 @@ CREATE TABLE journal_line
 
 CREATE TABLE product_line
 (
-    id          BIGSERIAL PRIMARY KEY,
-    document_id BIGINT REFERENCES document (id),
-    product_id  BIGINT REFERENCES product (id),
-    unit_id     BIGINT REFERENCES unit (id),
-    quantity    NUMERIC(20, 10) NOT NULL DEFAULT 0,
-    posted_quantity    NUMERIC(20, 10) NOT NULL DEFAULT 0,
-    unit_price  NUMERIC(20, 10) NOT NULL DEFAULT 0,
-    discount    NUMERIC(20, 10) NOT NULL DEFAULT 0
+    id              BIGSERIAL PRIMARY KEY,
+    document_id     BIGINT REFERENCES document (id),
+    product_id      BIGINT REFERENCES product (id),
+    unit_id         BIGINT REFERENCES unit (id),
+    quantity        NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    posted_quantity NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    unit_price      NUMERIC(20, 10) NOT NULL DEFAULT 0,
+    discount        NUMERIC(20, 10) NOT NULL DEFAULT 0
 );
 
 CREATE TABLE stock_context
@@ -621,7 +621,8 @@ CREATE TABLE outbox_event
     payload           TEXT,
     created_at        TIMESTAMP DEFAULT now(),
     published_at      TIMESTAMP,
-    status            VARCHAR(100)
+    status            VARCHAR(100),
+    queue_name        VARCHAR(100)
 );
 
 CREATE TABLE inbox_event
