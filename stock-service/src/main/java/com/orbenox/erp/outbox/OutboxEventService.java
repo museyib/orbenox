@@ -3,6 +3,7 @@ package com.orbenox.erp.outbox;
 import com.orbenox.erp.messaging.event.StockUpdatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -13,7 +14,7 @@ public class OutboxEventService {
     private final OutboxEventRepository outboxEventRepository;
     private final JsonMapper jsonMapper;
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createOutboxEvent(StockUpdatedEvent event, String eventType, String aggregateType) {
         OutboxEvent outboxEvent = new OutboxEvent();
         outboxEvent.setEventType(eventType);

@@ -2,6 +2,7 @@ package com.orbenox.erp.consumer;
 
 import com.orbenox.erp.enums.DocumentStatus;
 import com.orbenox.erp.messaging.event.StockUpdatedEvent;
+import com.orbenox.erp.outbox.EventMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +20,13 @@ public class EventConsumer {
 
     @Transactional
     @RabbitListener(queues = "stock.posted")
-    public void processEvent(String eventMessage) {
-        StockUpdatedEvent event = jsonMapper.readValue(eventMessage, StockUpdatedEvent.class);
+    public void processEvent(EventMessage eventMessage) {
 
-        log.info("Message received: {}", event);
+        log.info("Message received: {}", eventMessage);
 
-        int affected = inboxEventRepository.createInboxEvent("stock-service", event.documentId());
+        StockUpdatedEvent event = jsonMapper.readValue(eventMessage.payload(), StockUpdatedEvent.class);
+
+        int affected = inboxEventRepository.createInboxEvent("web-api", eventMessage.eventId());
 
         if (affected > 0) {
             if (event.success()) {

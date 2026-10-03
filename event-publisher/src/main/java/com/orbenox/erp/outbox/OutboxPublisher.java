@@ -36,7 +36,7 @@ public class OutboxPublisher {
 
             rabbitTemplate.convertAndSend("notification-queue", eventMessage);
             if (!isEmpty(event.getQueueName()))
-                rabbitTemplate.convertAndSend(event.getQueueName(), event.getPayload());
+                rabbitTemplate.convertAndSend(event.getQueueName(), eventMessage);
             log.info("Event with id {} published", event.getId());
             outboxEventRepository.updateStatus(event.getId(), "PUBLISHED");
         });
