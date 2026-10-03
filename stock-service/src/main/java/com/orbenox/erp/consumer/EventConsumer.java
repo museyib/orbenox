@@ -1,10 +1,10 @@
 package com.orbenox.erp.consumer;
 
+import com.orbenox.erp.exception.BusinessRuleException;
 import com.orbenox.erp.messaging.command.PostDocumentCommand;
 import com.orbenox.erp.messaging.event.StockUpdatedEvent;
 import com.orbenox.erp.outbox.OutboxEventService;
 import com.orbenox.erp.service.StockService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -23,7 +23,6 @@ public class EventConsumer {
         StockUpdatedEvent stockUpdatedEvent;
 
         try {
-
             stockService.post(command.id());
             stockUpdatedEvent = new StockUpdatedEvent(
                     true,
@@ -31,7 +30,7 @@ public class EventConsumer {
                     command.typeCode(),
                     "Stock updated successfully"
             );
-        } catch (Exception e) {
+        } catch (BusinessRuleException e) {
             log.error("Error processing event: {}", e.getMessage());
             stockUpdatedEvent = new StockUpdatedEvent(
                     false,
