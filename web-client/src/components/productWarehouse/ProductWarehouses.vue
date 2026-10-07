@@ -1,0 +1,165 @@
+<script setup>
+
+import MainLayout from "@/components/MainLayout.vue";
+import New from "@/components/New.vue";
+import PageHeader from "@/components/PageHeader.vue";
+import {useRoute, useRouter} from "vue-router";
+import {onMounted, ref} from "vue";
+import {apiRequest, refreshToken} from "@/api.js";
+import InfoBar from "@/components/InfoBar.vue";
+
+const route = useRoute();
+const router = useRouter();
+const info = ref('');
+const infoType = ref('');
+const currentProduct = ref();
+const productWarehouses = ref([]);
+const warehouses = ref([]);
+const warehousesToInsert = ref([]);
+const warehousesToDelete = ref([]);
+
+function init() {
+  apiRequest('/api/productWarehouses/' + route.params.id, 'GET').then(response => {
+    if (response.code === 200) {
+      currentProduct.value = response.data.product;
+      productWarehouses.value = response.data.warehouses;
+    } else if (response.code === 401) {
+      refreshToken(() => init(), () => router.push('/ui/login'));
+    } else {
+      info.value = response.message;
+      infoType.value = "error";
+    }
+  }).catch(error => {
+    info.value = error;
+    infoType.value = "error";
+  });
+
+  apiRequest('/api/lookups?types=warehouses', 'GET').then(response => {
+    if (response.code === 200) {
+      warehouses.value = response.data.warehouses;
+    } else if (response.code === 401) {
+      refreshToken(() => init(), () => router.push('/ui/login'));
+    } else {
+      info.value = response.message;
+      infoType.value = "error";
+    }
+  }).catch(error => {
+    info.value = error;
+    infoType.value = "error";
+  });
+}
+
+function newWarehouse() {
+  const newWarehouse = {
+    product: currentProduct.value,
+    warehouse: warehouses.value[0],
+    minQuantity: 0,
+    maxQuantity: 999999999
+  }
+  warehousesToInsert.value.push(newWarehouse);
+  productWarehouses.value.push(newWarehouse)
+}
+
+function deleteWarehouse(warehouseData) {
+  productWarehouses.value = productWarehouses.value.filter(w => w.id !== warehouseData.id);
+  warehousesToDelete.value.push(warehouseData);
+}
+
+function updateWarehouses() {
+  const toWarehouseDto = (item, includeId = false) => {
+    const dto = {
+      productId: currentProduct.value.id,
+      warehouseId: item.warehouse?.id ?? item.warehouseId,
+      minQuantity: item.minQuantity,
+      maxQuantity: item.maxQuantity
+    };
+    if (includeId) {
+      dto.id = item.id;
+    }
+    return dto;
+  };
+
+  const warehouseData = {
+    productId: currentProduct.value.id,
+    warehousesToUpdate: productWarehouses.value.filter(item => item.id).map(item => toWarehouseDto(item, true)),
+    warehousesToInsert: warehousesToInsert.value.map(item => toWarehouseDto(item)),
+    warehousesToDelete: warehousesToDelete.value.map(item => toWarehouseDto(item, true))
+  };
+
+  apiRequest('/api/productWarehouses', 'POST', warehouseData).then(response => {
+    if (response.code === 200) {
+      currentProduct.value = [];
+      productWarehouses.value = [];
+      warehousesToInsert.value = [];
+      warehousesToDelete.value = [];
+      init();
+    } else if (response.code === 401) {
+      refreshToken(() => init(), () => router.push('/ui/login'));
+    } else {
+      info.value = response.message;
+      infoType.value = "error";
+    }
+  }).catch(error => {
+    info.value = error;
+    infoType.value = "error";
+  });
+}
+
+onMounted(() => init());
+</script>
+
+<template>
+  <MainLayout>
+    <PageHeader :title="$t('productWarehouses')">
+      <New :on-create="newWarehouse"/>
+    </PageHeader>
+
+    <section class="card list-card">
+      <div v-if="productWarehouses.length > 0" class="table-wrap">
+        <div>
+          <table class="data-table" role="table">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>{{ $t('warehouse.title') }}</th>
+              <th>{{ $t('minQuantity') }}</th>
+              <th>{{ $t('maxQuantity') }}</th>
+              <th aria-hidden="true" class="actions-col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="warehouseData in productWarehouses">
+              <td class="mono">{{ warehouseData.id }}</td>
+              <td>
+                <select v-model="warehouseData.warehouse" name="warehouse">
+                  <option v-for="warehouse in warehouses"
+                          :key="warehouse.id"
+                          :value="warehouse">
+                    {{ warehouse.name }}
+                  </option>
+                </select>
+              </td>
+              <td><input v-model="warehouseData.minQuantity" name="minQuantity" type="text"/></td>
+              <td><input v-model="warehouseData.maxQuantity" name="maxQuantity" type="text"/></td>
+              <td class="actions-col">
+                <button class="btn btn-sm btn-danger" @click='deleteWarehouse(warehouseData)'>X</button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div v-else class="empty">
+        {{ $t('noRecords') }}
+      </div>
+      <button class="btn btn-primary" type="submit" @click="updateWarehouses">{{ $t('save') }}</button>
+    </section>
+    <InfoBar :info="info" :type="infoType"/>
+  </MainLayout>
+</template>
+
+<style scoped>
+
+</style>
+

@@ -1,0 +1,84 @@
+spring:
+  application:
+    name: web-api
+  datasource:
+    url: "${DB_URL:jdbc:postgresql://localhost:5435/orbenox}"
+    username: "${DB_USERNAME:postgres}"
+    password: "${DB_PASSWORD:postgres}"
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      auto-commit: true
+      pool-name: OrbenoxHikariPool
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+  flyway:
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  messages:
+    basename: messages
+    encoding: UTF-8
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      repositories:
+        enabled: false
+  security:
+    oauth2:
+      client:
+        registration:
+          stock-service-client:
+            provider: auth0-provider
+            client-id: ${AUTH0_CLIENT_ID}
+            client-secret: ${AUTH0_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            scope:
+              -  stock:read
+        provider:
+          auth0-provider:
+            token-uri: https://dev-wz16qsp7zezupivs.us.auth0.com/oauth/token
+  rabbitmq:
+    port: 5673
+    listener:
+      simple:
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          initial-interval: 5s
+          max-retries: 3
+          max-interval: 10s
+          multiplier: 2
+  cloud:
+    openfeign:
+      client:
+        config:
+          stock-service: # Applies to all clients globally
+            connectTimeout: 5000 # 5 seconds
+            readTimeout: 5000
+            loggerLevel: full
+auth0:
+  stock-service-audience: ${AUTH0_STOCK_SERVICE_AUDIENCE:https://stock-service/api}
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
+    path: /swagger
+    enabled: true
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://eureka-service:8761/eureka/}
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: ${EUREKA_PREFER_IP_ADDRESS:true}
+
+app:
+  jwtSecretKey: ${JWT_SECRET_KEY}
+  jwtExpiration: ${JWT_EXPIRATION:86400000}

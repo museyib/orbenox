@@ -1,0 +1,265 @@
+﻿{
+  "user": {
+    "title": "User",
+    "new": "New user",
+    "edit": "Edit user",
+    "username": "Username",
+    "password": "Password",
+    "displayName": "Display name",
+    "userType": "User type",
+    "updated": "User updated"
+  },
+  "role": {
+    "title": "Role",
+    "new": "New role",
+    "edit": "Edit role",
+    "updated": "Role updated"
+  },
+  "resource": {
+    "title": "Resource",
+    "new": "New resource",
+    "edit": "Edit resource",
+    "updated": "Resource updated"
+  },
+  "unit": {
+    "title": "Unit",
+    "new": "New unit",
+    "edit": "Edit unit",
+    "updated": "Unit updated"
+  },
+  "currency": {
+    "title": "Currency",
+    "new": "New currency",
+    "edit": "Edit currency",
+    "updated": "Currency updated"
+  },
+  "country": {
+    "title": "Country",
+    "new": "New country",
+    "edit": "Edit country",
+    "updated": "Country updated"
+  },
+  "brand": {
+    "title": "Brand",
+    "new": "New brand",
+    "edit": "Edit brand",
+    "updated": "Brand updated"
+  },
+  "producer": {
+    "title": "Producer",
+    "new": "New producer",
+    "edit": "Edit producer",
+    "updated": "Producer updated"
+  },
+  "productType": {
+    "title": "Product type",
+    "new": "New product type",
+    "edit": "Edit product type",
+    "updated": "Product type updated"
+  },
+  "productClass": {
+    "title": "Product class",
+    "new": "New product class",
+    "edit": "Edit product class",
+    "updated": "Product class updated"
+  },
+  "productGroup": {
+    "title": "Product group",
+    "new": "New product group",
+    "edit": "Edit product group",
+    "updated": "Product group updated"
+  },
+  "productCategory": {
+    "title": "Product category",
+    "new": "New product category",
+    "edit": "Edit product category",
+    "updated": "Product category updated"
+  },
+  "product": {
+    "title": "Product",
+    "new": "New product",
+    "edit": "Edit product",
+    "updated": "Product updated"
+  },
+  "warehouse": {
+    "title": "Warehouse",
+    "new": "New warehouse",
+    "edit": "Edit warehouse",
+    "updated": "Warehouse updated"
+  },
+  "priceList": {
+    "title": "Price list",
+    "new": "New price list",
+    "edit": "Edit price list",
+    "updated": "Price list updated",
+    "parent": "Parent price list"
+  },
+  "permission": {
+    "title": "Permission",
+    "updated": "Permission updated"
+  },
+  "transactionType": {
+    "title": "Transaction type",
+    "new": "New transaction type",
+    "edit": "Edit transaction type",
+    "updated": "Transaction type updated"
+  },
+  "document": {
+    "title": "Document",
+    "new": "New document",
+    "salesOrder": {
+      "new": "Create sales order"
+    },
+    "productApprove": {
+      "new": "Create product approve"
+    },
+    "edit": "Edit document",
+    "process": "Document process",
+    "updated": "Document updated",
+    "editLocked": "Editing is available only for drafts",
+    "validationDateType": "Date and transaction type are required",
+    "validationLines": "Each line requires product and quantity > 0",
+    "validationCommercial": "Sales order requires partner, price list, and source warehouse",
+    "validationWarehouse": "A warehouse is required"
+  },
+  "account": {
+    "title": "Account",
+    "new": "New account",
+    "edit": "Edit account",
+    "updated": "Account updated"
+  },
+  "businessPartner": {
+    "title": "Business partner",
+    "new": "New business partner",
+    "edit": "Edit business partner",
+    "updated": "Business partner updated"
+  },
+  "businessPartnerRole": {
+    "title": "Business partner role",
+    "new": "New business partner role",
+    "edit": "Edit business partner role",
+    "updated": "Business partner role updated"
+  },
+  "unitDimensionEntity": {
+    "title": "Unit dimension",
+    "new": "New unit dimension",
+    "edit": "Edit unit dimension",
+    "updated": "Unit dimension updated"
+  },
+  "postingRule": {
+    "title": "Posting rule",
+    "new": "New posting rule",
+    "edit": "Edit posting rule",
+    "updated": "Posting rule updated"
+  },
+  "users": "Users",
+  "roles": "Roles",
+  "units": "Units",
+  "unitDimensions": "Unit dimensions",
+  "resources": "Resources",
+  "actions": "Actions",
+  "id": "ID",
+  "code": "Code",
+  "name": "Name",
+  "description": "Description",
+  "barcode": "Barcode",
+  "unitDimension": "Unit dimension",
+  "create": "Create",
+  "new": "New",
+  "save": "Save",
+  "edit": "Edit",
+  "delete": "Delete",
+  "permissions": "Permissions",
+  "assignedRoles": "Assigned roles",
+  "assignedActions": "Assigned actions",
+  "grantedPermissions": "Granted permissions",
+  "isBase": "Base unit",
+  "factorToBase": "Factor to base unit",
+  "offsetToBase": "Offset to base unit",
+  "factorToParent": "Factor to parent",
+  "enabled": "Enabled",
+  "currencies": "Currencies",
+  "countries": "Countries",
+  "brands": "Brands",
+  "producers": "Producers",
+  "productTypes": "Product Types",
+  "productClasses": "Product Classes",
+  "productCategories": "Product Categories",
+  "productGroups": "Product Groups",
+  "parentGroup": "Parent group",
+  "products": "Products",
+  "selectProduct": "Select product",
+  "changeProduct": "Change",
+  "productPickerTitle": "Select product",
+  "search": "Search",
+  "priceLists": "Price lists",
+  "selectAsParent": "Select as parent",
+  "noRecords": "No records to display",
+  "productPrices": "Product prices",
+  "price": "Price",
+  "fixedPrice": "Fixed price",
+  "parentPrice": "Parent price",
+  "roundLength": "Round length",
+  "discountRatioLimit": "Discount ratio limit",
+  "productBarcodes": "Product barcodes",
+  "productUnits": "Product units",
+  "warehouses": "Warehouses",
+  "accounts": "Accounts",
+  "businessPartners": "Business Partners",
+  "businessPartnerRoles": "Business Partner Roles",
+  "postingRules": "Posting rules",
+  "productWarehouses": "Product warehouses",
+  "quantity": "Quantity",
+  "reservedQuantity": "Reserved quantity",
+  "freeQuantity": "Free quantity",
+  "minQuantity": "Minimum quantity",
+  "maxQuantity": "Maximum quantity",
+  "transactionTypes": "Transaction types",
+  "documents": "Documents",
+  "documentNumber": "Document number",
+  "documentDate": "Document date",
+  "documentStatus": "Document status",
+  "approvalStatus": "Approval status",
+  "paymentMethod": "Payment method",
+  "sourceWarehouse": "Source warehouse",
+  "targetWarehouse": "Target warehouse",
+  "lines": "Lines",
+  "addLine": "Add line",
+  "removeLine": "Remove line",
+  "discountRatio": "Discount ratio",
+  "total": "Total",
+  "saveDraft": "Save draft",
+  "saveAndSubmit": "Save and submit",
+  "submit": "Submit",
+  "approve": "Approve",
+  "reject": "Reject",
+  "post": "Post",
+  "close": "Close",
+  "cancel": "Cancel",
+  "process": "Process",
+  "processTimeline": "Process timeline",
+  "allowedActions": "Allowed actions",
+  "processScope": "Process scope",
+  "accountType": "Account type",
+  "partnerType": "Partner type",
+  "taxId": "Tax ID",
+  "security": "Security",
+  "masterData": "Master data",
+  "productSetup": "Product setup",
+  "operations": "Operations",
+  "sequence": "Sequence",
+  "debitAccount": "Debit account",
+  "creditAccount": "Credit account",
+  "amountSource": "Amount source",
+  "partnerSide": "Partner side",
+  "partnerRole": "Partner role",
+  "transactions": "Transactions",
+  "stockBalance": "Stock",
+  "commercialAffected": "Commercial is affected",
+  "accountingAffected": "Accounting is affected",
+  "creditLimitChecked": "Credit limit is checked",
+  "approvalRequired": "Approval is required",
+  "prefix": "Prefix",
+  "resetPeriod": "Reset period",
+  "sequenceLength": "Sequence length"
+}

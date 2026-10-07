@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: stock-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://dev-wz16qsp7zezupivs.us.auth0.com/.well-known/jwks.json
+          issuer-uri: https://dev-wz16qsp7zezupivs.us.auth0.com/
+          jws-algorithms:
+            - RS256
+  datasource:
+    url: "${STOCK_DB_URL:jdbc:postgresql://localhost:5436/stock}"
+    username: "${STOCK_DB_USERNAME:postgres}"
+    password: "${STOCK_DB_PASSWORD:postgres}"
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      auto-commit: true
+      pool-name: OrbenoxHikariPool
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+  flyway:
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  rabbitmq:
+    port: 5673
+    listener:
+      simple:
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          initial-interval: 5s
+          max-retries: 3
+          max-interval: 10s
+          multiplier: 2
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://eureka-service:8761/eureka/}
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: ${EUREKA_PREFER_IP_ADDRESS:true}

@@ -1,0 +1,39 @@
+package com.orbenox.erp.transaction.entity;
+
+import com.orbenox.erp.enums.JournalStatus;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
+@Entity
+public class JournalEntry {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private Document document;
+
+    @Column(nullable = false)
+    @CreatedDate
+    private LocalDateTime postingDate;
+
+    @Enumerated(EnumType.STRING)
+    private JournalStatus status;
+
+    @OneToMany(mappedBy = "journalEntry", fetch = FetchType.LAZY)
+    private List<JournalLine> journalLines = new ArrayList<>();
+
+    @PrePersist
+    public void prePersist() {
+        postingDate = LocalDateTime.now();
+    }
+}
