@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.orbenox.erp.config.RabbitMqConfiguration.STOCK_POST_QUEUE;
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.STOCK_POST_QUEUE;
 
 @Service
 @RequiredArgsConstructor

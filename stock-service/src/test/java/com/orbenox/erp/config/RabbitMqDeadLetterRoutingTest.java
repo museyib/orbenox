@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -47,13 +48,15 @@ class RabbitMqDeadLetterRoutingTest {
 
     @Test
     void rejectedMessageFromMainQueue_shouldBeRoutedToDeadLetterQueue() throws Exception {
-        RabbitMqConfiguration configuration = new RabbitMqConfiguration();
+
+        RabbitMqInfrastructureConfiguration infrastructureConfiguration = new RabbitMqInfrastructureConfiguration();
+        RabbitMqConfiguration configuration = new RabbitMqConfiguration(infrastructureConfiguration);
         Queue mainQueue = configuration.stockPostQueue();
-        Queue deadLetterQueue = configuration.deadLetterQueue();
+        Queue deadLetterQueue = infrastructureConfiguration.deadLetterQueue();
         CachingConnectionFactory connectionFactory = createConnectionFactory();
 
         try {
-            declareTopology(configuration, connectionFactory);
+            declareTopology(infrastructureConfiguration, configuration, connectionFactory);
             RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
             rabbitTemplate.convertAndSend(mainQueue.getName(), PAYLOAD);
 
@@ -74,9 +77,10 @@ class RabbitMqDeadLetterRoutingTest {
 
     @Test
     void repeatedTechnicalFailure_shouldRetryThenDeadLetterCommand() {
-        RabbitMqConfiguration configuration = new RabbitMqConfiguration();
+        RabbitMqInfrastructureConfiguration infrastructureConfiguration = new RabbitMqInfrastructureConfiguration();
+        RabbitMqConfiguration configuration = new RabbitMqConfiguration(infrastructureConfiguration);
         Queue mainQueue = configuration.stockPostQueue();
-        Queue deadLetterQueue = configuration.deadLetterQueue();
+        Queue deadLetterQueue = infrastructureConfiguration.deadLetterQueue();
         CachingConnectionFactory connectionFactory = createConnectionFactory();
         StockPostingService stockService = mock(StockPostingService.class);
         StockMovementCommand command = new StockMovementCommand(
@@ -88,7 +92,7 @@ class RabbitMqDeadLetterRoutingTest {
         SimpleMessageListenerContainer listener = null;
 
         try {
-            declareTopology(configuration, connectionFactory);
+            declareTopology(infrastructureConfiguration, configuration, connectionFactory);
             listener = new SimpleMessageListenerContainer(connectionFactory);
             listener.setQueueNames(mainQueue.getName());
             listener.setMessageListener((MessageListener) message ->
@@ -116,14 +120,15 @@ class RabbitMqDeadLetterRoutingTest {
 
     @Test
     void mainQueue_shouldDeclareDeadLetterExchangeAndRoutingKey() {
-        RabbitMqConfiguration configuration = new RabbitMqConfiguration();
+        RabbitMqInfrastructureConfiguration infrastructureConfiguration = new RabbitMqInfrastructureConfiguration();
+        RabbitMqConfiguration configuration = new RabbitMqConfiguration(infrastructureConfiguration);
         Queue mainQueue = configuration.stockPostQueue();
 
         assertThat(mainQueue.getArguments())
-                .containsEntry("x-dead-letter-exchange", RabbitMqConfiguration.DLX_EXCHANGE)
-                .containsEntry("x-dead-letter-routing-key", RabbitMqConfiguration.DLQ_ROUTING_KEY);
-        assertThat(configuration.dlqBinding().getDestination())
-                .isEqualTo(RabbitMqConfiguration.DLQ_QUEUE);
+                .containsEntry("x-dead-letter-exchange", DLX_EXCHANGE)
+                .containsEntry("x-dead-letter-routing-key", DLQ_ROUTING_KEY);
+        assertThat(infrastructureConfiguration.dlqBinding().getDestination())
+                .isEqualTo(DLQ_QUEUE);
     }
 
     private CachingConnectionFactory createConnectionFactory() {
@@ -134,17 +139,18 @@ class RabbitMqDeadLetterRoutingTest {
         return connectionFactory;
     }
 
-    private void declareTopology(RabbitMqConfiguration configuration,
+    private void declareTopology(RabbitMqInfrastructureConfiguration infrastructureConfiguration,
+                                 RabbitMqConfiguration configuration,
                                 CachingConnectionFactory connectionFactory) {
         RabbitAdmin rabbitAdmin = new RabbitAdmin(connectionFactory);
-        TopicExchange mainExchange = configuration.erpExchange();
-        DirectExchange deadLetterExchange = configuration.deadLetterExchange();
+        TopicExchange mainExchange = infrastructureConfiguration.erpExchange();
+        DirectExchange deadLetterExchange = infrastructureConfiguration.deadLetterExchange();
         rabbitAdmin.declareExchange(mainExchange);
         rabbitAdmin.declareExchange(deadLetterExchange);
         rabbitAdmin.declareQueue(configuration.stockPostQueue());
-        rabbitAdmin.declareQueue(configuration.deadLetterQueue());
-        rabbitAdmin.declareBinding(configuration.erpExchangeBinding());
-        rabbitAdmin.declareBinding(configuration.dlqBinding());
+        rabbitAdmin.declareQueue(infrastructureConfiguration.deadLetterQueue());
+        rabbitAdmin.declareBinding(configuration.stockPostBinding());
+        rabbitAdmin.declareBinding(infrastructureConfiguration.dlqBinding());
     }
 
     private void assertDeadLetter(Message deadLetter, Queue mainQueue) {

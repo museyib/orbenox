@@ -1,0 +1,10 @@
+.git
+.idea
+.env
+.env.*
+**/target
+web-client
+api-gateway
+eureka-service
+notification-service
+stock-service

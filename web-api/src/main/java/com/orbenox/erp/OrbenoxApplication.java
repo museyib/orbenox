@@ -1,5 +1,6 @@
 package com.orbenox.erp;
 
+import com.orbenox.erp.config.RabbitMqInfrastructureConfiguration;
 import com.orbenox.erp.security.entity.AppUser;
 import com.orbenox.erp.security.entity.UserType;
 import com.orbenox.erp.security.repository.UserRepository;
@@ -8,10 +9,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
+@Import(RabbitMqInfrastructureConfiguration.class)
 public class OrbenoxApplication {
 
     public static void main(String[] args) {

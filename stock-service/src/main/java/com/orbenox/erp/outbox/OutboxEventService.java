@@ -5,7 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.json.JsonMapper;
 
-import static com.orbenox.erp.config.RabbitMqConfiguration.STOCK_POSTED_QUEUE;
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.STOCK_POSTED_QUEUE;
+
 
 @Service
 @RequiredArgsConstructor

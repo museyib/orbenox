@@ -1,6 +1,5 @@
 package com.orbenox.erp.consumer;
 
-import com.orbenox.erp.config.RabbitMqConfiguration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -8,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
+
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.NOTIFICATION_QUEUE;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ public class EventConsumer {
     private final InboxEventRepository inboxEventRepository;
     private final JsonMapper jsonMapper;
 
-    @RabbitListener(queues = RabbitMqConfiguration.NOTIFICATION_QUEUE)
+    @RabbitListener(queues = NOTIFICATION_QUEUE)
     @Transactional
     public void processEvent(String message) {
         try {

@@ -68,7 +68,8 @@ services:
 
   web-api:
     build:
-      context: ./web-api
+      context: .
+      dockerfile: web-api/Dockerfile
     deploy:
       replicas: 3
     environment:
@@ -107,7 +108,8 @@ services:
 
   stock-service:
     build:
-      context: ./stock-service
+      context: .
+      dockerfile: stock-service/Dockerfile
     environment:
       STOCK_DB_URL: jdbc:postgresql://stock-db:5432/stock
       STOCK_DB_USERNAME: postgres
@@ -126,7 +128,8 @@ services:
 
   notification-service:
     build:
-      context: ./notification-service
+      context: .
+      dockerfile: notification-service/Dockerfile
     environment:
       DB_URL: jdbc:postgresql://main-db:5432/orbenox
       DB_USERNAME: postgres

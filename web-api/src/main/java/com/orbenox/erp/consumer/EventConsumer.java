@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
-import static com.orbenox.erp.config.RabbitMqConfiguration.STOCK_POSTED_QUEUE;
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.STOCK_POSTED_QUEUE;
 
 @Service
 @RequiredArgsConstructor

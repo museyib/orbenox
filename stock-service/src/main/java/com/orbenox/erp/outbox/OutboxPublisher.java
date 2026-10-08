@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.orbenox.erp.config.RabbitMqConfiguration.NOTIFICATION_QUEUE;
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.NOTIFICATION_QUEUE;
 import static org.hibernate.internal.util.StringHelper.isEmpty;
 
 @Service
