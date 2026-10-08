@@ -28,14 +28,6 @@ public class RabbitMqConfiguration {
     }
 
     @Bean
-    public Queue notificationQueue() {
-        return QueueBuilder.durable(NOTIFICATION_QUEUE)
-                .withArgument("x-dead-letter-exchange", DLX_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", DLQ_ROUTING_KEY)
-                .build();
-    }
-
-    @Bean
     public Binding stockPostBinding() {
         return BindingBuilder.bind(stockPostQueue())
                 .to(infrastructureConfiguration.erpExchange()).with(MAIN_ROUTING_KEY);
@@ -44,12 +36,6 @@ public class RabbitMqConfiguration {
     @Bean
     public Binding stockPostedBinding() {
         return BindingBuilder.bind(stockPostedQueue())
-                .to(infrastructureConfiguration.erpExchange()).with(MAIN_ROUTING_KEY);
-    }
-
-    @Bean
-    public Binding notificationBinding() {
-        return BindingBuilder.bind(notificationQueue())
                 .to(infrastructureConfiguration.erpExchange()).with(MAIN_ROUTING_KEY);
     }
 }
