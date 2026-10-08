@@ -21,6 +21,7 @@ import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.DOCUMEN
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ProductApproveActionService implements DocumentActionService<CreateProductApproveCommand> {
     private static final String TRANSACTION_TYPE = "PRODUCT_APPROVE";
 
@@ -48,7 +49,6 @@ public class ProductApproveActionService implements DocumentActionService<Create
     }
 
     @Override
-    @Transactional
     public void submit(Long documentId) {
         Document doc = documentResolver.resolve(documentId, TRANSACTION_TYPE);
         ApprovalPolicy approvalPolicy = approvalPolicyResolver.resolve(doc.getType());
@@ -65,7 +65,6 @@ public class ProductApproveActionService implements DocumentActionService<Create
     }
 
     @Override
-    @Transactional
     public void approve(Long documentId) {
         Document doc = documentResolver.resolve(documentId, TRANSACTION_TYPE);
         ApprovalPolicy approvalPolicy = approvalPolicyResolver.resolve(doc.getType());
@@ -80,7 +79,6 @@ public class ProductApproveActionService implements DocumentActionService<Create
     }
 
     @Override
-    @Transactional
     @CacheEvict(value = PRODUCT_WAREHOUSES, allEntries = true)
     public void post(Long documentId) {
         Document doc = documentResolver.resolve(documentId, TRANSACTION_TYPE);
@@ -102,7 +100,6 @@ public class ProductApproveActionService implements DocumentActionService<Create
     }
 
     @Override
-    @Transactional
     public void reject(Long documentId) {
         Document doc = documentResolver.resolve(documentId, TRANSACTION_TYPE);
 
@@ -114,7 +111,6 @@ public class ProductApproveActionService implements DocumentActionService<Create
     }
 
     @Override
-    @Transactional
     public void close(Long documentId) {
         Document doc = documentResolver.resolve(documentId, TRANSACTION_TYPE);
 
@@ -125,7 +121,6 @@ public class ProductApproveActionService implements DocumentActionService<Create
     }
 
     @Override
-    @Transactional
     public void cancel(Long documentId) {
         Document doc = documentResolver.resolve(documentId, TRANSACTION_TYPE);
 

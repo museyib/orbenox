@@ -2,11 +2,11 @@ package com.orbenox.erp.config;
 
 import com.orbenox.erp.consumer.EventConsumer;
 import com.orbenox.erp.messaging.command.StockMovementCommand;
+import com.orbenox.erp.outbox.EventMessage;
 import com.orbenox.erp.service.StockPostingService;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageListener;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -52,8 +52,8 @@ class RabbitMqDeadLetterRoutingTest {
 
         RabbitMqInfrastructureConfiguration infrastructureConfiguration = new RabbitMqInfrastructureConfiguration();
         RabbitMqConfiguration configuration = new RabbitMqConfiguration(infrastructureConfiguration);
-        Queue mainQueue = configuration.stockPostQueue();
-        Queue deadLetterQueue = infrastructureConfiguration.deadLetterQueue();
+        Queue mainQueue = configuration.documentPostedQueue();
+        Queue deadLetterQueue = configuration.documentPostedDlq();
         CachingConnectionFactory connectionFactory = createConnectionFactory();
 
         try {
@@ -80,8 +80,8 @@ class RabbitMqDeadLetterRoutingTest {
     void repeatedTechnicalFailure_shouldRetryThenDeadLetterCommand() {
         RabbitMqInfrastructureConfiguration infrastructureConfiguration = new RabbitMqInfrastructureConfiguration();
         RabbitMqConfiguration configuration = new RabbitMqConfiguration(infrastructureConfiguration);
-        Queue mainQueue = configuration.stockPostQueue();
-        Queue deadLetterQueue = infrastructureConfiguration.deadLetterQueue();
+        Queue mainQueue = configuration.documentPostedQueue();
+        Queue deadLetterQueue = configuration.documentPostedDlq();
         CachingConnectionFactory connectionFactory = createConnectionFactory();
         StockPostingService stockService = mock(StockPostingService.class);
         StockMovementCommand command = new StockMovementCommand(
@@ -92,12 +92,21 @@ class RabbitMqDeadLetterRoutingTest {
         doThrow(new IllegalStateException("Database unavailable")).when(stockService).post(command);
         SimpleMessageListenerContainer listener = null;
 
+        EventMessage eventMessage = new EventMessage(
+              1L,
+                "STOCK_POSTED",
+                "PRODUCT_APPROVE",
+                "12",
+                "",
+                new JsonMapper().writeValueAsString(command)
+        );
+
         try {
             declareTopology(infrastructureConfiguration, configuration, connectionFactory);
             listener = new SimpleMessageListenerContainer(connectionFactory);
             listener.setQueueNames(mainQueue.getName());
-            listener.setMessageListener((MessageListener) message ->
-                    new EventConsumer(stockService, new JsonMapper()).processEvent(command));
+            listener.setMessageListener(_ ->
+                    new EventConsumer(stockService, new JsonMapper()).processEvent(eventMessage));
             listener.setAdviceChain(RetryInterceptorBuilder.stateless()
                     .maxRetries(3)
                     .backOffOptions(1, 1.0, 1)
@@ -123,13 +132,15 @@ class RabbitMqDeadLetterRoutingTest {
     void mainQueue_shouldDeclareDeadLetterExchangeAndRoutingKey() {
         RabbitMqInfrastructureConfiguration infrastructureConfiguration = new RabbitMqInfrastructureConfiguration();
         RabbitMqConfiguration configuration = new RabbitMqConfiguration(infrastructureConfiguration);
-        Queue mainQueue = configuration.stockPostQueue();
+        Queue mainQueue = configuration.documentPostedQueue();
 
         assertThat(mainQueue.getArguments())
                 .containsEntry("x-dead-letter-exchange", DLX_EXCHANGE)
-                .containsEntry("x-dead-letter-routing-key", DLQ_ROUTING_KEY);
-        assertThat(infrastructureConfiguration.dlqBinding().getDestination())
-                .isEqualTo(DLQ_QUEUE);
+                .containsEntry("x-dead-letter-routing-key", DOCUMENT_POSTED_DLQ_KEY);
+        assertThat(configuration.documentPostedDlqBinding().getDestination())
+                .isEqualTo(DOCUMENT_POSTED_DLQ);
+        assertThat(configuration.documentPostedDlqBinding().getRoutingKey())
+                .isEqualTo(DOCUMENT_POSTED_DLQ_KEY);
     }
 
     private CachingConnectionFactory createConnectionFactory() {
@@ -148,9 +159,9 @@ class RabbitMqDeadLetterRoutingTest {
         DirectExchange deadLetterExchange = infrastructureConfiguration.deadLetterExchange();
         rabbitAdmin.declareExchange(mainExchange);
         rabbitAdmin.declareExchange(deadLetterExchange);
-        rabbitAdmin.declareQueue(configuration.stockPostQueue());
-        rabbitAdmin.declareQueue(infrastructureConfiguration.deadLetterQueue());
-        rabbitAdmin.declareBinding(infrastructureConfiguration.dlqBinding());
+        rabbitAdmin.declareQueue(configuration.documentPostedQueue());
+        rabbitAdmin.declareQueue(configuration.documentPostedDlq());
+        rabbitAdmin.declareBinding(configuration.documentPostedDlqBinding());
     }
 
     private void assertDeadLetter(Message deadLetter, Queue mainQueue) {

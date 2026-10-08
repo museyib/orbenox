@@ -2,12 +2,14 @@ package com.orbenox.erp.consumer;
 
 import com.orbenox.erp.exception.BusinessRuleException;
 import com.orbenox.erp.messaging.command.StockMovementCommand;
+import com.orbenox.erp.outbox.EventMessage;
 import com.orbenox.erp.service.StockPostingService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,7 +30,16 @@ class EventConsumerTest {
     void processEvent_whenStockUpdateSucceeds_shouldNotPublishFailureEvent() {
         StockMovementCommand command = command();
 
-        eventConsumer.processEvent(command);
+        EventMessage eventMessage = new EventMessage(
+                1L,
+                "STOCK_POSTED",
+                "PRODUCT_APPROVE",
+                "12",
+                "",
+                new JsonMapper().writeValueAsString(command)
+        );
+
+        eventConsumer.processEvent(eventMessage);
 
         verify(stockPostingService).post(command);
         verify(stockPostingService, never()).publishFailureEvent(any(), anyString());
@@ -39,7 +50,16 @@ class EventConsumerTest {
         StockMovementCommand command = command();
         whenStockUpdateFails(command, new BusinessRuleException("Insufficient stock"));
 
-        eventConsumer.processEvent(command);
+        EventMessage eventMessage = new EventMessage(
+                1L,
+                "STOCK_POSTED",
+                "PRODUCT_APPROVE",
+                "12",
+                "",
+                new JsonMapper().writeValueAsString(command)
+        );
+
+        eventConsumer.processEvent(eventMessage);
 
         verify(stockPostingService).publishFailureEvent(command, "Insufficient stock");
     }
@@ -50,7 +70,16 @@ class EventConsumerTest {
         RuntimeException failure = new IllegalStateException("Database unavailable");
         whenStockUpdateFails(command, failure);
 
-        assertThatThrownBy(() -> eventConsumer.processEvent(command))
+        EventMessage eventMessage = new EventMessage(
+                1L,
+                "STOCK_POSTED",
+                "PRODUCT_APPROVE",
+                "12",
+                "",
+                new JsonMapper().writeValueAsString(command)
+        );
+
+        assertThatThrownBy(() -> eventConsumer.processEvent(eventMessage))
                 .isSameAs(failure);
 
         verify(stockPostingService, never()).publishFailureEvent(any(), anyString());

@@ -10,8 +10,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.json.JsonMapper;
 
-import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.DLQ_QUEUE;
-import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.DOCUMENT_POSTED_QUEUE;
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,10 +28,5 @@ public class EventConsumer {
         } catch (BusinessRuleException e) {
             stockService.publishFailureEvent(command, e.getMessage());
         }
-    }
-
-    @RabbitListener(queues = DLQ_QUEUE)
-    public void processDeadLetter(String message) {
-        log.error("Received bad message in DLQ: {}", message);
     }
 }

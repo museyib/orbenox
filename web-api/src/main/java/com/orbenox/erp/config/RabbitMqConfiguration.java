@@ -17,7 +17,7 @@ public class RabbitMqConfiguration {
     public Queue stockPostedQueue() {
         return QueueBuilder.durable(STOCK_POSTED_QUEUE)
                 .withArgument("x-dead-letter-exchange", DLX_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", DLQ_ROUTING_KEY)
+                .withArgument("x-dead-letter-routing-key", STOCK_POSTED_DLQ_KEY)
                 .build();
     }
 
@@ -26,5 +26,17 @@ public class RabbitMqConfiguration {
         return BindingBuilder.bind(stockPostedQueue())
                 .to(infrastructureConfiguration.erpExchange())
                 .with(STOCK_POSTED_KEY);
+    }
+
+    @Bean
+    public Queue stockPostedDlq() {
+        return QueueBuilder.durable(STOCK_POSTED_DLQ).build();
+    }
+
+    @Bean
+    public Binding stockPostedDlqBinding() {
+        return BindingBuilder.bind(stockPostedDlq())
+                .to(infrastructureConfiguration.deadLetterExchange())
+                .with(STOCK_POSTED_DLQ_KEY);
     }
 }

@@ -10,6 +10,7 @@ import tools.jackson.databind.json.JsonMapper;
 @Configuration
 public class RabbitMqInfrastructureConfiguration {
     public static final String ERP_EXCHANGE = "erp.exchange";
+    public static final String DLX_EXCHANGE = "dead.letter.exchange";
 
     public static final String DOCUMENT_CREATED_KEY = "document.created";
     public static final String DOCUMENT_POSTED_KEY = "document.posted";
@@ -19,9 +20,14 @@ public class RabbitMqInfrastructureConfiguration {
     public static final String STOCK_POSTED_QUEUE = "stock.posted.queue";
     public static final String NOTIFICATION_QUEUE = "notification.queue";
 
-    public static final String DLQ_QUEUE = "dead.letter.queue";
-    public static final String DLX_EXCHANGE = "dead.letter.exchange";
-    public static final String DLQ_ROUTING_KEY = "dead.letter.routing.key";
+    public static final String DOCUMENT_POSTED_DLQ = "document.posted.dlq";
+    public static final String STOCK_POSTED_DLQ = "stock.posted.dlq";
+    public static final String NOTIFICATION_DLQ = "notification.dlq";
+
+
+    public static final String DOCUMENT_POSTED_DLQ_KEY = "document.posted.dlq.key";
+    public static final String STOCK_POSTED_DLQ_KEY = "stock.posted.dlq.key";
+    public static final String NOTIFICATION_DLQ_KEY = "notification.dlq.key";
 
     @Bean
     public TopicExchange erpExchange() {
@@ -31,18 +37,6 @@ public class RabbitMqInfrastructureConfiguration {
     @Bean
     public DirectExchange deadLetterExchange() {
         return new DirectExchange(DLX_EXCHANGE);
-    }
-
-    @Bean
-    public Queue deadLetterQueue() {
-        return QueueBuilder.durable(DLQ_QUEUE).build();
-    }
-
-    @Bean
-    public Binding dlqBinding() {
-        return BindingBuilder.bind(deadLetterQueue())
-                .to(deadLetterExchange())
-                .with(DLQ_ROUTING_KEY);
     }
 
     @Bean

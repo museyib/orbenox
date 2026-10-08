@@ -4,6 +4,7 @@ import com.orbenox.erp.consumer.EventConsumer;
 import com.orbenox.erp.messaging.command.StockMovementCommand;
 import com.orbenox.erp.messaging.command.StockMovementCommand.StockOperation;
 import com.orbenox.erp.messaging.event.StockUpdatedEvent;
+import com.orbenox.erp.outbox.EventMessage;
 import com.orbenox.erp.outbox.OutboxEvent;
 import com.orbenox.erp.outbox.OutboxEventRepository;
 import com.orbenox.erp.repository.StockMovementRepository;
@@ -71,7 +72,16 @@ class StockPostingTransactionTest {
         Long documentId = DOCUMENT_IDS.incrementAndGet();
         saveStockBalance(56L, BigDecimal.ONE);
 
-        eventConsumer.processEvent(command(documentId, "SALES_ORDER"));
+        EventMessage eventMessage = new EventMessage(
+                1L,
+                "STOCK_POSTED",
+                "PRODUCT_APPROVE",
+                documentId.toString(),
+                "",
+                new JsonMapper().writeValueAsString(command(documentId, "SALES_ORDER"))
+        );
+
+        eventConsumer.processEvent(eventMessage);
 
         BigDecimal savedQuantity = jdbcTemplate.queryForObject(
                 "SELECT quantity FROM stock_balance WHERE product_id = 34 AND warehouse_id = 56",
@@ -94,7 +104,16 @@ class StockPostingTransactionTest {
     void processEvent_whenProductApproveSucceeds_shouldPersistStockAndSuccessEvent() {
         Long documentId = DOCUMENT_IDS.incrementAndGet();
 
-        eventConsumer.processEvent(command(documentId, "PRODUCT_APPROVE"));
+
+        EventMessage eventMessage = new EventMessage(
+                1L,
+                "STOCK_POSTED",
+                "PRODUCT_APPROVE",
+                documentId.toString(),
+                "",
+                new JsonMapper().writeValueAsString(command(documentId, "SALES_ORDER"))
+        );
+        eventConsumer.processEvent(eventMessage);
 
         BigDecimal savedQuantity = jdbcTemplate.queryForObject(
                 "SELECT quantity FROM stock_balance WHERE product_id = 34 AND warehouse_id = 57",
@@ -122,7 +141,16 @@ class StockPostingTransactionTest {
         Long documentId = DOCUMENT_IDS.incrementAndGet();
         saveStockBalance(56L, BigDecimal.valueOf(5));
 
-        eventConsumer.processEvent(command(documentId, "SALES_ORDER"));
+        EventMessage eventMessage = new EventMessage(
+                1L,
+                "STOCK_POSTED",
+                "PRODUCT_APPROVE",
+                documentId.toString(),
+                "",
+                new JsonMapper().writeValueAsString(command(documentId, "SALES_ORDER"))
+        );
+
+        eventConsumer.processEvent(eventMessage);
 
         assertThat(stockBalanceQuantity(56L)).isEqualByComparingTo("3");
         assertThat(stockMovementRepository.countByDocumentId(documentId)).isEqualTo(1);
@@ -163,9 +191,17 @@ class StockPostingTransactionTest {
                 EXECUTE FUNCTION fail_sales_order_outbox_insert()
                 """);
 
+
+        EventMessage eventMessage = new EventMessage(
+                1L,
+                "STOCK_POSTED",
+                "PRODUCT_APPROVE",
+                documentId.toString(),
+                "",
+                new JsonMapper().writeValueAsString(command(documentId, "SALES_ORDER"))
+        );
         try {
-            assertThatThrownBy(() -> eventConsumer.processEvent(
-                    command(documentId, "SALES_ORDER")))
+            assertThatThrownBy(() -> eventConsumer.processEvent(eventMessage))
                     .isInstanceOf(RuntimeException.class)
                     .hasMessageContaining("simulated technical outbox failure");
         } finally {

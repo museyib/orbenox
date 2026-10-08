@@ -16,7 +16,7 @@ public class RabbitMqConfiguration {
     public Queue notificationQueue() {
         return QueueBuilder.durable(NOTIFICATION_QUEUE)
                 .withArgument("x-dead-letter-exchange", DLX_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", DLQ_ROUTING_KEY)
+                .withArgument("x-dead-letter-routing-key", NOTIFICATION_DLQ_KEY)
                 .build();
     }
 
@@ -24,20 +24,32 @@ public class RabbitMqConfiguration {
     public Binding notificationDocumentCreatedBinding() {
         return BindingBuilder.bind(notificationQueue())
                 .to(infrastructureConfiguration.erpExchange())
-                .with("document.created");
+                .with(DOCUMENT_CREATED_KEY);
     }
 
     @Bean
     public Binding notificationDocumentPostedBinding() {
         return BindingBuilder.bind(notificationQueue())
                 .to(infrastructureConfiguration.erpExchange())
-                .with("document.posted");
+                .with(DOCUMENT_POSTED_KEY);
     }
 
     @Bean
     public Binding notificationStockPostedBinding() {
         return BindingBuilder.bind(notificationQueue())
                 .to(infrastructureConfiguration.erpExchange())
-                .with("stock.posted");
+                .with(STOCK_POSTED_KEY);
+    }
+
+    @Bean
+    public Queue notificationDlq() {
+        return QueueBuilder.durable(NOTIFICATION_DLQ).build();
+    }
+
+    @Bean
+    public Binding notificationDlqBinding() {
+        return BindingBuilder.bind(notificationDlq())
+                .to(infrastructureConfiguration.deadLetterExchange())
+                .with(NOTIFICATION_DLQ_KEY);
     }
 }

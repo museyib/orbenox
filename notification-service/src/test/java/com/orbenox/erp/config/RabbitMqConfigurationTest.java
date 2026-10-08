@@ -17,10 +17,10 @@ class RabbitMqConfigurationTest {
         assertThat(queue.getName()).isEqualTo(NOTIFICATION_QUEUE);
         assertThat(queue.getArguments())
                 .containsEntry("x-dead-letter-exchange", DLX_EXCHANGE)
-                .containsEntry("x-dead-letter-routing-key", DLQ_ROUTING_KEY);
-        assertThat(infrastructureConfiguration.dlqBinding().getDestination())
-                .isEqualTo(DLQ_QUEUE);
-        assertThat(infrastructureConfiguration.dlqBinding().getRoutingKey())
-                .isEqualTo(DLQ_ROUTING_KEY);
+                .containsEntry("x-dead-letter-routing-key", NOTIFICATION_DLQ_KEY);
+        assertThat(configuration.notificationDlqBinding().getDestination())
+                .isEqualTo(NOTIFICATION_DLQ);
+        assertThat(configuration.notificationDlqBinding().getRoutingKey())
+                .isEqualTo(NOTIFICATION_DLQ_KEY);
     }
 }

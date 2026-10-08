@@ -16,7 +16,7 @@ public class RabbitMqConfiguration {
     public Queue documentPostedQueue() {
         return QueueBuilder.durable(DOCUMENT_POSTED_QUEUE)
                 .withArgument("x-dead-letter-exchange", DLX_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", DLQ_ROUTING_KEY)
+                .withArgument("x-dead-letter-routing-key", DOCUMENT_POSTED_DLQ_KEY)
                 .build();
     }
 
@@ -31,7 +31,7 @@ public class RabbitMqConfiguration {
     public Queue stockPostedQueue() {
         return QueueBuilder.durable(STOCK_POSTED_QUEUE)
                 .withArgument("x-dead-letter-exchange", DLX_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", DLQ_ROUTING_KEY)
+                .withArgument("x-dead-letter-routing-key", STOCK_POSTED_DLQ_KEY)
                 .build();
     }
 
@@ -40,5 +40,29 @@ public class RabbitMqConfiguration {
         return BindingBuilder.bind(stockPostedQueue())
                 .to(infrastructureConfiguration.erpExchange())
                 .with(STOCK_POSTED_KEY);
+    }
+
+    @Bean
+    public Queue stockPostedDlq() {
+        return QueueBuilder.durable(STOCK_POSTED_DLQ).build();
+    }
+
+    @Bean
+    public Binding stockPostedDlqBinding() {
+        return BindingBuilder.bind(stockPostedDlq())
+                .to(infrastructureConfiguration.deadLetterExchange())
+                .with(STOCK_POSTED_DLQ_KEY);
+    }
+
+    @Bean
+    public Queue documentPostedDlq() {
+        return QueueBuilder.durable(DOCUMENT_POSTED_DLQ).build();
+    }
+
+    @Bean
+    public Binding documentPostedDlqBinding() {
+        return BindingBuilder.bind(documentPostedDlq())
+                .to(infrastructureConfiguration.deadLetterExchange())
+                .with(DOCUMENT_POSTED_DLQ_KEY);
     }
 }
