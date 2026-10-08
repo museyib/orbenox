@@ -6,7 +6,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.core.JacksonException;
-import tools.jackson.databind.json.JsonMapper;
 
 import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.NOTIFICATION_QUEUE;
 
@@ -16,21 +15,20 @@ import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.NOTIFIC
 public class EventConsumer {
 
     private final InboxEventRepository inboxEventRepository;
-    private final JsonMapper jsonMapper;
 
     @RabbitListener(queues = NOTIFICATION_QUEUE)
     @Transactional
-    public void processEvent(String message) {
+    public void processEvent(EventMessage eventMessage) {
+        log.info("Message received: {}", eventMessage);
         try {
-            EventMessage eventMessage = jsonMapper.readValue(message, EventMessage.class);
             int affected = inboxEventRepository.createInboxEvent("notification-service", eventMessage.eventId());
             if (affected > 0) {
-                log.info("Message received: {}", message);
+                log.info("Event {} processed", eventMessage.eventId());
             } else {
                 log.warn("Event {} already processed", eventMessage.eventId());
             }
         } catch (JacksonException e) {
-            log.error("Error processing message: {}", message, e);
+            log.error("Error processing message: {}", eventMessage, e);
             throw new RuntimeException(e);
         }
     }

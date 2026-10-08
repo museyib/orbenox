@@ -142,6 +142,20 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  web-client:
+    build:
+      context: ./web-client
+    container_name: web-client
+    ports:
+      - "5173:5173"
+    depends_on:
+      stock-service:
+        condition: service_started
+      web-api:
+        condition: service_started
+      notification-service:
+        condition: service_started
+
 volumes:
   main_data:
   redis_data:

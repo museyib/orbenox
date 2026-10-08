@@ -27,10 +27,9 @@ class EventConsumerTest {
     void processEvent_whenNewMessageArrives_shouldRecordNotificationEvent() {
         EventMessage message = new EventMessage(201L, "SALES_ORDER_CREATED",
                 "SALES_ORDER", "12", "1", "{}");
-        when(jsonMapper.readValue("{}", EventMessage.class)).thenReturn(message);
         when(inboxEventRepository.createInboxEvent("notification-service", 201L)).thenReturn(1);
 
-        eventConsumer.processEvent("{}");
+        eventConsumer.processEvent(message);
 
         verify(inboxEventRepository).createInboxEvent("notification-service", 201L);
     }
@@ -39,10 +38,9 @@ class EventConsumerTest {
     void processEvent_whenMessageWasAlreadyProcessed_shouldNotInsertItAgain() {
         EventMessage message = new EventMessage(202L, "PRODUCT_APPROVE_CREATED",
                 "PRODUCT_APPROVE", "13", "1", "{}");
-        when(jsonMapper.readValue("{}", EventMessage.class)).thenReturn(message);
         when(inboxEventRepository.createInboxEvent("notification-service", 202L)).thenReturn(0);
 
-        eventConsumer.processEvent("{}");
+        eventConsumer.processEvent(message);
 
         verify(inboxEventRepository).createInboxEvent("notification-service", 202L);
     }
@@ -52,7 +50,7 @@ class EventConsumerTest {
         when(jsonMapper.readValue("invalid", EventMessage.class))
                 .thenThrow(new StreamReadException("Invalid event"));
 
-        assertThatThrownBy(() -> eventConsumer.processEvent("invalid"))
+        assertThatThrownBy(() -> eventConsumer.processEvent(any()))
                 .isInstanceOf(RuntimeException.class)
                 .hasCauseInstanceOf(StreamReadException.class);
 
