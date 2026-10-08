@@ -1,7 +1,5 @@
 package com.orbenox.erp.outbox;
 
-import com.orbenox.erp.messaging.command.PostDocumentCommand;
-import com.orbenox.erp.transaction.entity.Document;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,22 +13,14 @@ public class OutboxEventService {
     private final JsonMapper jsonMapper;
 
     @Transactional
-    public void createOutboxEvent(Document document, String eventType, String aggregateType) {
-        PostDocumentCommand postDocumentCommand = new PostDocumentCommand(
-                document.getId(),
-                document.getDocumentNo(),
-                document.getDocumentDate().toString(),
-                document.getDocumentStatus().name(),
-                document.getApprovalStatus().name(),
-                document.getDescription(),
-                document.getType().getCode()
-        );
+    public void createOutboxEvent(Object payload, String eventType, String aggregateType, String aggregateId, String routingKey) {
         OutboxEvent outboxEvent = new OutboxEvent();
         outboxEvent.setEventType(eventType);
         outboxEvent.setAggregateType(aggregateType);
-        outboxEvent.setAggregateId(document.getId().toString());
-        outboxEvent.setPayload(jsonMapper.writeValueAsString(postDocumentCommand));
+        outboxEvent.setAggregateId(aggregateId);
+        outboxEvent.setPayload(jsonMapper.writeValueAsString(payload));
         outboxEvent.setStatus("PENDING");
+        outboxEvent.setRoutingKey(routingKey);
         outboxEventRepository.save(outboxEvent);
     }
 }

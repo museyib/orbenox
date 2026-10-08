@@ -21,8 +21,23 @@ public class RabbitMqConfiguration {
     }
 
     @Bean
-    public Binding notificationBinding() {
+    public Binding notificationDocumentCreatedBinding() {
         return BindingBuilder.bind(notificationQueue())
-                .to(infrastructureConfiguration.erpExchange()).with(MAIN_ROUTING_KEY);
+                .to(infrastructureConfiguration.erpExchange())
+                .with("document.created");
+    }
+
+    @Bean
+    public Binding notificationDocumentPostedBinding() {
+        return BindingBuilder.bind(notificationQueue())
+                .to(infrastructureConfiguration.erpExchange())
+                .with("document.posted");
+    }
+
+    @Bean
+    public Binding notificationStockPostedBinding() {
+        return BindingBuilder.bind(notificationQueue())
+                .to(infrastructureConfiguration.erpExchange())
+                .with("stock.posted");
     }
 }

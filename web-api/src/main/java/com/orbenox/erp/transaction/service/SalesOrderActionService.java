@@ -4,6 +4,7 @@ import com.orbenox.erp.enums.ApprovalStatus;
 import com.orbenox.erp.enums.DocumentStatus;
 import com.orbenox.erp.exception.BusinessRuleException;
 import com.orbenox.erp.localization.LocalizationService;
+import com.orbenox.erp.messaging.command.PostDocumentCommand;
 import com.orbenox.erp.outbox.OutboxEventService;
 import com.orbenox.erp.transaction.command.CreateSalesOrderCommand;
 import com.orbenox.erp.transaction.entity.Document;
@@ -16,6 +17,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import static com.orbenox.erp.config.CacheConfig.CacheNames.PRODUCT_WAREHOUSES;
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.DOCUMENT_CREATED_KEY;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +34,18 @@ public class SalesOrderActionService implements DocumentActionService<CreateSale
 
     @Override
     public Document createDraft(CreateSalesOrderCommand command) {
-        Document salesOrder = documentService.createSalesOrder(command);
-        outboxEventService.createOutboxEvent(salesOrder, "SALES_ORDER_CREATED", TRANSACTION_TYPE);
-        return salesOrder;
+        Document document = documentService.createSalesOrder(command);
+        PostDocumentCommand postDocumentCommand = new PostDocumentCommand(
+                document.getId(),
+                document.getDocumentNo(),
+                document.getDocumentDate().toString(),
+                document.getDocumentStatus().name(),
+                document.getApprovalStatus().name(),
+                document.getDescription(),
+                document.getType().getCode()
+        );
+        outboxEventService.createOutboxEvent(postDocumentCommand, "SALES_ORDER_CREATED", TRANSACTION_TYPE, document.getId().toString(), DOCUMENT_CREATED_KEY);
+        return document;
     }
 
     @Override

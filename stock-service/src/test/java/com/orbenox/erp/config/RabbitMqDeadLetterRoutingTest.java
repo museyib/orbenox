@@ -20,6 +20,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -58,7 +59,7 @@ class RabbitMqDeadLetterRoutingTest {
         try {
             declareTopology(infrastructureConfiguration, configuration, connectionFactory);
             RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-            rabbitTemplate.convertAndSend(mainQueue.getName(), PAYLOAD);
+            rabbitTemplate.convertAndSend(ERP_EXCHANGE, mainQueue.getName(), PAYLOAD);
 
             var connection = connectionFactory.createConnection();
             try (var channel = connection.createChannel(false)) {
@@ -96,7 +97,7 @@ class RabbitMqDeadLetterRoutingTest {
             listener = new SimpleMessageListenerContainer(connectionFactory);
             listener.setQueueNames(mainQueue.getName());
             listener.setMessageListener((MessageListener) message ->
-                    new EventConsumer(stockService).processEvent(command));
+                    new EventConsumer(stockService, new JsonMapper()).processEvent(command));
             listener.setAdviceChain(RetryInterceptorBuilder.stateless()
                     .maxRetries(3)
                     .backOffOptions(1, 1.0, 1)
@@ -105,7 +106,7 @@ class RabbitMqDeadLetterRoutingTest {
             listener.start();
 
             RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-            rabbitTemplate.convertAndSend(mainQueue.getName(), PAYLOAD);
+            rabbitTemplate.convertAndSend(ERP_EXCHANGE, mainQueue.getName(), PAYLOAD);
             Message deadLetter = rabbitTemplate.receive(deadLetterQueue.getName(), 10_000);
 
             assertDeadLetter(deadLetter, mainQueue);
@@ -149,7 +150,6 @@ class RabbitMqDeadLetterRoutingTest {
         rabbitAdmin.declareExchange(deadLetterExchange);
         rabbitAdmin.declareQueue(configuration.stockPostQueue());
         rabbitAdmin.declareQueue(infrastructureConfiguration.deadLetterQueue());
-        rabbitAdmin.declareBinding(configuration.stockPostBinding());
         rabbitAdmin.declareBinding(infrastructureConfiguration.dlqBinding());
     }
 

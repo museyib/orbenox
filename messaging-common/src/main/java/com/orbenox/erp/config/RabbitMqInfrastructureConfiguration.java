@@ -9,11 +9,14 @@ import tools.jackson.databind.json.JsonMapper;
 
 @Configuration
 public class RabbitMqInfrastructureConfiguration {
-    public static final String MAIN_EXCHANGE = "erp.exchange";
-    public static final String MAIN_ROUTING_KEY = "erp.routing.key";
+    public static final String ERP_EXCHANGE = "erp.exchange";
 
-    public static final String STOCK_POST_QUEUE = "stock.post";
-    public static final String STOCK_POSTED_QUEUE = "stock.posted";
+    public static final String DOCUMENT_CREATED_KEY = "document.created";
+    public static final String DOCUMENT_POSTED_KEY = "document.posted";
+    public static final String STOCK_POSTED_KEY = "stock.posted";
+
+    public static final String DOCUMENT_POSTED_QUEUE = "document.posted.queue";
+    public static final String STOCK_POSTED_QUEUE = "stock.posted.queue";
     public static final String NOTIFICATION_QUEUE = "notification.queue";
 
     public static final String DLQ_QUEUE = "dead.letter.queue";
@@ -22,7 +25,7 @@ public class RabbitMqInfrastructureConfiguration {
 
     @Bean
     public TopicExchange erpExchange() {
-        return new TopicExchange(MAIN_EXCHANGE);
+        return new TopicExchange(ERP_EXCHANGE);
     }
 
     @Bean

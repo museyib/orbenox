@@ -24,6 +24,7 @@ public class RabbitMqConfiguration {
     @Bean
     public Binding stockPostedBinding() {
         return BindingBuilder.bind(stockPostedQueue())
-                .to(infrastructureConfiguration.erpExchange()).with(MAIN_ROUTING_KEY);
+                .to(infrastructureConfiguration.erpExchange())
+                .with(STOCK_POSTED_KEY);
     }
 }

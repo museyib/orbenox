@@ -26,6 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.DOCUMENT_CREATED_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -70,7 +71,7 @@ public class OutboxEventServiceTest {
         transactionTemplate.execute(status -> {
             document.setType(transactionTypeRepository.findByCode("SALES_ORDER"));
             documentRepository.save(document);
-            outboxEventService.createOutboxEvent(document, "SALES_ORDER_CREATED", "SALES_ORDER");
+            outboxEventService.createOutboxEvent(document, "SALES_ORDER_CREATED", "SALES_ORDER", document.getId().toString(), DOCUMENT_CREATED_KEY);
             return null;
         });
 
@@ -95,7 +96,7 @@ public class OutboxEventServiceTest {
         assertThatThrownBy(() -> transactionTemplate.execute(status -> {
             document.setType(transactionTypeRepository.findByCode("SALES_ORDER"));
             documentRepository.save(document);
-            outboxEventService.createOutboxEvent(document, "SALES_ORDER_CREATED", "SALES_ORDER");
+            outboxEventService.createOutboxEvent(document, "SALES_ORDER_CREATED", "SALES_ORDER", document.getId().toString(), DOCUMENT_CREATED_KEY);
             throw new RuntimeException("Simulated transaction failure");
         })).isInstanceOf(RuntimeException.class)
                 .hasMessage("Simulated transaction failure");

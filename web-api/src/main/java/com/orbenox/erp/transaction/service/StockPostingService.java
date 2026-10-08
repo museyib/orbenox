@@ -2,23 +2,23 @@ package com.orbenox.erp.transaction.service;
 
 import com.orbenox.erp.messaging.command.StockMovementCommand;
 import com.orbenox.erp.messaging.command.StockMovementCommand.StockOperation;
+import com.orbenox.erp.outbox.OutboxEventService;
 import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.entity.ProductLine;
 import com.orbenox.erp.transaction.entity.StockContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.STOCK_POST_QUEUE;
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.*;
 
 @Service
 @RequiredArgsConstructor
 public class StockPostingService {
-    private final RabbitTemplate rabbitTemplate;
+    private final OutboxEventService outboxEventService;
 
     public void post(Document document) {
         if (document.getType().isStockAffected()) {
@@ -37,10 +37,9 @@ public class StockPostingService {
                         }
                     }
                 }
-
                 StockMovementCommand command = new StockMovementCommand(document.getId(), document.getType().getCode(), operations);
 
-                rabbitTemplate.convertAndSend(STOCK_POST_QUEUE, command);
+                outboxEventService.createOutboxEvent(command, "SALES_ORDER_POSTED", document.getType().getCode(), document.getId().toString(), DOCUMENT_POSTED_KEY);
             }
         }
     }

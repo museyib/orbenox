@@ -600,7 +600,7 @@ CREATE TABLE outbox_event
     created_at        TIMESTAMP    NOT NULL DEFAULT now(),
     published_at      TIMESTAMP,
     status            VARCHAR(100),
-    queue_name        VARCHAR(100)
+    routing_key        VARCHAR(100)
 );
 
 CREATE TABLE inbox_event

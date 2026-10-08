@@ -36,5 +36,5 @@ public class OutboxEvent {
 
     private String status;
 
-    private String queueName;
+    private String routingKey;
 }

@@ -13,12 +13,20 @@ public class RabbitMqConfiguration {
     private final RabbitMqInfrastructureConfiguration infrastructureConfiguration;
 
     @Bean
-    public Queue stockPostQueue() {
-        return QueueBuilder.durable(STOCK_POST_QUEUE)
+    public Queue documentPostedQueue() {
+        return QueueBuilder.durable(DOCUMENT_POSTED_QUEUE)
                 .withArgument("x-dead-letter-exchange", DLX_EXCHANGE)
                 .withArgument("x-dead-letter-routing-key", DLQ_ROUTING_KEY)
                 .build();
     }
+
+    @Bean
+    public Binding documentPostedBinding() {
+        return BindingBuilder.bind(documentPostedQueue())
+                .to(infrastructureConfiguration.erpExchange())
+                .with(DOCUMENT_POSTED_KEY);
+    }
+
     @Bean
     public Queue stockPostedQueue() {
         return QueueBuilder.durable(STOCK_POSTED_QUEUE)
@@ -28,14 +36,9 @@ public class RabbitMqConfiguration {
     }
 
     @Bean
-    public Binding stockPostBinding() {
-        return BindingBuilder.bind(stockPostQueue())
-                .to(infrastructureConfiguration.erpExchange()).with(MAIN_ROUTING_KEY);
-    }
-
-    @Bean
     public Binding stockPostedBinding() {
         return BindingBuilder.bind(stockPostedQueue())
-                .to(infrastructureConfiguration.erpExchange()).with(MAIN_ROUTING_KEY);
+                .to(infrastructureConfiguration.erpExchange())
+                .with(STOCK_POSTED_KEY);
     }
 }
