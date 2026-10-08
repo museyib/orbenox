@@ -137,13 +137,13 @@ class RabbitMqDeadLetterRoutingTest {
     private void declareTopology(RabbitMqConfiguration configuration,
                                 CachingConnectionFactory connectionFactory) {
         RabbitAdmin rabbitAdmin = new RabbitAdmin(connectionFactory);
-        TopicExchange mainExchange = configuration.outboxExchange();
+        TopicExchange mainExchange = configuration.erpExchange();
         DirectExchange deadLetterExchange = configuration.deadLetterExchange();
         rabbitAdmin.declareExchange(mainExchange);
         rabbitAdmin.declareExchange(deadLetterExchange);
         rabbitAdmin.declareQueue(configuration.stockPostQueue());
         rabbitAdmin.declareQueue(configuration.deadLetterQueue());
-        rabbitAdmin.declareBinding(configuration.outboxBinding());
+        rabbitAdmin.declareBinding(configuration.erpExchangeBinding());
         rabbitAdmin.declareBinding(configuration.dlqBinding());
     }
 

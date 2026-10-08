@@ -1,5 +1,6 @@
 package com.orbenox.erp.outbox;
 
+import com.orbenox.erp.config.RabbitMqConfiguration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -34,7 +35,7 @@ public class OutboxPublisher {
                     event.getAggregateVersion(),
                     event.getPayload());
 
-            rabbitTemplate.convertAndSend("notification.queue", eventMessage);
+            rabbitTemplate.convertAndSend(RabbitMqConfiguration.NOTIFICATION_QUEUE, eventMessage);
             if (!isEmpty(event.getQueueName()))
                 rabbitTemplate.convertAndSend(event.getQueueName(), eventMessage);
             log.info("Event with id {} published", event.getId());

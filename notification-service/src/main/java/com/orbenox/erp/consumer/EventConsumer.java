@@ -17,7 +17,7 @@ public class EventConsumer {
     private final InboxEventRepository inboxEventRepository;
     private final JsonMapper jsonMapper;
 
-    @RabbitListener(queues = RabbitMqConfiguration.MAIN_QUEUE)
+    @RabbitListener(queues = RabbitMqConfiguration.NOTIFICATION_QUEUE)
     @Transactional
     public void processEvent(String message) {
         try {

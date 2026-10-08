@@ -10,9 +10,9 @@ class RabbitMqConfigurationTest {
     @Test
     void notificationQueue_shouldRouteRejectedMessagesToDeadLetterQueue() {
         RabbitMqConfiguration configuration = new RabbitMqConfiguration();
-        Queue queue = configuration.stockPostQueue();
+        Queue queue = configuration.notificationQueue();
 
-        assertThat(queue.getName()).isEqualTo(RabbitMqConfiguration.MAIN_QUEUE);
+        assertThat(queue.getName()).isEqualTo(RabbitMqConfiguration.NOTIFICATION_QUEUE);
         assertThat(queue.getArguments())
                 .containsEntry("x-dead-letter-exchange", RabbitMqConfiguration.DLX_EXCHANGE)
                 .containsEntry("x-dead-letter-routing-key", RabbitMqConfiguration.DLQ_ROUTING_KEY);

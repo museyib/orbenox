@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class EventConsumer {
     private final StockPostingService stockService;
 
-    @RabbitListener(queues = RabbitMqConfiguration.MAIN_QUEUE)
+    @RabbitListener(queues = RabbitMqConfiguration.STOCK_POST_QUEUE)
     public void processEvent(StockMovementCommand command) {
         log.info("Message received: {}", command);
         try {

@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.json.JsonMapper;
 
+import static com.orbenox.erp.config.RabbitMqConfiguration.STOCK_POSTED_QUEUE;
+
 @Service
 @RequiredArgsConstructor
 public class OutboxEventService {
@@ -19,7 +21,7 @@ public class OutboxEventService {
         outboxEvent.setAggregateId(event.documentId().toString());
         outboxEvent.setPayload(jsonMapper.writeValueAsString(event));
         outboxEvent.setStatus("PENDING");
-        outboxEvent.setQueueName("stock.posted");
+        outboxEvent.setQueueName(STOCK_POSTED_QUEUE);
         outboxEventRepository.save(outboxEvent);
     }
 }

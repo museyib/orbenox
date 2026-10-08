@@ -21,6 +21,7 @@
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/common/pom.xml" />
+        <option value="$PROJECT_DIR$/event-publisher/pom.xml" />
       </set>
     </option>
   </component>

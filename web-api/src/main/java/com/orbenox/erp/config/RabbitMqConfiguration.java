@@ -9,30 +9,41 @@ import tools.jackson.databind.json.JsonMapper;
 
 @Configuration
 public class RabbitMqConfiguration {
-    public static final String MAIN_EXCHANGE = "outbox.exchange";
-    public static final String MAIN_ROUTING_KEY = "outbox.routing.key";
-    public static final String MAIN_QUEUE = "stock.posted";
+    public static final String MAIN_EXCHANGE = "erp.exchange";
+    public static final String MAIN_ROUTING_KEY = "erp.routing.key";
+
+    public static final String STOCK_POST_QUEUE = "stock.post";
+    public static final String STOCK_POSTED_QUEUE = "stock.posted";
+    public static final String NOTIFICATION_QUEUE = "notification.queue";
 
     public static final String DLQ_QUEUE = "dead.letter.queue";
     public static final String DLX_EXCHANGE = "dead.letter.exchange";
     public static final String DLQ_ROUTING_KEY = "dead.letter.routing.key";
 
     @Bean
-    public TopicExchange outboxExchange() {
+    public TopicExchange erpExchange() {
         return new TopicExchange(MAIN_EXCHANGE);
     }
 
     @Bean
-    public Queue stockPostQueue() {
-        return QueueBuilder.durable(MAIN_QUEUE)
+    public Queue stockPostedQueue() {
+        return QueueBuilder.durable(STOCK_POSTED_QUEUE)
                 .withArgument("x-dead-letter-exchange", DLX_EXCHANGE)
                 .withArgument("x-dead-letter-routing-key", DLQ_ROUTING_KEY)
                 .build();
     }
 
     @Bean
-    public Binding outboxBinding() {
-        return BindingBuilder.bind(stockPostQueue()).to(outboxExchange()).with(MAIN_ROUTING_KEY);
+    public Queue notificationQueue() {
+        return QueueBuilder.durable(NOTIFICATION_QUEUE)
+                .withArgument("x-dead-letter-exchange", DLX_EXCHANGE)
+                .withArgument("x-dead-letter-routing-key", DLQ_ROUTING_KEY)
+                .build();
+    }
+
+    @Bean
+    public Binding erpExchangeBinding() {
+        return BindingBuilder.bind(stockPostedQueue()).to(erpExchange()).with(MAIN_ROUTING_KEY);
     }
 
     @Bean

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.orbenox.erp.config.RabbitMqConfiguration.NOTIFICATION_QUEUE;
 import static org.hibernate.internal.util.StringHelper.isEmpty;
 
 @Service
@@ -34,7 +35,7 @@ public class OutboxPublisher {
                     event.getAggregateVersion(),
                     event.getPayload());
 
-            rabbitTemplate.convertAndSend("notification.queue", eventMessage);
+            rabbitTemplate.convertAndSend(NOTIFICATION_QUEUE, eventMessage);
             if (!isEmpty(event.getQueueName()))
                 rabbitTemplate.convertAndSend(event.getQueueName(), eventMessage);
             log.info("Event with id {} published", event.getId());
