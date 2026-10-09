@@ -17,7 +17,7 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
-    show-sql: false
+    show-sql: true
     properties:
       dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:

@@ -25,7 +25,7 @@ public class OutboxPublisher {
 
     @Scheduled(fixedDelay = 5000)
     @Transactional
-    @SchedulerLock(name = "outbox_publisher_lock", lockAtMostFor = "4s", lockAtLeastFor = "2s")
+    @SchedulerLock(name = "outbox_publisher_lock", lockAtMostFor = "30s", lockAtLeastFor = "2s")
     public void publishEvents() {
         List<OutboxEvent> pending = outboxEventRepository.findAllByStatusOrderByCreatedAt("PENDING", Limit.of(10));
 
