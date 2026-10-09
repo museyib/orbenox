@@ -2,11 +2,13 @@ package com.orbenox.erp.outbox;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Limit;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +24,8 @@ public class OutboxPublisher {
     private final RabbitTemplate rabbitTemplate;
 
     @Scheduled(fixedDelay = 5000)
+    @Transactional
+    @SchedulerLock(name = "outbox_publisher_lock", lockAtMostFor = "4s", lockAtLeastFor = "2s")
     public void publishEvents() {
         List<OutboxEvent> pending = outboxEventRepository.findAllByStatusOrderByCreatedAt("PENDING", Limit.of(10));
 
