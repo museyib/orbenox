@@ -22,7 +22,7 @@ public class StockPostingService {
     private final JsonMapper jsonMapper;
 
     @Transactional
-    public boolean post(EventMessage eventMessage) {
+    public void post(EventMessage eventMessage) {
 
         int affected = inboxEventRepository.createInboxEvent("stock-service", eventMessage.eventId());
 
@@ -44,9 +44,6 @@ public class StockPostingService {
                     command.typeCode()
             );
             log.info("Stock updated event created: {}", event);
-            return true;
-        } else {
-            return false;
         }
     }
 
