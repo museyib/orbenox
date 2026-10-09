@@ -14,8 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,10 +50,10 @@ class ProductGroupServiceTest {
         ProductGroupItem child = group(2L, parent(1L));
         ProductGroupItem descendant = group(3L, parent(2L));
         ProductGroupItem outside = group(4L, null);
-        Slice<ProductGroupItem> groups = new SliceImpl<>(List.of(root, child, descendant, outside));
+        List<ProductGroupItem> groups = new ArrayList<>(List.of(root, child, descendant, outside));
         List<Long> allowedIds = List.of(4L);
         List<SimpleProductGroupItem> allowed = List.of(mock(SimpleProductGroupItem.class));
-        when(repository.getAllItems(PageRequest.of(0, Integer.MAX_VALUE))).thenReturn(groups);
+        when(repository.getAllItems()).thenReturn(groups);
         when(repository.getItemsExcluded(allowedIds)).thenReturn(allowed);
 
         assertThat(service.findAllExcluded(1L)).isSameAs(allowed);

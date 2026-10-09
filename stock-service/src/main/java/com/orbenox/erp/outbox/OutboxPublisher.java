@@ -7,7 +7,6 @@ import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Limit;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,6 @@ import java.util.concurrent.TimeoutException;
 import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.ERP_EXCHANGE;
 
 @Service
-@EnableScheduling
 @RequiredArgsConstructor
 @Slf4j
 public class OutboxPublisher {
@@ -32,7 +30,7 @@ public class OutboxPublisher {
     @Transactional
     @SchedulerLock(name = "outbox_publisher_lock", lockAtMostFor = "30s", lockAtLeastFor = "2s")
     public void publishEvents() {
-        List<OutboxEvent> pending = outboxEventRepository.findAllByStatusOrderByCreatedAt("PENDING", Limit.of(10));
+        List<OutboxEvent> pending = outboxEventRepository.findAllByStatusOrderByCreatedAt("PENDING", Limit.of(5));
 
         for (OutboxEvent event : pending) {
             EventMessage eventMessage = new EventMessage(
@@ -57,7 +55,7 @@ public class OutboxPublisher {
                 if (correlationData.getReturned() != null) {
                     var returned = correlationData.getReturned();
 
-                    log.error("Event{} was returned {}", event.getId(), returned.getReplyText());
+                    log.error("Event {} was returned {}", event.getId(), returned.getReplyText());
                     continue;
                 }
 
@@ -68,7 +66,7 @@ public class OutboxPublisher {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 log.error("Interrupted while publishing event with id {}", event.getId());
-                return;
+                break;
             } catch (AmqpException | ExecutionException | TimeoutException e) {
                 log.error("Error publishing event with id {}", event.getId(), e);
             }
