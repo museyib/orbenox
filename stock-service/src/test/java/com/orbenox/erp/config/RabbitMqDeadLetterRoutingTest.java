@@ -92,7 +92,7 @@ class RabbitMqDeadLetterRoutingTest {
         SimpleMessageListenerContainer listener = null;
 
         EventMessage eventMessage = new EventMessage(
-              1L,
+                1L,
                 "STOCK_POSTED",
                 "PRODUCT_APPROVE",
                 "12",
@@ -100,6 +100,8 @@ class RabbitMqDeadLetterRoutingTest {
                 new JsonMapper().writeValueAsString(command)
         );
         doThrow(new IllegalStateException("Database unavailable")).when(stockService).post(eventMessage);
+        doThrow(new IllegalStateException("Failure event database unavailable"))
+                .when(stockService).publishFailureEvent(eventMessage, "Database unavailable");
 
         try {
             declareTopology(infrastructureConfiguration, configuration, connectionFactory);
@@ -119,8 +121,9 @@ class RabbitMqDeadLetterRoutingTest {
             Message deadLetter = rabbitTemplate.receive(deadLetterQueue.getName(), 10_000);
 
             assertDeadLetter(deadLetter, mainQueue);
-            doThrow(new IllegalStateException("Database unavailable")).when(stockService).post(eventMessage);
             verify(stockService, times(4)).post(eventMessage);
+            verify(stockService, times(4))
+                    .publishFailureEvent(eventMessage, "Database unavailable");
         } finally {
             if (listener != null) {
                 listener.stop();

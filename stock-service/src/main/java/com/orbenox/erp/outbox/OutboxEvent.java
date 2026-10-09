@@ -23,6 +23,7 @@ public class OutboxEvent {
 
     private String aggregateVersion;
 
+    @Column(columnDefinition = "TEXT")
     private String payload;
 
     @Column(nullable = false, updatable = false)

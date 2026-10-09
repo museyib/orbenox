@@ -14,7 +14,6 @@ import tools.jackson.databind.json.JsonMapper;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -23,9 +22,6 @@ class EventConsumerTest {
 
     @Mock
     private StockPostingService stockPostingService;
-
-    @Mock
-    private JsonMapper jsonMapper;
 
     @InjectMocks
     private EventConsumer eventConsumer;
@@ -61,34 +57,31 @@ class EventConsumerTest {
                 "",
                 new JsonMapper().writeValueAsString(command)
         );
-        whenStockUpdateFails(eventMessage, new BusinessRuleException("Insufficient stock"));
+        doThrow(new BusinessRuleException("Insufficient stock")).when(stockPostingService).post(eventMessage);
 
-        assertThrows(BusinessRuleException.class, () -> eventConsumer.processEvent(eventMessage));
+        eventConsumer.processEvent(eventMessage);
+
+        verify(stockPostingService).publishFailureEvent(eventMessage, "Insufficient stock");
     }
 
     @Test
-    void processEvent_whenTechnicalFailureOccurs_shouldPropagateForMessageRedelivery() {
-        StockMovementCommand command = command();
-        RuntimeException failure = new IllegalStateException("Database unavailable");
-
+    void processEvent_whenFailureEventCannotBePublished_shouldPropagateForMessageRedelivery() {
         EventMessage eventMessage = new EventMessage(
                 1L,
                 "STOCK_POSTED",
                 "PRODUCT_APPROVE",
                 "12",
                 "",
-                new JsonMapper().writeValueAsString(command)
+                new JsonMapper().writeValueAsString(command())
         );
-        whenStockUpdateFails(eventMessage, failure);
+        doThrow(new BusinessRuleException("Insufficient stock")).when(stockPostingService).post(eventMessage);
+        RuntimeException publishFailure = new IllegalStateException("Outbox unavailable");
+        doThrow(publishFailure).when(stockPostingService)
+                .publishFailureEvent(eventMessage, "Insufficient stock");
 
-        assertThatThrownBy(() -> eventConsumer.processEvent(eventMessage))
-                .isSameAs(failure);
+        assertThrows(RuntimeException.class, () -> eventConsumer.processEvent(eventMessage));
 
-        verify(stockPostingService, never()).publishFailureEvent(any(), anyString());
-    }
-
-    private void whenStockUpdateFails(EventMessage eventMessage, RuntimeException failure) {
-        doThrow(failure).when(stockPostingService).post(eventMessage);
+        verify(stockPostingService).publishFailureEvent(eventMessage, "Insufficient stock");
     }
 
     private StockMovementCommand command() {
