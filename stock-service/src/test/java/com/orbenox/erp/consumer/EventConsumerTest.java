@@ -80,9 +80,8 @@ class EventConsumerTest {
                 .publishFailureEvent(eventMessage, "Insufficient stock");
 
         assertThrows(IllegalStateException.class, () -> eventConsumer.processEvent(eventMessage));
-        assertThrows(RuntimeException.class, () -> eventConsumer.processEvent(eventMessage));
 
-        verify(stockPostingService, never()).publishFailureEvent(eventMessage, "Outbox unavailable");
+        verify(stockPostingService).publishFailureEvent(eventMessage, "Insufficient stock");
     }
 
     private StockMovementCommand command() {

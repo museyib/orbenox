@@ -117,7 +117,7 @@ class RabbitMqDeadLetterRoutingTest {
 
             assertDeadLetter(deadLetter, mainQueue);
             verify(stockService, times(4)).post(eventMessage);
-            verify(stockService, never()).publishFailureEvent(eventMessage, eq(anyString()));
+            verify(stockService, never()).publishFailureEvent(any(), anyString());
         } finally {
             if (listener != null) {
                 listener.stop();
