@@ -36,7 +36,7 @@ public class ProductGroupService {
 
     @Cacheable(PRODUCT_GROUPS_EXCLUDED)
     public List<SimpleProductGroupItem> findAllExcluded(Long idToExclude) {
-        List<ProductGroupItem> items = productGroupRepository.getAllItems(PageRequest.of(0, Integer.MAX_VALUE)).getContent();
+        List<ProductGroupItem> items = productGroupRepository.getAllItems();
         Map<Long, List<ProductGroupItem>> childrenMap = items.stream()
                 .collect(Collectors.groupingBy(
                         groupItem -> groupItem.getParent() == null

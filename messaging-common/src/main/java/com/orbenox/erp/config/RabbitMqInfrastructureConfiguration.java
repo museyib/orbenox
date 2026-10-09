@@ -40,6 +40,11 @@ public class RabbitMqInfrastructureConfiguration {
     }
 
     @Bean
+    public JsonMapper jsonMapper() {
+        return JsonMapper.builder().build();
+    }
+
+    @Bean
     public MessageConverter messageConverter(JsonMapper jsonMapper) {
         return new JacksonJsonMessageConverter(jsonMapper);
     }

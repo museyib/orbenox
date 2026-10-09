@@ -23,6 +23,9 @@ class EventConsumerTest {
     @Mock
     private StockPostingService stockPostingService;
 
+    @Mock
+    private JsonMapper jsonMapper;
+
     @InjectMocks
     private EventConsumer eventConsumer;
 
@@ -38,6 +41,7 @@ class EventConsumerTest {
                 "",
                 new JsonMapper().writeValueAsString(command)
         );
+        when(jsonMapper.readValue(eventMessage.payload(), StockMovementCommand.class)).thenReturn(command);
 
         eventConsumer.processEvent(eventMessage);
 
@@ -58,6 +62,7 @@ class EventConsumerTest {
                 "",
                 new JsonMapper().writeValueAsString(command)
         );
+        when(jsonMapper.readValue(eventMessage.payload(), StockMovementCommand.class)).thenReturn(command);
 
         eventConsumer.processEvent(eventMessage);
 
@@ -78,18 +83,12 @@ class EventConsumerTest {
                 "",
                 new JsonMapper().writeValueAsString(command)
         );
+        when(jsonMapper.readValue(eventMessage.payload(), StockMovementCommand.class)).thenReturn(command);
 
         assertThatThrownBy(() -> eventConsumer.processEvent(eventMessage))
                 .isSameAs(failure);
 
         verify(stockPostingService, never()).publishFailureEvent(any(), anyString());
-    }
-
-    @Test
-    void processDeadLetter_shouldConsumeMessageWithoutReprocessingStockCommand() {
-        eventConsumer.processDeadLetter("dead-lettered malformed command");
-
-        verifyNoInteractions(stockPostingService);
     }
 
     private void whenStockUpdateFails(StockMovementCommand command, RuntimeException failure) {

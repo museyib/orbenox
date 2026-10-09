@@ -5,8 +5,11 @@ import com.orbenox.erp.domain.price.PriceListRepository;
 import com.orbenox.erp.domain.product.entity.Product;
 import com.orbenox.erp.domain.product.repository.ProductRepository;
 import com.orbenox.erp.domain.stock.StockBalanceService;
+import com.orbenox.erp.domain.stock.StockBalanceClient;
+import com.orbenox.erp.domain.stock.SimpleStockBalanceItem;
 import com.orbenox.erp.domain.warehouse.Warehouse;
 import com.orbenox.erp.domain.warehouse.WarehouseRepository;
+import com.orbenox.erp.common.Response;
 import com.orbenox.erp.enums.DocumentStatus;
 import com.orbenox.erp.consumer.EventConsumer;
 import com.orbenox.erp.consumer.InboxEventRepository;
@@ -34,6 +37,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -46,6 +50,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Testcontainers
@@ -83,6 +89,8 @@ public class CreateAndPostDocumentTest {
     private DocumentRepository documentRepository;
     @Autowired
     private StockBalanceService stockBalanceRepo;
+    @MockitoBean
+    private StockBalanceClient stockBalanceClient;
     @Autowired
     private EventConsumer eventConsumer;
     @Autowired
@@ -106,6 +114,13 @@ public class CreateAndPostDocumentTest {
 
         product = productRepo.findAll().getFirst();
         warehouse = warehouseRepo.findAll().getFirst();
+        when(stockBalanceClient.getStockBalanceItem(anyLong(), anyLong())).thenAnswer(invocation -> {
+            Long productId = invocation.getArgument(0);
+            Long warehouseId = invocation.getArgument(1);
+            BigDecimal quantity = warehouseId.equals(warehouse.getId()) ? BigDecimal.ONE : BigDecimal.ZERO;
+            return Response.successData(new SimpleStockBalanceItem(
+                    productId, warehouseId, quantity, BigDecimal.ZERO, quantity));
+        });
     }
 
     @Test
@@ -253,6 +268,13 @@ public class CreateAndPostDocumentTest {
     @Test
     public void salesOrders_postShouldRemainPostingUntilStockEventsArrive() {
         Warehouse isolatedWarehouse = createIsolatedWarehouse("CONC-SO");
+        when(stockBalanceClient.getStockBalanceItem(product.getId(), isolatedWarehouse.getId()))
+                .thenReturn(Response.successData(new SimpleStockBalanceItem(
+                        product.getId(),
+                        isolatedWarehouse.getId(),
+                        BigDecimal.ONE,
+                        BigDecimal.ZERO,
+                        BigDecimal.ONE)));
 
         List<Document> documents = new ArrayList<>();
         for (int i = 0; i < 6; i++) {

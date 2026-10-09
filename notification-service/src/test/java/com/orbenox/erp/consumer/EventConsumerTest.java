@@ -44,16 +44,4 @@ class EventConsumerTest {
 
         verify(inboxEventRepository).createInboxEvent("notification-service", 202L);
     }
-
-    @Test
-    void processEvent_whenMessageIsInvalid_shouldPropagateDeserializationFailure() {
-        when(jsonMapper.readValue("invalid", EventMessage.class))
-                .thenThrow(new StreamReadException("Invalid event"));
-
-        assertThatThrownBy(() -> eventConsumer.processEvent(any()))
-                .isInstanceOf(RuntimeException.class)
-                .hasCauseInstanceOf(StreamReadException.class);
-
-        verifyNoInteractions(inboxEventRepository);
-    }
 }

@@ -7,7 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.mockito.Mockito.mockStatic;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "eureka.client.enabled=false",
+        "spring.cloud.discovery.enabled=false",
+        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration"
+})
 class StockServiceApplicationTests {
 
     @Test

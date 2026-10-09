@@ -8,6 +8,14 @@ spring:
     discovery:
       enabled: false
 
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/orbenox"
+    username: "postgres"
+    password: "postgres"
+
 eureka:
   client:
     enabled: false
+app:
+  jwtSecretKey: "${JWT_SECRET_KEY:0e1156ac32b34087c0fc3da6b5cc015e1d86f013acdfc1bbbed78940f1d8c81d}"
+  jwtExpiration: "${JWT_EXPIRATION:86400000}"

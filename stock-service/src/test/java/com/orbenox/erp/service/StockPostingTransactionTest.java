@@ -30,7 +30,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(properties = {
         "spring.jpa.hibernate.ddl-auto=create-drop",
-        "spring.rabbitmq.listener.simple.auto-startup=false"
+        "spring.rabbitmq.listener.simple.auto-startup=false",
+        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration",
+        "eureka.client.enabled=false",
+        "spring.cloud.discovery.enabled=false"
 })
 @Testcontainers
 class StockPostingTransactionTest {
@@ -104,14 +107,13 @@ class StockPostingTransactionTest {
     void processEvent_whenProductApproveSucceeds_shouldPersistStockAndSuccessEvent() {
         Long documentId = DOCUMENT_IDS.incrementAndGet();
 
-
         EventMessage eventMessage = new EventMessage(
                 1L,
                 "STOCK_POSTED",
                 "PRODUCT_APPROVE",
                 documentId.toString(),
                 "",
-                new JsonMapper().writeValueAsString(command(documentId, "SALES_ORDER"))
+                new JsonMapper().writeValueAsString(command(documentId, "PRODUCT_APPROVE"))
         );
         eventConsumer.processEvent(eventMessage);
 

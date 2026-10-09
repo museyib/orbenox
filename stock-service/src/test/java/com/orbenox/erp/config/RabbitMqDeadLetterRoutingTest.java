@@ -59,7 +59,7 @@ class RabbitMqDeadLetterRoutingTest {
         try {
             declareTopology(infrastructureConfiguration, configuration, connectionFactory);
             RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-            rabbitTemplate.convertAndSend(ERP_EXCHANGE, mainQueue.getName(), PAYLOAD);
+            rabbitTemplate.convertAndSend(ERP_EXCHANGE, DOCUMENT_POSTED_KEY, PAYLOAD);
 
             var connection = connectionFactory.createConnection();
             try (var channel = connection.createChannel(false)) {
@@ -115,7 +115,7 @@ class RabbitMqDeadLetterRoutingTest {
             listener.start();
 
             RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-            rabbitTemplate.convertAndSend(ERP_EXCHANGE, mainQueue.getName(), PAYLOAD);
+            rabbitTemplate.convertAndSend(ERP_EXCHANGE, DOCUMENT_POSTED_KEY, PAYLOAD);
             Message deadLetter = rabbitTemplate.receive(deadLetterQueue.getName(), 10_000);
 
             assertDeadLetter(deadLetter, mainQueue);
@@ -161,6 +161,7 @@ class RabbitMqDeadLetterRoutingTest {
         rabbitAdmin.declareExchange(deadLetterExchange);
         rabbitAdmin.declareQueue(configuration.documentPostedQueue());
         rabbitAdmin.declareQueue(configuration.documentPostedDlq());
+        rabbitAdmin.declareBinding(configuration.documentPostedBinding());
         rabbitAdmin.declareBinding(configuration.documentPostedDlqBinding());
     }
 
