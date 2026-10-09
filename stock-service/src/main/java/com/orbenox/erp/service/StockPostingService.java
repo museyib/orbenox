@@ -22,7 +22,7 @@ public class StockPostingService {
     private final JsonMapper jsonMapper;
 
     @Transactional
-    public void post(EventMessage eventMessage) {
+    public boolean post(EventMessage eventMessage) {
 
         int affected = inboxEventRepository.createInboxEvent("stock-service", eventMessage.eventId());
 
@@ -44,8 +44,9 @@ public class StockPostingService {
                     command.typeCode()
             );
             log.info("Stock updated event created: {}", event);
+            return true;
         } else {
-            throw new RuntimeException(String.format("Event %s already processed", eventMessage.eventId()));
+            return false;
         }
     }
 

@@ -18,10 +18,8 @@ public class EventConsumer {
     @RabbitListener(queues = DOCUMENT_POSTED_QUEUE)
     public void processEvent(EventMessage eventMessage) {
         log.info("Message received: {}", eventMessage);
-        try {
-            stockService.post(eventMessage);
-        } catch (RuntimeException e) {
-            stockService.publishFailureEvent(eventMessage, e.getMessage());
+        if (!stockService.post(eventMessage)) {
+            stockService.publishFailureEvent(eventMessage, String.format("Event %s already processed", eventMessage.eventId()));
         }
     }
 }
