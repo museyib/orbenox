@@ -1,5 +1,6 @@
 package com.orbenox.erp.consumer;
 
+import com.orbenox.erp.exception.BusinessRuleException;
 import com.orbenox.erp.outbox.EventMessage;
 import com.orbenox.erp.service.StockPostingService;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,11 @@ public class EventConsumer {
         log.info("Message received: {}", eventMessage);
         try {
             stockService.post(eventMessage);
-        } catch (RuntimeException e) {
+        } catch (BusinessRuleException e) {
             stockService.publishFailureEvent(eventMessage, e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("Error processing event: {}", eventMessage, e);
+            throw e;
         }
     }
 }

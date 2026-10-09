@@ -64,6 +64,6 @@ public class StockPostingService {
                 command.typeCode() + "_POSTED",
                 command.typeCode()
         );
-        log.error("Error processing event: {}", message);
+        log.error("Stock processing failed: {}", message);
     }
 }
