@@ -89,7 +89,6 @@ class RabbitMqDeadLetterRoutingTest {
                 new StockMovementCommand.StockOperation(11L, 1L, 1L, BigDecimal.TEN, 1),
                 new StockMovementCommand.StockOperation(12L, 2L, 1L, BigDecimal.TEN, 1)
         ));
-        doThrow(new IllegalStateException("Database unavailable")).when(stockService).post(command);
         SimpleMessageListenerContainer listener = null;
 
         EventMessage eventMessage = new EventMessage(
@@ -100,13 +99,14 @@ class RabbitMqDeadLetterRoutingTest {
                 "",
                 new JsonMapper().writeValueAsString(command)
         );
+        doThrow(new IllegalStateException("Database unavailable")).when(stockService).post(eventMessage);
 
         try {
             declareTopology(infrastructureConfiguration, configuration, connectionFactory);
             listener = new SimpleMessageListenerContainer(connectionFactory);
             listener.setQueueNames(mainQueue.getName());
             listener.setMessageListener(_ ->
-                    new EventConsumer(stockService, new JsonMapper()).processEvent(eventMessage));
+                    new EventConsumer(stockService).processEvent(eventMessage));
             listener.setAdviceChain(RetryInterceptorBuilder.stateless()
                     .maxRetries(3)
                     .backOffOptions(1, 1.0, 1)
@@ -119,7 +119,8 @@ class RabbitMqDeadLetterRoutingTest {
             Message deadLetter = rabbitTemplate.receive(deadLetterQueue.getName(), 10_000);
 
             assertDeadLetter(deadLetter, mainQueue);
-            verify(stockService, times(4)).post(command);
+            doThrow(new IllegalStateException("Database unavailable")).when(stockService).post(eventMessage);
+            verify(stockService, times(4)).post(eventMessage);
         } finally {
             if (listener != null) {
                 listener.stop();

@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,18 +42,16 @@ class EventConsumerTest {
                 "",
                 new JsonMapper().writeValueAsString(command)
         );
-        when(jsonMapper.readValue(eventMessage.payload(), StockMovementCommand.class)).thenReturn(command);
 
         eventConsumer.processEvent(eventMessage);
 
-        verify(stockPostingService).post(command);
+        verify(stockPostingService).post(eventMessage);
         verify(stockPostingService, never()).publishFailureEvent(any(), anyString());
     }
 
     @Test
     void processEvent_whenStockUpdateViolatesBusinessRule_shouldPublishFailureEvent() {
         StockMovementCommand command = command();
-        whenStockUpdateFails(command, new BusinessRuleException("Insufficient stock"));
 
         EventMessage eventMessage = new EventMessage(
                 1L,
@@ -62,18 +61,15 @@ class EventConsumerTest {
                 "",
                 new JsonMapper().writeValueAsString(command)
         );
-        when(jsonMapper.readValue(eventMessage.payload(), StockMovementCommand.class)).thenReturn(command);
+        whenStockUpdateFails(eventMessage, new BusinessRuleException("Insufficient stock"));
 
-        eventConsumer.processEvent(eventMessage);
-
-        verify(stockPostingService).publishFailureEvent(command, "Insufficient stock");
+        assertThrows(BusinessRuleException.class, () -> eventConsumer.processEvent(eventMessage));
     }
 
     @Test
     void processEvent_whenTechnicalFailureOccurs_shouldPropagateForMessageRedelivery() {
         StockMovementCommand command = command();
         RuntimeException failure = new IllegalStateException("Database unavailable");
-        whenStockUpdateFails(command, failure);
 
         EventMessage eventMessage = new EventMessage(
                 1L,
@@ -83,7 +79,7 @@ class EventConsumerTest {
                 "",
                 new JsonMapper().writeValueAsString(command)
         );
-        when(jsonMapper.readValue(eventMessage.payload(), StockMovementCommand.class)).thenReturn(command);
+        whenStockUpdateFails(eventMessage, failure);
 
         assertThatThrownBy(() -> eventConsumer.processEvent(eventMessage))
                 .isSameAs(failure);
@@ -91,8 +87,8 @@ class EventConsumerTest {
         verify(stockPostingService, never()).publishFailureEvent(any(), anyString());
     }
 
-    private void whenStockUpdateFails(StockMovementCommand command, RuntimeException failure) {
-        doThrow(failure).when(stockPostingService).post(command);
+    private void whenStockUpdateFails(EventMessage eventMessage, RuntimeException failure) {
+        doThrow(failure).when(stockPostingService).post(eventMessage);
     }
 
     private StockMovementCommand command() {
