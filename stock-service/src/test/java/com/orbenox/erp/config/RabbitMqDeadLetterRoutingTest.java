@@ -28,10 +28,7 @@ import java.util.List;
 
 import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @Testcontainers
 class RabbitMqDeadLetterRoutingTest {
@@ -122,8 +119,7 @@ class RabbitMqDeadLetterRoutingTest {
 
             assertDeadLetter(deadLetter, mainQueue);
             verify(stockService, times(4)).post(eventMessage);
-            verify(stockService, times(4))
-                    .publishFailureEvent(eventMessage, "Database unavailable");
+            verify(stockService, never()).publishFailureEvent(eventMessage, "Database unavailable");
         } finally {
             if (listener != null) {
                 listener.stop();

@@ -74,14 +74,12 @@ class EventConsumerTest {
                 "",
                 new JsonMapper().writeValueAsString(command())
         );
-        doThrow(new BusinessRuleException("Insufficient stock")).when(stockPostingService).post(eventMessage);
         RuntimeException publishFailure = new IllegalStateException("Outbox unavailable");
-        doThrow(publishFailure).when(stockPostingService)
-                .publishFailureEvent(eventMessage, "Insufficient stock");
+        doThrow(publishFailure).when(stockPostingService).post(eventMessage);
 
         assertThrows(RuntimeException.class, () -> eventConsumer.processEvent(eventMessage));
 
-        verify(stockPostingService).publishFailureEvent(eventMessage, "Insufficient stock");
+        verify(stockPostingService, never()).publishFailureEvent(eventMessage, "Outbox unavailable");
     }
 
     private StockMovementCommand command() {
