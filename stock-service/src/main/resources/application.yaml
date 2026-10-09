@@ -40,6 +40,10 @@ spring:
           max-retries: 3
           max-interval: 10s
           multiplier: 2
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
 eureka:
   client:
     service-url:
