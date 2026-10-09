@@ -612,3 +612,11 @@ CREATE TABLE inbox_event
     CONSTRAINT uk_inbox_consumer_event
         UNIQUE (consumer_name, event_id)
 );
+
+CREATE TABLE shedlock
+(
+    name VARCHAR(100) PRIMARY KEY ,
+    lock_until TIMESTAMP,
+    locked_at TIMESTAMP,
+    locked_by VARCHAR(100)
+)
