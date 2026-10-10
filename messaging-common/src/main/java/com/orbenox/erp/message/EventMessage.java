@@ -1,4 +1,4 @@
-package com.orbenox.erp.outbox;
+package com.orbenox.erp.message;
 
 public record EventMessage(
         Long eventId,

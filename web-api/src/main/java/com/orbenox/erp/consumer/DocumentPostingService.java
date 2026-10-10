@@ -1,9 +1,9 @@
 package com.orbenox.erp.consumer;
 
 import com.orbenox.erp.enums.DocumentStatus;
+import com.orbenox.erp.message.EventMessage;
 import com.orbenox.erp.messaging.command.StockMovementCommand.StockOperation;
 import com.orbenox.erp.messaging.event.StockUpdatedEvent;
-import com.orbenox.erp.outbox.EventMessage;
 import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.service.DocumentResolver;
 import jakarta.transaction.Transactional;

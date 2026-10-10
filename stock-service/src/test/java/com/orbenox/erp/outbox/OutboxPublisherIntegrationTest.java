@@ -1,5 +1,6 @@
 package com.orbenox.erp.outbox;
 
+import com.orbenox.erp.message.EventMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

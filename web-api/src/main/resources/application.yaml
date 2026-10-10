@@ -17,7 +17,7 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
-    show-sql: true
+    show-sql: false
     properties:
       dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
@@ -84,7 +84,15 @@ eureka:
     register-with-eureka: true
   instance:
     prefer-ip-address: ${EUREKA_PREFER_IP_ADDRESS:true}
+server:
+  port: 8081
 
 app:
   jwtSecretKey: ${JWT_SECRET_KEY:change-me-very-long-secret-key-for-local-tests-123}
   jwtExpiration: ${JWT_EXPIRATION:86400000}
+
+# Logging file path
+logging:
+  file:
+    path: "./logs"
+    name: "web-api"

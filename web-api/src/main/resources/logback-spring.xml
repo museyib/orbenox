@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Define the log pattern with correlation-id -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} %-5level [%X{X-Correlation-Id}] - %msg%n"/>
+
+    <!-- Read both properties from application.yml -->
+    <springProperty name="logDir" source="logging.file.path" defaultValue="./logs"/>
+    <springProperty name="logName" source="logging.file.name" defaultValue="web-api"/>
+
+    <!-- Combine path and name into a single variable -->
+    <property name="LOG_FILE" value="${logDir}/${logName}.log"/>
+
+    <!-- File Appender -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Dynamic rollover pattern: ./logs/web-api.2026-10-10.log -->
+            <fileNamePattern>${logDir}/${logName}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <!-- Filter changed to ThresholdFilter to include INFO, WARN, and ERROR -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <!-- Console Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Root Logger Configuration -->
+    <!-- Note: Root is set to INFO so your appender actually receives INFO logs -->
+    <root level="INFO">
+        <appender-ref ref="FILE" />
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>

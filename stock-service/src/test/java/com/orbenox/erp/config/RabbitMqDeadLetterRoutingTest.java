@@ -1,8 +1,8 @@
 package com.orbenox.erp.config;
 
 import com.orbenox.erp.consumer.EventConsumer;
+import com.orbenox.erp.message.EventMessage;
 import com.orbenox.erp.messaging.command.StockMovementCommand;
-import com.orbenox.erp.outbox.EventMessage;
 import com.orbenox.erp.service.StockPostingService;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.DirectExchange;

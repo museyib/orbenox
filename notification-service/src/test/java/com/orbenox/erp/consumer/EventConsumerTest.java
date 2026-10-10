@@ -1,5 +1,6 @@
 package com.orbenox.erp.consumer;
 
+import com.orbenox.erp.message.EventMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

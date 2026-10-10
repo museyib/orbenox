@@ -1,8 +1,8 @@
 package com.orbenox.erp.consumer;
 
 import com.orbenox.erp.exception.BusinessRuleException;
+import com.orbenox.erp.message.EventMessage;
 import com.orbenox.erp.messaging.command.StockMovementCommand;
-import com.orbenox.erp.outbox.EventMessage;
 import com.orbenox.erp.service.StockPostingService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

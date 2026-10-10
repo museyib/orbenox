@@ -2,6 +2,8 @@ package com.orbenox.erp.config;
 
 import com.orbenox.erp.domain.stock.StockBalanceClient;
 import feign.RequestInterceptor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +22,7 @@ import org.springframework.util.MultiValueMap;
 
 @Configuration
 @EnableFeignClients(clients = {StockBalanceClient.class})
+@Slf4j
 public class ClientConfiguration {
     @Bean
     public OAuth2AuthorizedClientManager authorizedClientManager(
@@ -60,7 +63,10 @@ public class ClientConfiguration {
             }
 
             String token = authorizedClient.getAccessToken().getTokenValue();
+            String correlationId = MDC.get("X-Correlation-Id");
+            log.info("Adding X-Correlation-Id headers to request: {} ", correlationId);
             requestTemplate.header("Authorization", "Bearer " + token);
+            requestTemplate.header("X-Correlation-Id", correlationId);
         };
     }
 }

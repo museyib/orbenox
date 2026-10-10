@@ -1,9 +1,9 @@
 package com.orbenox.erp.service;
 
 import com.orbenox.erp.consumer.InboxEventRepository;
+import com.orbenox.erp.message.EventMessage;
 import com.orbenox.erp.messaging.command.StockMovementCommand;
 import com.orbenox.erp.messaging.event.StockUpdatedEvent;
-import com.orbenox.erp.outbox.EventMessage;
 import com.orbenox.erp.outbox.OutboxEventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

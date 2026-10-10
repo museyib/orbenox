@@ -1,6 +1,6 @@
 package com.orbenox.erp.consumer;
 
-import com.orbenox.erp.outbox.EventMessage;
+import com.orbenox.erp.message.EventMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

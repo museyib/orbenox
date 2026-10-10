@@ -1,10 +1,10 @@
 package com.orbenox.erp.service;
 
 import com.orbenox.erp.consumer.EventConsumer;
+import com.orbenox.erp.message.EventMessage;
 import com.orbenox.erp.messaging.command.StockMovementCommand;
 import com.orbenox.erp.messaging.command.StockMovementCommand.StockOperation;
 import com.orbenox.erp.messaging.event.StockUpdatedEvent;
-import com.orbenox.erp.outbox.EventMessage;
 import com.orbenox.erp.outbox.OutboxEvent;
 import com.orbenox.erp.outbox.OutboxEventRepository;
 import com.orbenox.erp.repository.StockMovementRepository;

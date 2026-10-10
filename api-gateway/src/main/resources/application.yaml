@@ -1,3 +1,4 @@
+
 spring:
   application:
     name: api-gateway
@@ -38,3 +39,5 @@ eureka:
   instance:
     lease-renewal-interval-in-seconds: 5
     prefer-ip-address: ${EUREKA_PREFER_IP_ADDRESS:false}
+server:
+  port: 8083

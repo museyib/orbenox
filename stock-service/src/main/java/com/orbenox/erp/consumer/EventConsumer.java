@@ -1,7 +1,7 @@
 package com.orbenox.erp.consumer;
 
 import com.orbenox.erp.exception.BusinessRuleException;
-import com.orbenox.erp.outbox.EventMessage;
+import com.orbenox.erp.message.EventMessage;
 import com.orbenox.erp.service.StockPostingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

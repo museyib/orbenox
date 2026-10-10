@@ -10,7 +10,7 @@ spring:
           jws-algorithms:
             - RS256
   datasource:
-    url: "${STOCK_DB_URL:jdbc:postgresql://localhost:5436/stock}"
+    url: "${STOCK_DB_URL:jdbc:postgresql://localhost:5432/stock}"
     username: "${STOCK_DB_USERNAME:postgres}"
     password: "${STOCK_DB_PASSWORD:postgres}"
     hikari:
@@ -52,3 +52,11 @@ eureka:
     register-with-eureka: true
   instance:
     prefer-ip-address: ${EUREKA_PREFER_IP_ADDRESS:true}
+server:
+  port: 8082
+
+# Logging file path
+logging:
+  file:
+    path: "./logs"
+    name: "stock-service"
