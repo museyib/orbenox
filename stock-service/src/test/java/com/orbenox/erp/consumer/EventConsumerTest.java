@@ -54,6 +54,29 @@ class EventConsumerTest {
     }
 
     @Test
+    void processEvent_withoutCorrelationId_shouldNotExposeStaleMdcToService() {
+        EventMessage eventMessage = new EventMessage(
+                1L,
+                "STOCK_POSTED",
+                "PRODUCT_APPROVE",
+                "12",
+                "",
+                new JsonMapper().writeValueAsString(command()),
+                null
+        );
+        MDC.put("X-Correlation-Id", "stale-correlation-id");
+        doAnswer(invocation -> {
+            assertThat(MDC.get("X-Correlation-Id")).isNull();
+            return null;
+        }).when(stockPostingService).post(eventMessage);
+
+        eventConsumer.processEvent(eventMessage);
+
+        verify(stockPostingService).post(eventMessage);
+        assertThat(MDC.get("X-Correlation-Id")).isNull();
+    }
+
+    @Test
     void processEvent_whenStockUpdateViolatesBusinessRule_shouldPublishFailureEvent() {
         StockMovementCommand command = command();
 

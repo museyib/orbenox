@@ -19,9 +19,13 @@ public class EventConsumer {
 
     @RabbitListener(queues = DOCUMENT_POSTED_QUEUE)
     public void processEvent(EventMessage eventMessage) {
-        MDC.put("X-Correlation-Id", eventMessage.correlationId());
-        log.info("Message received: {}", eventMessage);
         try {
+            if (eventMessage.correlationId() != null) {
+                MDC.put("X-Correlation-Id", eventMessage.correlationId());
+            } else {
+                MDC.remove("X-Correlation-Id");
+            }
+            log.info("Message received: {}", eventMessage);
             stockService.post(eventMessage);
         } catch (BusinessRuleException e) {
             stockService.publishFailureEvent(eventMessage, e.getMessage());

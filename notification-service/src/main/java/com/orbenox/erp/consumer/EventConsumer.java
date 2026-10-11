@@ -21,9 +21,13 @@ public class EventConsumer {
     @RabbitListener(queues = NOTIFICATION_QUEUE)
     @Transactional
     public void processEvent(EventMessage eventMessage) {
-        MDC.put("X-Correlation-Id", eventMessage.correlationId());
-        log.info("Message received: {}", eventMessage);
         try {
+            if (eventMessage.correlationId() != null) {
+                MDC.put("X-Correlation-Id", eventMessage.correlationId());
+            } else {
+                MDC.remove("X-Correlation-Id");
+            }
+            log.info("Message received: {}", eventMessage);
             int affected = inboxEventRepository.createInboxEvent("notification-service", eventMessage.eventId());
             if (affected > 0) {
                 log.info("Event {} processed", eventMessage.eventId());

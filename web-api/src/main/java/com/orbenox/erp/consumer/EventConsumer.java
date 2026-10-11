@@ -17,9 +17,13 @@ public class EventConsumer {
 
     @RabbitListener(queues = STOCK_POSTED_QUEUE)
     public void processEvent(EventMessage eventMessage) {
-        MDC.put("X-Correlation-Id", eventMessage.correlationId());
-        log.info("Message received: {}", eventMessage);
         try {
+            if (eventMessage.correlationId() != null) {
+                MDC.put("X-Correlation-Id", eventMessage.correlationId());
+            } else {
+                MDC.remove("X-Correlation-Id");
+            }
+            log.info("Message received: {}", eventMessage);
             documentPostingService.handleStockUpdatedEvent(eventMessage);
         } finally {
             MDC.remove("X-Correlation-Id");

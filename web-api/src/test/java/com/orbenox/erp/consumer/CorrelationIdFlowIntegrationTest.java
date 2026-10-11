@@ -6,6 +6,7 @@ import ch.qos.logback.core.read.ListAppender;
 import com.orbenox.erp.config.CorrelationIdFilter;
 import com.orbenox.erp.config.JpaAuditingConfig;
 import com.orbenox.erp.message.EventMessage;
+import com.orbenox.erp.messaging.command.StockMovementCommand;
 import com.orbenox.erp.messaging.event.StockUpdatedEvent;
 import com.orbenox.erp.outbox.OutboxEvent;
 import com.orbenox.erp.outbox.OutboxEventRepository;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
@@ -30,11 +32,11 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Propagation;
@@ -46,17 +48,23 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-import org.springframework.amqp.core.Message;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 import java.util.UUID;
 
 import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.ERP_EXCHANGE;
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.DOCUMENT_POSTED_KEY;
 import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.STOCK_POSTED_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -142,34 +150,90 @@ class CorrelationIdFlowIntegrationTest {
 
     @Test
     void knownRequestCorrelationId_shouldRemainConsistentAcrossOutboxRabbitAndConsumerLog() throws Exception {
-        verifyCorrelationIdFlow("known-correlation-id", "known-correlation-id");
+        verifyCorrelationIdFlow("known-correlation-id", "known-correlation-id", true);
     }
 
     @Test
     void missingRequestCorrelationId_shouldGenerateAndPropagateOneCorrelationId() throws Exception {
-        verifyCorrelationIdFlow(null, null);
+        verifyCorrelationIdFlow(null, null, true);
+    }
+
+    @Test
+    void businessFailure_shouldKeepRequestCorrelationIdThroughRabbitAndConsumerLog() throws Exception {
+        verifyCorrelationIdFlow("business-failure-correlation", "business-failure-correlation", false);
     }
 
     @Test
     void invalidRequestCorrelationId_shouldBeRejectedWithoutCreatingAnOutboxEvent() throws Exception {
         String queueName = declareStockPostedQueue();
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader(CORRELATION_ID_HEADER, "invalid correlation id!");
-        MockHttpServletResponse response = new MockHttpServletResponse();
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new TestEndpoint())
+                .addFilters(correlationIdFilter)
+                .build();
 
-        assertThatThrownBy(() -> correlationIdFilter.doFilter(request, response, createOutboxChain()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Invalid correlation ID");
+        MDC.put(CORRELATION_ID_HEADER, "stale-request-correlation");
+        mockMvc.perform(get("/correlation-test")
+                        .header(CORRELATION_ID_HEADER, "invalid correlation id!"))
+                .andExpect(status().isBadRequest())
+                .andExpect(header().doesNotExist(CORRELATION_ID_HEADER));
 
-        assertThat(response.getHeader(CORRELATION_ID_HEADER)).isNull();
-        assertThat(request.getAttribute(CORRELATION_ID_HEADER)).isNull();
         assertThat(outboxEventRepository.findAll()).isEmpty();
         assertThat(rabbitTemplate.receive(queueName, 100)).isNull();
         assertThat(MDC.get(CORRELATION_ID_HEADER)).isNull();
         assertThat(logAppender.list).isEmpty();
     }
 
-    private void verifyCorrelationIdFlow(String requestCorrelationId, String expectedCorrelationId) throws Exception {
+    @Test
+    void publisher_shouldPublishEventWithoutCorrelationId() {
+        String queueName = declareStockPostedQueue();
+        MDC.remove(CORRELATION_ID_HEADER);
+        transactionTemplate.executeWithoutResult(status ->
+                outboxEventService.createOutboxEvent(
+                        new StockUpdatedEvent(
+                                false, 987654321L, "PRODUCT_APPROVE", "No correlation ID", List.of()),
+                        "PRODUCT_APPROVE_POSTED",
+                        "PRODUCT_APPROVE",
+                        "987654321",
+                        STOCK_POSTED_KEY));
+        OutboxEvent persistedEvent = outboxEventRepository.findAll().getFirst();
+        assertThat(persistedEvent.getCorrelationId()).isNull();
+        MDC.put(CORRELATION_ID_HEADER, "stale-publisher-correlation");
+
+        transactionTemplate.executeWithoutResult(status -> outboxPublisher.publishEvents());
+
+        assertThat(outboxEventRepository.findById(persistedEvent.getId()).orElseThrow().getStatus())
+                .isEqualTo("PUBLISHED");
+        EventMessage eventMessage = receiveEvent(queueName);
+        assertThat(eventMessage.eventId()).isEqualTo(persistedEvent.getId());
+        assertThat(eventMessage.correlationId()).isNull();
+        assertThat(MDC.get(CORRELATION_ID_HEADER)).isNull();
+    }
+
+    @Test
+    void messageWithoutCorrelationId_shouldClearStaleMdcOnReusedConsumerThread() {
+        MDC.put(CORRELATION_ID_HEADER, "stale-correlation-id");
+        EventMessage eventMessage = new EventMessage(
+                987654321L,
+                "PRODUCT_APPROVE_POSTED",
+                "PRODUCT_APPROVE",
+                "987654321",
+                null,
+                "{}",
+                null);
+
+        eventConsumer.processEvent(eventMessage);
+
+        assertThat(logAppender.list)
+                .anySatisfy(event -> {
+                    assertThat(event.getFormattedMessage()).contains("Message received");
+                    assertThat(event.getMDCPropertyMap()).doesNotContainKey(CORRELATION_ID_HEADER);
+                });
+        assertThat(MDC.get(CORRELATION_ID_HEADER)).isNull();
+    }
+
+    private void verifyCorrelationIdFlow(
+            String requestCorrelationId,
+            String expectedCorrelationId,
+            boolean success) throws Exception {
         String queueName = declareStockPostedQueue();
         MockHttpServletRequest request = new MockHttpServletRequest();
         if (requestCorrelationId != null) {
@@ -190,7 +254,7 @@ class CorrelationIdFlowIntegrationTest {
         assertThat(MDC.get(CORRELATION_ID_HEADER)).isNull();
 
         OutboxEvent persistedEvent = outboxEventRepository.findAll().stream()
-                .filter(event -> "PRODUCT_APPROVE_POSTED".equals(event.getEventType()))
+                .filter(event -> DOCUMENT_POSTED_KEY.equals(event.getRoutingKey()))
                 .findFirst()
                 .orElseThrow();
         assertThat(persistedEvent.getCorrelationId()).isEqualTo(correlationId);
@@ -200,11 +264,46 @@ class CorrelationIdFlowIntegrationTest {
         assertThat(outboxEventRepository.findById(persistedEvent.getId()).orElseThrow().getStatus())
                 .isEqualTo("PUBLISHED");
 
-        Message publishedMessage = rabbitTemplate.receive(queueName, 1_000);
-        assertThat(publishedMessage).isNotNull();
-        EventMessage eventMessage = jsonMapper.readValue(publishedMessage.getBody(), EventMessage.class);
-        assertThat(eventMessage.eventId()).isEqualTo(persistedEvent.getId());
+        EventMessage stockRequest = receiveEvent(queueName);
+        assertThat(stockRequest.eventId()).isEqualTo(persistedEvent.getId());
+        assertThat(stockRequest.eventType()).isEqualTo("SALES_ORDER_POSTED");
+        assertThat(stockRequest.correlationId()).isEqualTo(correlationId);
+
+        MDC.put(CORRELATION_ID_HEADER, stockRequest.correlationId());
+        try {
+            StockUpdatedEvent stockResponse = new StockUpdatedEvent(
+                    success,
+                    987654321L,
+                    "SALES_ORDER",
+                    success ? "Stock updated successfully" : "Insufficient stock",
+                    List.of());
+            transactionTemplate.executeWithoutResult(status ->
+                    outboxEventService.createOutboxEvent(
+                            stockResponse,
+                            "SALES_ORDER_POSTED",
+                            "SALES_ORDER",
+                            "987654321",
+                            STOCK_POSTED_KEY));
+        } finally {
+            MDC.remove(CORRELATION_ID_HEADER);
+        }
+        assertThat(MDC.get(CORRELATION_ID_HEADER)).isNull();
+
+        OutboxEvent responseEvent = outboxEventRepository.findAll().stream()
+                .filter(event -> STOCK_POSTED_KEY.equals(event.getRoutingKey()))
+                .findFirst()
+                .orElseThrow();
+        assertThat(responseEvent.getCorrelationId()).isEqualTo(correlationId);
+        transactionTemplate.executeWithoutResult(status -> outboxPublisher.publishEvents());
+        assertThat(MDC.get(CORRELATION_ID_HEADER)).isNull();
+        assertThat(outboxEventRepository.findById(responseEvent.getId()).orElseThrow().getStatus())
+                .isEqualTo("PUBLISHED");
+
+        EventMessage eventMessage = receiveEvent(queueName);
+        assertThat(eventMessage.eventId()).isEqualTo(responseEvent.getId());
+        assertThat(eventMessage.eventType()).isEqualTo("SALES_ORDER_POSTED");
         assertThat(eventMessage.correlationId()).isEqualTo(correlationId);
+        assertThat(eventMessage.payload()).contains("\"success\":" + success);
 
         logAppender.list.clear();
         eventConsumer.processEvent(eventMessage);
@@ -218,19 +317,17 @@ class CorrelationIdFlowIntegrationTest {
     }
 
     private FilterChain createOutboxChain() {
-        StockUpdatedEvent payload = new StockUpdatedEvent(
-                false,
+        StockMovementCommand payload = new StockMovementCommand(
                 987654321L,
-                "PRODUCT_APPROVE",
-                "Correlation integration test",
+                "SALES_ORDER",
                 List.of());
         return (request, response) -> transactionTemplate.executeWithoutResult(status ->
                 outboxEventService.createOutboxEvent(
                         payload,
-                        "PRODUCT_APPROVE_POSTED",
-                        "PRODUCT_APPROVE",
+                        "SALES_ORDER_POSTED",
+                        "SALES_ORDER",
                         "987654321",
-                        STOCK_POSTED_KEY));
+                        DOCUMENT_POSTED_KEY));
     }
 
     private String declareStockPostedQueue() {
@@ -239,8 +336,17 @@ class CorrelationIdFlowIntegrationTest {
         rabbitAdmin.declareQueue(queue);
         rabbitAdmin.declareBinding(BindingBuilder.bind(queue)
                 .to(new TopicExchange(ERP_EXCHANGE))
+                .with(DOCUMENT_POSTED_KEY));
+        rabbitAdmin.declareBinding(BindingBuilder.bind(queue)
+                .to(new TopicExchange(ERP_EXCHANGE))
                 .with(STOCK_POSTED_KEY));
         return queueName;
+    }
+
+    private EventMessage receiveEvent(String queueName) {
+        Message received = rabbitTemplate.receive(queueName, 1_000);
+        assertThat(received).isNotNull();
+        return jsonMapper.readValue(received.getBody(), EventMessage.class);
     }
 
     private CachingConnectionFactory createConnectionFactory() {
@@ -251,5 +357,13 @@ class CorrelationIdFlowIntegrationTest {
         factory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);
         factory.setPublisherReturns(true);
         return factory;
+    }
+
+    @RestController
+    static class TestEndpoint {
+        @GetMapping("/correlation-test")
+        String handle() {
+            return "ok";
+        }
     }
 }

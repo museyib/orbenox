@@ -36,7 +36,9 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
         } else {
             Matcher matcher = pattern.matcher(incomingCorrelationId);
             if (!matcher.matches()) {
-                throw new IllegalArgumentException("Invalid correlation ID: " + incomingCorrelationId);
+                MDC.remove(CORRELATION_ID_HEADER);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid correlation ID");
+                return;
             }
         }
         MDC.put(CORRELATION_ID_HEADER, incomingCorrelationId);

@@ -4,6 +4,7 @@ import com.orbenox.erp.message.EventMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.MDC;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Message;
@@ -140,6 +141,36 @@ class OutboxPublisherIntegrationTest {
     }
 
     @Test
+    void publisher_shouldPublishEventWithoutCorrelationId() {
+        String queueName = declareBoundQueue(STOCK_POSTED_KEY);
+        OutboxEvent event = savePendingEvent(STOCK_POSTED_KEY, "PRODUCT_APPROVE_POSTED", null);
+        MDC.put("X-Correlation-Id", "stale-correlation-id");
+
+        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate));
+
+        assertThat(loadEvent(event).getStatus()).isEqualTo("PUBLISHED");
+        EventMessage message = receiveEvent(queueName);
+        assertThat(message.eventId()).isEqualTo(event.getId());
+        assertThat(message.correlationId()).isNull();
+        assertThat(MDC.get("X-Correlation-Id")).isNull();
+    }
+
+    @Test
+    void stockBusinessFailureEvent_shouldRetainCorrelationIdWhenPublished() {
+        String correlationId = "business-failure-correlation";
+        String webApiQueue = declareBoundQueue(STOCK_POSTED_KEY);
+        OutboxEvent event = savePendingEvent(
+                STOCK_POSTED_KEY, "SALES_ORDER_POSTED", correlationId, false);
+
+        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate));
+
+        EventMessage message = receiveEvent(webApiQueue);
+        assertThat(message.eventId()).isEqualTo(event.getId());
+        assertThat(message.correlationId()).isEqualTo(correlationId);
+        assertThat(message.payload()).contains("\"success\":false");
+    }
+
+    @Test
     void brokerNack_shouldLeaveEventPending() throws Exception {
         String routingKey = uniqueRoutingKey();
         String queueName = declareRejectingQueue(routingKey);
@@ -238,12 +269,20 @@ class OutboxPublisherIntegrationTest {
     }
 
     private OutboxEvent savePendingEvent(String routingKey, String eventType, String correlationId) {
+        return savePendingEvent(routingKey, eventType, correlationId, true);
+    }
+
+    private OutboxEvent savePendingEvent(
+            String routingKey,
+            String eventType,
+            String correlationId,
+            boolean success) {
         OutboxEvent event = new OutboxEvent();
         event.setEventType(eventType);
         event.setAggregateType("DOCUMENT");
         event.setAggregateId(UUID.randomUUID().toString());
         event.setAggregateVersion("1");
-        event.setPayload("{\"success\":true}");
+        event.setPayload("{\"success\":" + success + "}");
         event.setStatus("PENDING");
         event.setRoutingKey(routingKey);
         event.setCorrelationId(correlationId);

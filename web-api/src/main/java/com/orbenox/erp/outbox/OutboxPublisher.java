@@ -43,9 +43,15 @@ public class OutboxPublisher {
                     event.getAggregateVersion(),
                     event.getPayload(),
                     event.getCorrelationId());
-            MDC.put("X-Correlation-Id", event.getCorrelationId());
 
             try {
+                String correlationId = event.getCorrelationId();
+                if (correlationId != null) {
+                    MDC.put("X-Correlation-Id", correlationId);
+                } else {
+                    MDC.remove("X-Correlation-Id");
+                }
+
                 CorrelationData correlationData = new CorrelationData(event.getId().toString());
                 rabbitTemplate.convertAndSend(ERP_EXCHANGE, event.getRoutingKey(), eventMessage, correlationData);
 
