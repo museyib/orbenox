@@ -4,6 +4,7 @@ import com.orbenox.erp.consumer.EventConsumer;
 import com.orbenox.erp.message.EventMessage;
 import com.orbenox.erp.messaging.command.StockMovementCommand;
 import com.orbenox.erp.service.StockPostingService;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Message;
@@ -81,6 +82,7 @@ class RabbitMqDeadLetterRoutingTest {
         Queue deadLetterQueue = configuration.documentPostedDlq();
         CachingConnectionFactory connectionFactory = createConnectionFactory();
         StockPostingService stockService = mock(StockPostingService.class);
+        MeterRegistry meterRegistry = mock(MeterRegistry.class);
         StockMovementCommand command = new StockMovementCommand(
                 12L, "SO-12", List.of(
                 new StockMovementCommand.StockOperation(11L, 1L, 1L, BigDecimal.TEN, 1),
@@ -104,7 +106,7 @@ class RabbitMqDeadLetterRoutingTest {
             listener = new SimpleMessageListenerContainer(connectionFactory);
             listener.setQueueNames(mainQueue.getName());
             listener.setMessageListener(_ ->
-                    new EventConsumer(stockService).processEvent(eventMessage));
+                    new EventConsumer(stockService, meterRegistry).processEvent(eventMessage));
             listener.setAdviceChain(RetryInterceptorBuilder.stateless()
                     .maxRetries(3)
                     .backOffOptions(1, 1.0, 1)

@@ -12,6 +12,7 @@ import com.orbenox.erp.outbox.OutboxEvent;
 import com.orbenox.erp.outbox.OutboxEventRepository;
 import com.orbenox.erp.outbox.OutboxEventService;
 import com.orbenox.erp.outbox.OutboxPublisher;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.servlet.FilterChain;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -130,7 +131,7 @@ class CorrelationIdFlowIntegrationTest {
         ReflectionTestUtils.setField(correlationIdFilter, "serviceName", "web-api");
         outboxEventService = new OutboxEventService(outboxEventRepository, jsonMapper);
         outboxPublisher = new OutboxPublisher(outboxEventRepository, rabbitTemplate);
-        eventConsumer = new EventConsumer(mock(DocumentPostingService.class));
+        eventConsumer = new EventConsumer(mock(DocumentPostingService.class), mock(MeterRegistry.class));
 
         consumerLogger = (Logger) LoggerFactory.getLogger(EventConsumer.class);
         logAppender = new ListAppender<>();

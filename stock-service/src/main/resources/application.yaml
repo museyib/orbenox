@@ -55,6 +55,15 @@ eureka:
 server:
   port: 8082
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - metrics
+          - actuator
+          - health
+
 # Logging file path
 logging:
   file:

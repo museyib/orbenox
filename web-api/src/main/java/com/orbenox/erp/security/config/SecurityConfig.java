@@ -45,7 +45,8 @@ public class SecurityConfig {
                                         "/swagger-ui.html",
                                         "/swagger-ui/**",
                                         "/v3/api-docs*/**",
-                                        "/api/auth/login").permitAll()
+                                        "/api/auth/login",
+                                        "/actuator/**").permitAll()
                                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                                 .anyRequest().authenticated())
                 .formLogin(form -> form.loginPage("/ui/login").permitAll())

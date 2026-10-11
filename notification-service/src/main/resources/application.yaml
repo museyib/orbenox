@@ -16,6 +16,15 @@ spring:
   rabbitmq:
     port: 5673
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - metrics
+          - actuator
+          - health
+
 # Logging file path
 logging:
   file:

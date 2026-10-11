@@ -91,6 +91,15 @@ app:
   jwtSecretKey: ${JWT_SECRET_KEY:change-me-very-long-secret-key-for-local-tests-123}
   jwtExpiration: ${JWT_EXPIRATION:86400000}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - metrics
+          - actuator
+          - health
+
 # Logging file path
 logging:
   file:
