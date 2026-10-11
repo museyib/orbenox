@@ -15,7 +15,7 @@ public class OutboxEventService {
     private final OutboxEventRepository outboxEventRepository;
     private final JsonMapper jsonMapper;
 
-    public void createOutboxEvent(StockUpdatedEvent event, String eventType, String aggregateType) {
+    public void createOutboxEvent(StockUpdatedEvent event, String eventType, String aggregateType, String correlationId) {
         OutboxEvent outboxEvent = new OutboxEvent();
         outboxEvent.setEventType(eventType);
         outboxEvent.setAggregateType(aggregateType);
@@ -23,6 +23,7 @@ public class OutboxEventService {
         outboxEvent.setPayload(jsonMapper.writeValueAsString(event));
         outboxEvent.setStatus("PENDING");
         outboxEvent.setRoutingKey(STOCK_POSTED_KEY);
+        outboxEvent.setCorrelationId(correlationId);
         outboxEventRepository.save(outboxEvent);
     }
 }

@@ -12,6 +12,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class CorrelationIdFilter extends OncePerRequestFilter {
@@ -19,6 +21,9 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
 
     @Value("${spring.application.name:web-api}")
     private String serviceName;
+
+    //Correlation ID pattern: ^[a-zA-Z0-9_-]{1,100}$
+    private final Pattern pattern = Pattern.compile("^[a-zA-Z0-9_-]{1,100}$");
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -28,6 +33,11 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
         String incomingCorrelationId = request.getHeader(CORRELATION_ID_HEADER);
         if (incomingCorrelationId == null) {
             incomingCorrelationId = serviceName + "_" + UUID.randomUUID();
+        } else {
+            Matcher matcher = pattern.matcher(incomingCorrelationId);
+            if (!matcher.matches()) {
+                throw new IllegalArgumentException("Invalid correlation ID: " + incomingCorrelationId);
+            }
         }
         MDC.put(CORRELATION_ID_HEADER, incomingCorrelationId);
         response.setHeader(CORRELATION_ID_HEADER, incomingCorrelationId);

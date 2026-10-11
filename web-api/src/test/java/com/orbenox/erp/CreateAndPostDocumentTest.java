@@ -13,7 +13,10 @@ import com.orbenox.erp.common.Response;
 import com.orbenox.erp.enums.DocumentStatus;
 import com.orbenox.erp.consumer.EventConsumer;
 import com.orbenox.erp.consumer.InboxEventRepository;
+import com.orbenox.erp.config.CorrelationIdFilter;
 import com.orbenox.erp.message.EventMessage;
+import com.orbenox.erp.outbox.OutboxEvent;
+import com.orbenox.erp.outbox.OutboxEventRepository;
 import com.orbenox.erp.messaging.command.StockMovementCommand.StockOperation;
 import com.orbenox.erp.messaging.event.StockUpdatedEvent;
 import com.orbenox.erp.transaction.command.CreateProductApproveCommand;
@@ -32,8 +35,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -49,6 +55,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.DOCUMENT_CREATED_KEY;
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.DOCUMENT_POSTED_KEY;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -93,6 +102,10 @@ public class CreateAndPostDocumentTest {
     private StockBalanceClient stockBalanceClient;
     @Autowired
     private EventConsumer eventConsumer;
+    @Autowired
+    private OutboxEventRepository outboxEventRepository;
+    @Autowired
+    private CorrelationIdFilter correlationIdFilter;
     @Autowired
     private InboxEventRepository inboxEventRepository;
     @Autowired
@@ -150,6 +163,50 @@ public class CreateAndPostDocumentTest {
     }
 
     @Test
+    public void createProductApproveAndSalesOrder_shouldPropagateRequestCorrelationIdToNotificationEvents() throws Exception {
+        String correlationId = "creation-flow-correlation";
+
+        MockHttpServletResponse response = executeWithCorrelationId(correlationId, () -> {
+            productApproveActionService.createDraft(newProductApproveCommand(warehouse));
+            salesOrderActionService.createDraft(newSalesOrderCommand(warehouse));
+        });
+
+        assertEquals(correlationId, response.getHeader("X-Correlation-Id"));
+        assertNull(MDC.get("X-Correlation-Id"));
+        List<OutboxEvent> events = outboxEventsForCorrelationId(correlationId);
+        assertThat(events).hasSize(2)
+                .extracting(OutboxEvent::getEventType)
+                .containsExactlyInAnyOrder("PRODUCT_APPROVE_CREATED", "SALES_ORDER_CREATED");
+        assertThat(events).allSatisfy(event -> {
+            assertThat(event.getCorrelationId()).isEqualTo(correlationId);
+            assertThat(event.getRoutingKey()).isEqualTo(DOCUMENT_CREATED_KEY);
+        });
+    }
+
+    @Test
+    public void postProductApproveAndSalesOrder_shouldPropagateRequestCorrelationIdToStockEvents() throws Exception {
+        String correlationId = "posting-flow-correlation";
+        Document productApprove = createSubmittedProductApprove(warehouse, BigDecimal.ONE);
+        Document salesOrder = createApprovedSalesOrder(warehouse, BigDecimal.ONE, BigDecimal.ONE);
+
+        MockHttpServletResponse response = executeWithCorrelationId(correlationId, () -> {
+            productApproveActionService.post(productApprove.getId());
+            salesOrderActionService.post(salesOrder.getId());
+        });
+
+        assertEquals(correlationId, response.getHeader("X-Correlation-Id"));
+        assertNull(MDC.get("X-Correlation-Id"));
+        List<OutboxEvent> events = outboxEventsForCorrelationId(correlationId);
+        assertThat(events).hasSize(2)
+                .extracting(OutboxEvent::getAggregateType)
+                .containsExactlyInAnyOrder("PRODUCT_APPROVE", "SALES_ORDER");
+        assertThat(events).allSatisfy(event -> {
+            assertThat(event.getCorrelationId()).isEqualTo(correlationId);
+            assertThat(event.getRoutingKey()).isEqualTo(DOCUMENT_POSTED_KEY);
+        });
+    }
+
+    @Test
     public void stockPostedEvent_shouldPostDocumentAndIgnoreDuplicateDelivery() {
         Warehouse isolatedWarehouse = createIsolatedWarehouse("EVENT-POST");
         Document document = createSubmittedProductApprove(isolatedWarehouse, BigDecimal.ONE);
@@ -175,7 +232,8 @@ public class CreateAndPostDocumentTest {
                                 product.getId(),
                                 isolatedWarehouse.getId(),
                                 BigDecimal.ONE,
-                                1)))));
+                                1)))),
+                "correlation-document-test");
 
         eventConsumer.processEvent(event);
 
@@ -355,6 +413,41 @@ public class CreateAndPostDocumentTest {
         isolatedWarehouse.setCode(prefix + "-" + UUID.randomUUID());
         isolatedWarehouse.setName(prefix + " warehouse");
         return warehouseRepo.saveAndFlush(isolatedWarehouse);
+    }
+
+    private CreateProductApproveCommand newProductApproveCommand(Warehouse targetWarehouse) {
+        return new CreateProductApproveCommand(
+                LocalDate.now(),
+                "Correlation test",
+                null,
+                priceListId,
+                targetWarehouse.getId(),
+                List.of(line(product, BigDecimal.ONE, BigDecimal.ZERO)));
+    }
+
+    private CreateSalesOrderCommand newSalesOrderCommand(Warehouse sourceWarehouse) {
+        return new CreateSalesOrderCommand(
+                LocalDate.now(),
+                "Correlation test",
+                partnerId,
+                "CASH",
+                priceListId,
+                sourceWarehouse.getId(),
+                List.of(line(product, BigDecimal.ONE, BigDecimal.ONE)));
+    }
+
+    private MockHttpServletResponse executeWithCorrelationId(String correlationId, Runnable request) throws Exception {
+        MockHttpServletRequest httpRequest = new MockHttpServletRequest();
+        httpRequest.addHeader("X-Correlation-Id", correlationId);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        correlationIdFilter.doFilter(httpRequest, response, (servletRequest, servletResponse) -> request.run());
+        return response;
+    }
+
+    private List<OutboxEvent> outboxEventsForCorrelationId(String correlationId) {
+        return outboxEventRepository.findAll().stream()
+                .filter(event -> correlationId.equals(event.getCorrelationId()))
+                .toList();
     }
 
     private Product createSiblingProduct(String prefix) {

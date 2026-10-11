@@ -1,5 +1,6 @@
 package com.orbenox.erp.outbox;
 
+import com.orbenox.erp.message.EventMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -139,7 +140,8 @@ class OutboxPublisherConcurrencyTest {
                 "SALES_ORDER",
                 "SO-123",
                 "1",
-                "{\"documentId\":\"SO-123\"}");
+                "{\"documentId\":\"SO-123\"}",
+                "correlation-outbox-test");
         verify(rabbitTemplate, times(1))
                 .convertAndSend(
                         eq(ERP_EXCHANGE),
@@ -162,6 +164,7 @@ class OutboxPublisherConcurrencyTest {
         event.setPayload("{\"documentId\":\"SO-123\"}");
         event.setRoutingKey(DOCUMENT_CREATED_KEY);
         event.setStatus("PENDING");
+        event.setCorrelationId("correlation-outbox-test");
         return event;
     }
 }

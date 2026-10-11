@@ -1,5 +1,6 @@
 package com.orbenox.erp.outbox;
 
+import com.orbenox.erp.message.EventMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.DOCUMENT_CREATED_KEY;
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.DOCUMENT_POSTED_KEY;
 import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.ERP_EXCHANGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -113,6 +116,45 @@ class OutboxPublisherIntegrationTest {
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PUBLISHED");
         assertThat(rabbitTemplate.receive(queueName, 1_000)).isNotNull();
+    }
+
+    @Test
+    void documentCreatedEvent_shouldKeepCorrelationIdForNotificationService() {
+        String correlationId = "creation-flow-correlation";
+        String notificationQueue = declareBoundQueue(DOCUMENT_CREATED_KEY);
+        OutboxEvent productApprove = savePendingEvent(
+                DOCUMENT_CREATED_KEY, "PRODUCT_APPROVE_CREATED", correlationId);
+        OutboxEvent salesOrder = savePendingEvent(
+                DOCUMENT_CREATED_KEY, "SALES_ORDER_CREATED", correlationId);
+
+        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate));
+
+        EventMessage productApproveMessage = receiveEvent(notificationQueue);
+        EventMessage salesOrderMessage = receiveEvent(notificationQueue);
+        assertThat(productApproveMessage.eventId()).isEqualTo(productApprove.getId());
+        assertThat(salesOrderMessage.eventId()).isEqualTo(salesOrder.getId());
+        assertThat(productApproveMessage.eventType()).isEqualTo("PRODUCT_APPROVE_CREATED");
+        assertThat(salesOrderMessage.eventType()).isEqualTo("SALES_ORDER_CREATED");
+        assertThat(productApproveMessage.correlationId()).isEqualTo(correlationId);
+        assertThat(salesOrderMessage.correlationId()).isEqualTo(correlationId);
+    }
+
+    @Test
+    void documentPostedEvent_shouldKeepCorrelationIdForStockAndNotificationServices() {
+        String correlationId = "posting-flow-correlation";
+        String stockQueue = declareBoundQueue(DOCUMENT_POSTED_KEY);
+        String notificationQueue = declareBoundQueue(DOCUMENT_POSTED_KEY);
+        OutboxEvent event = savePendingEvent(
+                DOCUMENT_POSTED_KEY, "SALES_ORDER_POSTED", correlationId);
+
+        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate));
+
+        EventMessage stockMessage = receiveEvent(stockQueue);
+        EventMessage notificationMessage = receiveEvent(notificationQueue);
+        assertThat(stockMessage.eventId()).isEqualTo(event.getId());
+        assertThat(notificationMessage.eventId()).isEqualTo(event.getId());
+        assertThat(stockMessage.correlationId()).isEqualTo(correlationId);
+        assertThat(notificationMessage.correlationId()).isEqualTo(correlationId);
     }
 
     @Test
@@ -210,8 +252,12 @@ class OutboxPublisherIntegrationTest {
     }
 
     private OutboxEvent savePendingEvent(String routingKey) {
+        return savePendingEvent(routingKey, "STOCK_POSTED", null);
+    }
+
+    private OutboxEvent savePendingEvent(String routingKey, String eventType, String correlationId) {
         OutboxEvent event = new OutboxEvent();
-        event.setEventType("STOCK_POSTED");
+        event.setEventType(eventType);
         event.setAggregateType("DOCUMENT");
         event.setAggregateId(UUID.randomUUID().toString());
         event.setAggregateVersion("1");
@@ -219,7 +265,14 @@ class OutboxPublisherIntegrationTest {
         event.setStatus("PENDING");
         event.setRoutingKey(routingKey);
         event.setCreatedAt(LocalDateTime.now());
+        event.setCorrelationId(correlationId);
         return outboxEventRepository.saveAndFlush(event);
+    }
+
+    private EventMessage receiveEvent(String queueName) {
+        Message received = rabbitTemplate.receive(queueName, 1_000);
+        assertThat(received).isNotNull();
+        return jsonMapper.readValue(received.getBody(), EventMessage.class);
     }
 
     private OutboxEvent loadEvent(OutboxEvent event) {

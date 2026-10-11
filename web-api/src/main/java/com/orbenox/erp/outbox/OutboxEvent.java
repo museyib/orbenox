@@ -37,4 +37,6 @@ public class OutboxEvent {
     private String status;
 
     private String routingKey;
+
+    private String correlationId;
 }

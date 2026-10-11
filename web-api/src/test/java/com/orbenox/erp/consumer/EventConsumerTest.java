@@ -6,8 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.MDC;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doAnswer;
 
 @ExtendWith(MockitoExtension.class)
 class EventConsumerTest {
@@ -22,10 +25,15 @@ class EventConsumerTest {
     void processEvent_whenStockPostingSucceeded_shouldDelegateEvent() {
         EventMessage eventMessage = eventMessage(
                 101L, "{\"success\":true,\"documentId\":12,\"typeCode\":\"SALES_ORDER\"}");
+        doAnswer(invocation -> {
+            assertThat(MDC.get("X-Correlation-Id")).isEqualTo(eventMessage.correlationId());
+            return null;
+        }).when(documentPostingService).handleStockUpdatedEvent(eventMessage);
 
         eventConsumer.processEvent(eventMessage);
 
         verify(documentPostingService).handleStockUpdatedEvent(eventMessage);
+        assertThat(MDC.get("X-Correlation-Id")).isNull();
     }
 
     @Test
@@ -45,6 +53,7 @@ class EventConsumerTest {
                 "DOCUMENT",
                 "12",
                 "1",
-                payload);
+                payload,
+                "correlation-web-test");
     }
 }

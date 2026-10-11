@@ -9,11 +9,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.MDC;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -36,13 +38,19 @@ class EventConsumerTest {
                 "PRODUCT_APPROVE",
                 "12",
                 "",
-                new JsonMapper().writeValueAsString(command)
+                new JsonMapper().writeValueAsString(command),
+                "correlation-stock-success"
         );
+        doAnswer(invocation -> {
+            assertThat(MDC.get("X-Correlation-Id")).isEqualTo(eventMessage.correlationId());
+            return null;
+        }).when(stockPostingService).post(eventMessage);
 
         eventConsumer.processEvent(eventMessage);
 
         verify(stockPostingService).post(eventMessage);
         verify(stockPostingService, never()).publishFailureEvent(any(), anyString());
+        assertThat(MDC.get("X-Correlation-Id")).isNull();
     }
 
     @Test
@@ -55,7 +63,8 @@ class EventConsumerTest {
                 "PRODUCT_APPROVE",
                 "12",
                 "",
-                new JsonMapper().writeValueAsString(command)
+                new JsonMapper().writeValueAsString(command),
+                "correlation-stock-business-rule"
         );
         doThrow(new BusinessRuleException("Insufficient stock")).when(stockPostingService).post(eventMessage);
 
@@ -72,7 +81,8 @@ class EventConsumerTest {
                 "PRODUCT_APPROVE",
                 "12",
                 "",
-                new JsonMapper().writeValueAsString(command())
+                new JsonMapper().writeValueAsString(command()),
+                "correlation-stock-failure"
         );
         doThrow(new BusinessRuleException("Insufficient stock")).when(stockPostingService).post(eventMessage);
         doThrow(new IllegalStateException("Outbox unavailable"))

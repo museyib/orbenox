@@ -11,6 +11,7 @@ import com.orbenox.erp.transaction.repository.DocumentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -35,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ActiveProfiles("test")
 @DisplayName("Outbox Event Service Transaction Tests")
 public class OutboxEventServiceTest {
+    private static final String CORRELATION_ID = "correlation-outbox-service-test";
 
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15");
@@ -68,12 +70,17 @@ public class OutboxEventServiceTest {
     void createOutboxEvent_whenDocumentCreatedAndTransactionCommits_shouldPersistEvent() {
         Document document = newDocument();
 
-        transactionTemplate.execute(status -> {
-            document.setType(transactionTypeRepository.findByCode("SALES_ORDER"));
-            documentRepository.save(document);
-            outboxEventService.createOutboxEvent(document, "SALES_ORDER_CREATED", "SALES_ORDER", document.getId().toString(), DOCUMENT_CREATED_KEY);
-            return null;
-        });
+        try {
+            MDC.put("X-Correlation-Id", CORRELATION_ID);
+            transactionTemplate.execute(status -> {
+                document.setType(transactionTypeRepository.findByCode("SALES_ORDER"));
+                documentRepository.save(document);
+                outboxEventService.createOutboxEvent(document, "SALES_ORDER_CREATED", "SALES_ORDER", document.getId().toString(), DOCUMENT_CREATED_KEY);
+                return null;
+            });
+        } finally {
+            MDC.remove("X-Correlation-Id");
+        }
 
         assertThat(document.getId()).isNotNull();
         OutboxEvent loaded = outboxEventRepository.findAll().stream()
@@ -87,6 +94,7 @@ public class OutboxEventServiceTest {
         assertThat(loaded.getStatus()).isEqualTo("PENDING");
         assertThat(loaded.getCreatedAt()).isNotNull();
         assertThat(loaded.getPublishedAt()).isNull();
+        assertThat(loaded.getCorrelationId()).isEqualTo(CORRELATION_ID);
     }
 
     @Test

@@ -33,7 +33,8 @@ CREATE TABLE outbox_event
     created_at        TIMESTAMP    NOT NULL DEFAULT now(),
     published_at      TIMESTAMP,
     status            VARCHAR(100),
-    routing_key        VARCHAR(100)
+    routing_key       VARCHAR(100),
+    correlation_id    VARCHAR(100)
 );
 
 CREATE TABLE inbox_event
@@ -48,8 +49,8 @@ CREATE TABLE inbox_event
 
 CREATE TABLE shedlock
 (
-    name VARCHAR(100) PRIMARY KEY ,
+    name       VARCHAR(100) PRIMARY KEY,
     lock_until TIMESTAMP,
-    locked_at TIMESTAMP,
-    locked_by VARCHAR(100)
+    locked_at  TIMESTAMP,
+    locked_by  VARCHAR(100)
 )

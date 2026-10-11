@@ -5,6 +5,7 @@ import com.orbenox.erp.message.EventMessage;
 import com.orbenox.erp.service.StockPostingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ public class EventConsumer {
 
     @RabbitListener(queues = DOCUMENT_POSTED_QUEUE)
     public void processEvent(EventMessage eventMessage) {
+        MDC.put("X-Correlation-Id", eventMessage.correlationId());
         log.info("Message received: {}", eventMessage);
         try {
             stockService.post(eventMessage);
@@ -26,6 +28,8 @@ public class EventConsumer {
         } catch (RuntimeException e) {
             log.error("Error processing event: {}", eventMessage, e);
             throw e;
+        } finally {
+            MDC.remove("X-Correlation-Id");
         }
     }
 }

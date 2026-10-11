@@ -6,6 +6,7 @@ public record EventMessage(
         String aggregateType,
         String aggregateId,
         String aggregateVersion,
-        String payload
+        String payload,
+        String correlationId
 ) {
 }

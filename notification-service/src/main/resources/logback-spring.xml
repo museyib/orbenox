@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <!-- Define the log pattern with correlation-id -->
-    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} %-5level [%X{X-Correlation-Id}] - %msg%n"/>
-
     <!-- Read both properties from application.yml -->
     <springProperty name="logDir" source="logging.file.path" defaultValue="./logs"/>
     <springProperty name="logName" source="logging.file.name" defaultValue="notification-service"/>
+    <springProperty name="appName" source="spring.application.name" defaultValue="notification-service"/>
+
+    <!-- Define the log pattern with correlation-id -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} %-5level [%X{X-Correlation-Id}] [${appName}] - %msg%n"/>
 
     <!-- Combine path and name into a single variable -->
     <property name="LOG_FILE" value="${logDir}/${logName}.log"/>

@@ -35,6 +35,8 @@ public class OutboxEvent {
 
     private String routingKey;
 
+    private String correlationId;
+
     @PrePersist
     void prePersist() {
         createdAt = LocalDateTime.now();

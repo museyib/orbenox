@@ -94,7 +94,8 @@ class RabbitMqDeadLetterRoutingTest {
                 "PRODUCT_APPROVE",
                 "12",
                 "",
-                new JsonMapper().writeValueAsString(command)
+                new JsonMapper().writeValueAsString(command),
+                "correlation-stock-dead-letter"
         );
         doThrow(new IllegalStateException()).when(stockService).post(eventMessage);
 

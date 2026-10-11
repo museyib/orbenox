@@ -41,7 +41,8 @@ public class StockPostingService {
             outboxEventService.createOutboxEvent(
                     event,
                     command.typeCode() + "_POSTED",
-                    command.typeCode()
+                    command.typeCode(),
+                    eventMessage.correlationId()
             );
             log.info("Stock updated event created: {}", event);
         }
@@ -62,7 +63,8 @@ public class StockPostingService {
         outboxEventService.createOutboxEvent(
                 event,
                 command.typeCode() + "_POSTED",
-                command.typeCode()
+                command.typeCode(),
+                eventMessage.correlationId()
         );
         log.error("Stock processing failed: {}", message);
     }

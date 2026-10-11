@@ -81,7 +81,8 @@ class StockPostingTransactionTest {
                 "PRODUCT_APPROVE",
                 documentId.toString(),
                 "",
-                new JsonMapper().writeValueAsString(command(documentId, "SALES_ORDER"))
+                new JsonMapper().writeValueAsString(command(documentId, "SALES_ORDER")),
+                "correlation-stock-test"
         );
 
         eventConsumer.processEvent(eventMessage);
@@ -101,6 +102,7 @@ class StockPostingTransactionTest {
         assertThat(failureEvent.operations()).containsExactly(
                 new StockOperation(1L, 34L, 56L, BigDecimal.TWO, -1));
         assertThat(outboxEvent.getStatus()).isEqualTo("PENDING");
+        assertThat(outboxEvent.getCorrelationId()).isEqualTo("correlation-stock-test");
     }
 
     @Test
@@ -113,7 +115,8 @@ class StockPostingTransactionTest {
                 "PRODUCT_APPROVE",
                 documentId.toString(),
                 "",
-                new JsonMapper().writeValueAsString(command(documentId, "PRODUCT_APPROVE"))
+                new JsonMapper().writeValueAsString(command(documentId, "PRODUCT_APPROVE")),
+                "correlation-stock-test"
         );
         eventConsumer.processEvent(eventMessage);
 
@@ -136,6 +139,7 @@ class StockPostingTransactionTest {
         assertThat(successEvent.operations()).containsExactly(
                 new StockOperation(1L, 34L, 57L, BigDecimal.valueOf(5), 1));
         assertThat(event.getStatus()).isEqualTo("PENDING");
+        assertThat(event.getCorrelationId()).isEqualTo("correlation-stock-test");
     }
 
     @Test
@@ -149,7 +153,8 @@ class StockPostingTransactionTest {
                 "PRODUCT_APPROVE",
                 documentId.toString(),
                 "",
-                new JsonMapper().writeValueAsString(command(documentId, "SALES_ORDER"))
+                new JsonMapper().writeValueAsString(command(documentId, "SALES_ORDER")),
+                "correlation-stock-test"
         );
 
         eventConsumer.processEvent(eventMessage);
@@ -171,6 +176,7 @@ class StockPostingTransactionTest {
         assertThat(successEvent.operations()).containsExactly(
                 new StockOperation(1L, 34L, 56L, BigDecimal.TWO, -1));
         assertThat(event.getStatus()).isEqualTo("PENDING");
+        assertThat(event.getCorrelationId()).isEqualTo("correlation-stock-test");
     }
 
     @Test
@@ -200,7 +206,8 @@ class StockPostingTransactionTest {
                 "PRODUCT_APPROVE",
                 documentId.toString(),
                 "",
-                new JsonMapper().writeValueAsString(command(documentId, "SALES_ORDER"))
+                new JsonMapper().writeValueAsString(command(documentId, "SALES_ORDER")),
+                "correlation-stock-test"
         );
         try {
             assertThatThrownBy(() -> eventConsumer.processEvent(eventMessage))

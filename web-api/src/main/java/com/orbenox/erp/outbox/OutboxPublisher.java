@@ -4,6 +4,7 @@ import com.orbenox.erp.message.EventMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.slf4j.MDC;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -40,7 +41,9 @@ public class OutboxPublisher {
                     event.getAggregateType(),
                     event.getAggregateId(),
                     event.getAggregateVersion(),
-                    event.getPayload());
+                    event.getPayload(),
+                    event.getCorrelationId());
+            MDC.put("X-Correlation-Id", event.getCorrelationId());
 
             try {
                 CorrelationData correlationData = new CorrelationData(event.getId().toString());
@@ -70,6 +73,8 @@ public class OutboxPublisher {
                 break;
             } catch (AmqpException | ExecutionException | TimeoutException e) {
                 log.error("Error publishing event with id {}", event.getId(), e);
+            } finally {
+                MDC.remove("X-Correlation-Id");
             }
         }
     }

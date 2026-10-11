@@ -1,6 +1,7 @@
 package com.orbenox.erp.outbox;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.json.JsonMapper;
@@ -21,6 +22,7 @@ public class OutboxEventService {
         outboxEvent.setPayload(jsonMapper.writeValueAsString(payload));
         outboxEvent.setStatus("PENDING");
         outboxEvent.setRoutingKey(routingKey);
+        outboxEvent.setCorrelationId(MDC.get("X-Correlation-Id"));
         outboxEventRepository.save(outboxEvent);
     }
 }
