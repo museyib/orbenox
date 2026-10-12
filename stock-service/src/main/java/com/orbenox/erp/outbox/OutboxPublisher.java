@@ -94,6 +94,10 @@ public class OutboxPublisher {
             } catch (AmqpException | ExecutionException | TimeoutException e) {
                 log.error("Error publishing event with id {}", event.getId(), e);
                 outboxPublishError.increment();
+            } catch (RuntimeException e) {
+                log.error("Unexpected error publishing event with id {}", event.getId(), e);
+                outboxPublishError.increment();
+                throw e;
             } finally {
                 MDC.remove("X-Correlation-Id");
             }
