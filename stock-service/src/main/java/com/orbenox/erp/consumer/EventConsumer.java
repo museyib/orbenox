@@ -18,7 +18,7 @@ import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.*;
 public class EventConsumer {
     private final Counter eventConsumptionTotalCounter;
     private final Counter eventConsumptionSuccessCounter;
-    private final Counter eventConsumptionDuplicateCounter;
+    private final Counter eventConsumptionFailCounter;
     private final Counter eventConsumptionErrorCounter;
     private final StockPostingService stockService;
 
@@ -27,7 +27,7 @@ public class EventConsumer {
         this.stockService = stockService;
         this.eventConsumptionTotalCounter = Counter.builder("event.consumption.total").register(registry);
         this.eventConsumptionSuccessCounter = Counter.builder("event.consumption.success").register(registry);
-        this.eventConsumptionDuplicateCounter = Counter.builder("event.consumption.duplicate").register(registry);
+        this.eventConsumptionFailCounter = Counter.builder("event.consumption.fail").register(registry);
         this.eventConsumptionErrorCounter = Counter.builder("event.consumption.error").register(registry);
     }
 
@@ -51,7 +51,7 @@ public class EventConsumer {
                 log.error("Error publishing failure event for: {}", eventMessage, publishException);
                 throw publishException;
             }
-            eventConsumptionDuplicateCounter.increment();
+            eventConsumptionFailCounter.increment();
         } catch (RuntimeException e) {
             log.error("Error processing event: {}", eventMessage, e);
             eventConsumptionErrorCounter.increment();

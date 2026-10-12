@@ -8,7 +8,6 @@ import org.slf4j.MDC;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tools.jackson.core.JacksonException;
 
 import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.NOTIFICATION_QUEUE;
 
@@ -50,10 +49,10 @@ public class EventConsumer {
                 eventConsumptionDuplicateCounter.increment();
             }
             eventConsumptionSuccessCounter.increment();
-        } catch (JacksonException e) {
+        } catch (RuntimeException e) {
             eventConsumptionErrorCounter.increment();
             log.error("Error processing message: {}", eventMessage, e);
-            throw new RuntimeException(e);
+            throw e;
         } finally {
             MDC.remove("X-Correlation-Id");
         }

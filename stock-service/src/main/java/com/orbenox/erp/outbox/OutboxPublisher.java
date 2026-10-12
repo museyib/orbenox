@@ -25,6 +25,8 @@ import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.ERP_EXC
 @Slf4j
 public class OutboxPublisher {
 
+    private double successCount;
+
     private final Counter outboxPublishSuccess;
     private final Counter outboxPublishError;
 
@@ -57,6 +59,7 @@ public class OutboxPublisher {
                     event.getCorrelationId());
 
             try {
+                successCount = outboxPublishSuccess.count();
                 String correlationId = event.getCorrelationId();
                 if (correlationId != null) {
                     MDC.put("X-Correlation-Id", correlationId);
@@ -95,6 +98,12 @@ public class OutboxPublisher {
             } catch (AmqpException | ExecutionException | TimeoutException e) {
                 log.error("Error publishing event with id {}", event.getId(), e);
                 outboxPublishError.increment();
+            } catch (RuntimeException e) {
+                log.error("Error publishing event with id {}", event.getId(), e);
+                if (outboxPublishSuccess.count() > successCount)
+                    outboxPublishSuccess.increment(-1.0);
+                outboxPublishError.increment();
+                throw e;
             } finally {
                 MDC.remove("X-Correlation-Id");
             }

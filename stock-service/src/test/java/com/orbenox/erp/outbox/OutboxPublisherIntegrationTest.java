@@ -47,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 
@@ -124,6 +125,7 @@ class OutboxPublisherIntegrationTest {
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PUBLISHED");
         assertThat(rabbitTemplate.receive(queueName, 1_000)).isNotNull();
+        assertPublishCounters(1, 0);
     }
 
     @Test
@@ -188,6 +190,7 @@ class OutboxPublisherIntegrationTest {
         assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
         assertThat(rabbitTemplate.receive(queueName, 1_000)).isNotNull();
         assertThat(rabbitTemplate.receive(queueName, 100)).isNull();
+        assertPublishCounters(0, 1);
     }
 
     @Test
@@ -198,6 +201,26 @@ class OutboxPublisherIntegrationTest {
         publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
+        assertPublishCounters(0, 1);
+    }
+
+    @Test
+    void runtimeFailureAfterSuccessCounterIncrement_shouldDecrementSuccessCounterAndRethrow() {
+        OutboxEvent event = savePendingEvent(uniqueRoutingKey());
+        RabbitTemplate templateWithRuntimeFailure = mock(RabbitTemplate.class);
+        doAnswer(invocation -> {
+            meterRegistry.counter("outbox.publish.success").increment();
+            throw new IllegalStateException("simulated runtime failure");
+        }).when(templateWithRuntimeFailure)
+                .convertAndSend(anyString(), anyString(), any(EventMessage.class), any(CorrelationData.class));
+
+        assertThatThrownBy(() -> publish(new OutboxPublisher(
+                outboxEventRepository, templateWithRuntimeFailure, meterRegistry)))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("simulated runtime failure");
+
+        assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
+        assertPublishCounters(0, 1);
     }
 
     @Test
@@ -266,6 +289,11 @@ class OutboxPublisherIntegrationTest {
 
     private void publish(OutboxPublisher publisher) {
         transactionTemplate.executeWithoutResult(status -> publisher.publishEvents());
+    }
+
+    private void assertPublishCounters(double success, double error) {
+        assertThat(meterRegistry.get("outbox.publish.success").counter().count()).isEqualTo(success);
+        assertThat(meterRegistry.get("outbox.publish.error").counter().count()).isEqualTo(error);
     }
 
     private OutboxEvent savePendingEvent(String routingKey) {

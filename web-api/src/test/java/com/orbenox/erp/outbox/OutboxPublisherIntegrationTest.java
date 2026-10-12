@@ -120,6 +120,7 @@ class OutboxPublisherIntegrationTest {
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PUBLISHED");
         assertThat(rabbitTemplate.receive(queueName, 1_000)).isNotNull();
+        assertPublishCounters(1, 0);
     }
 
     @Test
@@ -175,6 +176,7 @@ class OutboxPublisherIntegrationTest {
         assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
         assertThat(rabbitTemplate.receive(queueName, 1_000)).isNotNull();
         assertThat(rabbitTemplate.receive(queueName, 100)).isNull();
+        assertPublishCounters(0, 1);
     }
 
     @Test
@@ -185,6 +187,7 @@ class OutboxPublisherIntegrationTest {
         publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
+        assertPublishCounters(0, 1);
     }
 
     @Test
@@ -253,6 +256,11 @@ class OutboxPublisherIntegrationTest {
 
     private void publish(OutboxPublisher publisher) {
         transactionTemplate.executeWithoutResult(status -> publisher.publishEvents());
+    }
+
+    private void assertPublishCounters(double success, double error) {
+        assertThat(meterRegistry.get("outbox.publish.success").counter().count()).isEqualTo(success);
+        assertThat(meterRegistry.get("outbox.publish.error").counter().count()).isEqualTo(error);
     }
 
     private OutboxEvent savePendingEvent(String routingKey) {
