@@ -29,6 +29,7 @@ public class OutboxEventService {
         outboxEventRepository.save(outboxEvent);
     }
 
+    @Transactional
     public List<OutboxEvent> getPendingEvents() {
         return outboxEventRepository.findAllByStatusOrderByCreatedAt("PENDING", Limit.of(5));
     }

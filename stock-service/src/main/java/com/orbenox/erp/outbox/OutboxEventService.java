@@ -32,16 +32,13 @@ public class OutboxEventService {
         outboxEventRepository.save(outboxEvent);
     }
 
+    @Transactional
     public List<OutboxEvent> getPendingEvents() {
         return outboxEventRepository.findAllByStatusOrderByCreatedAt("PENDING", Limit.of(5));
     }
 
     @Transactional
     public void updateStatus(long eventId, String status) {
-        OutboxEvent outboxEvent = outboxEventRepository.findById(eventId).orElseThrow();
-        outboxEvent.setStatus(status);
-        if ("PUBLISHED".equals(status)) {
-            outboxEvent.setPublishedAt(LocalDateTime.now());
-        }
+        outboxEventRepository.updateStatus(eventId, status);
     }
 }

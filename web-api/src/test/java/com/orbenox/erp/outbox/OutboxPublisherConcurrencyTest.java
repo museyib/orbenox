@@ -3,6 +3,7 @@ package com.orbenox.erp.outbox;
 import com.orbenox.erp.message.EventMessage;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -61,7 +62,12 @@ class OutboxPublisherConcurrencyTest {
 
     private final MeterRegistry meterRegistry = new SimpleMeterRegistry();
 
-    private OutboxEventService outboxEventService = new OutboxEventService(outboxEventRepository, new JsonMapper());
+    private OutboxEventService outboxEventService;
+
+    @BeforeEach
+    void setUp() {
+        outboxEventService = new OutboxEventService(outboxEventRepository, new JsonMapper());
+    }
 
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {
