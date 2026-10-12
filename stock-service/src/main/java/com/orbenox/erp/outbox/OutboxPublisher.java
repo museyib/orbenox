@@ -3,6 +3,7 @@ package com.orbenox.erp.outbox;
 import com.orbenox.erp.message.EventMessage;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.MDC;
@@ -37,6 +38,7 @@ public class OutboxPublisher {
         this.outboxPublishError = meterRegistry.counter("outbox.publish.error");
     }
 
+    @Transactional
     @Scheduled(fixedDelay = 5000)
     @SchedulerLock(name = "outbox_publisher_lock", lockAtMostFor = "30s", lockAtLeastFor = "2s")
     public void publishEvents() {

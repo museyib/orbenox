@@ -1,27 +1,24 @@
 package com.orbenox.erp.outbox;
 
 import com.orbenox.erp.message.EventMessage;
-import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,6 +44,7 @@ import static org.mockito.Mockito.verify;
 @Testcontainers
 @ActiveProfiles("test")
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
+@Import({OutboxEventService.class, OutboxPublisherConcurrencyTest.TestBeans.class})
 class OutboxPublisherConcurrencyTest {
 
     private static final int REPLICA_COUNT = 3;
@@ -58,16 +56,10 @@ class OutboxPublisherConcurrencyTest {
     private OutboxEventRepository outboxEventRepository;
 
     @Autowired
-    private PlatformTransactionManager transactionManager;
+    private RabbitTemplate rabbitTemplate;
 
-    private final MeterRegistry meterRegistry = new SimpleMeterRegistry();
-
-    private OutboxEventService outboxEventService;
-
-    @BeforeEach
-    void setUp() {
-        outboxEventService = new OutboxEventService(outboxEventRepository, new JsonMapper());
-    }
+    @Autowired
+    private OutboxPublisher publisher;
 
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {
@@ -80,7 +72,6 @@ class OutboxPublisherConcurrencyTest {
     void publishEvents_whenReplicasCompeteForSamePendingRow_shouldPublishItOnce() throws Exception {
         outboxEventRepository.deleteAll();
         OutboxEvent pendingEvent = outboxEventRepository.saveAndFlush(pendingEvent());
-        RabbitTemplate rabbitTemplate = mock(RabbitTemplate.class);
         CountDownLatch allReplicasReady = new CountDownLatch(REPLICA_COUNT);
         CountDownLatch startReplicas = new CountDownLatch(1);
         CountDownLatch firstPublishStarted = new CountDownLatch(1);
@@ -104,7 +95,6 @@ class OutboxPublisherConcurrencyTest {
                 any(EventMessage.class),
                 any(CorrelationData.class));
 
-        OutboxPublisher publisher = new OutboxPublisher(outboxEventService, rabbitTemplate, meterRegistry);
         ExecutorService executor = Executors.newFixedThreadPool(REPLICA_COUNT);
         try {
             List<? extends Future<?>> publishAttempts = java.util.stream.IntStream.range(0, REPLICA_COUNT)
@@ -114,9 +104,7 @@ class OutboxPublisherConcurrencyTest {
                             throw new IllegalStateException("Timed out waiting to start publisher replicas");
                         }
                         try {
-                            TransactionTemplate transaction = new TransactionTemplate(transactionManager);
-                            transaction.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
-                            transaction.executeWithoutResult(status -> publisher.publishEvents());
+                            publisher.publishEvents();
                         } finally {
                             otherReplicasFinished.countDown();
                         }
@@ -175,5 +163,18 @@ class OutboxPublisherConcurrencyTest {
         event.setStatus("PENDING");
         event.setCorrelationId("correlation-outbox-test");
         return event;
+    }
+
+    @TestConfiguration
+    static class TestBeans {
+        @Bean
+        RabbitTemplate rabbitTemplate() {
+            return mock(RabbitTemplate.class);
+        }
+
+        @Bean
+        OutboxPublisher outboxPublisher(OutboxEventService outboxEventService, RabbitTemplate rabbitTemplate) {
+            return new OutboxPublisher(outboxEventService, rabbitTemplate, new SimpleMeterRegistry());
+        }
     }
 }

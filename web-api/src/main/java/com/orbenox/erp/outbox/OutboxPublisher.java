@@ -11,6 +11,7 @@ import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -38,6 +39,7 @@ public class OutboxPublisher {
         this.outboxPublishError = meterRegistry.counter("outbox.publish.error");
     }
 
+    @Transactional
     @Scheduled(fixedDelay = 5000)
     @SchedulerLock(name = "outbox_publisher_lock", lockAtMostFor = "30s", lockAtLeastFor = "2s")
     public void publishEvents() {
