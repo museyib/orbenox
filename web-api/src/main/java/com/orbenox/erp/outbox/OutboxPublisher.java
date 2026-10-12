@@ -9,10 +9,8 @@ import org.slf4j.MDC;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.data.domain.Limit;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -28,23 +26,22 @@ public class OutboxPublisher {
     private final Counter outboxPublishSuccess;
     private final Counter outboxPublishError;
 
-    private final OutboxEventRepository outboxEventRepository;
+    private final OutboxEventService outboxEventService;
     private final RabbitTemplate rabbitTemplate;
 
-    public OutboxPublisher(OutboxEventRepository outboxEventRepository,
+    public OutboxPublisher(OutboxEventService outboxEventService,
                            RabbitTemplate rabbitTemplate,
                            MeterRegistry meterRegistry) {
-        this.outboxEventRepository = outboxEventRepository;
+        this.outboxEventService = outboxEventService;
         this.rabbitTemplate = rabbitTemplate;
         this.outboxPublishSuccess = meterRegistry.counter("outbox.publish.success");
         this.outboxPublishError = meterRegistry.counter("outbox.publish.error");
     }
 
     @Scheduled(fixedDelay = 5000)
-    @Transactional
     @SchedulerLock(name = "outbox_publisher_lock", lockAtMostFor = "30s", lockAtLeastFor = "2s")
     public void publishEvents() {
-        List<OutboxEvent> pending = outboxEventRepository.findAllByStatusOrderByCreatedAt("PENDING", Limit.of(5));
+        List<OutboxEvent> pending = outboxEventService.getPendingEvents();
 
         for (OutboxEvent event : pending) {
             EventMessage eventMessage = new EventMessage(
@@ -83,7 +80,7 @@ public class OutboxPublisher {
                     continue;
                 }
 
-                outboxEventRepository.updateStatus(event.getId(), "PUBLISHED");
+                outboxEventService.updateStatus(event.getId(), "PUBLISHED");
                 outboxPublishSuccess.increment();
 
                 log.info("Event with id {} published", event.getId());

@@ -3,6 +3,7 @@ package com.orbenox.erp.outbox;
 import com.orbenox.erp.message.EventMessage;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -20,6 +21,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,6 +62,13 @@ class OutboxPublisherConcurrencyTest {
 
     private final MeterRegistry meterRegistry = new SimpleMeterRegistry();
 
+    private OutboxEventService outboxEventService;
+
+    @BeforeEach
+    void setUp() {
+        outboxEventService = new OutboxEventService(outboxEventRepository, new JsonMapper());
+    }
+
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
@@ -95,7 +104,7 @@ class OutboxPublisherConcurrencyTest {
                 any(EventMessage.class),
                 any(CorrelationData.class));
 
-        OutboxPublisher publisher = new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry);
+        OutboxPublisher publisher = new OutboxPublisher(outboxEventService, rabbitTemplate, meterRegistry);
         ExecutorService executor = Executors.newFixedThreadPool(REPLICA_COUNT);
         try {
             List<? extends Future<?>> publishAttempts = java.util.stream.IntStream.range(0, REPLICA_COUNT)

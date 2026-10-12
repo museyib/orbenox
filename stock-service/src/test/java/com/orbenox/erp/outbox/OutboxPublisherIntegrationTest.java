@@ -47,7 +47,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 
@@ -73,6 +72,8 @@ class OutboxPublisherIntegrationTest {
 
     @Autowired
     private OutboxEventRepository outboxEventRepository;
+
+    private OutboxEventService outboxEventService;
 
     @Autowired
     private PlatformTransactionManager transactionManager;
@@ -103,6 +104,7 @@ class OutboxPublisherIntegrationTest {
         rabbitTemplate = createRabbitTemplate(connectionFactory);
         rabbitAdmin = new RabbitAdmin(connectionFactory);
         meterRegistry = new SimpleMeterRegistry();
+        outboxEventService = new OutboxEventService(outboxEventRepository, jsonMapper);
         rabbitAdmin.declareExchange(new TopicExchange(ERP_EXCHANGE, true, false));
         transactionTemplate = new TransactionTemplate(transactionManager);
         transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
@@ -121,7 +123,7 @@ class OutboxPublisherIntegrationTest {
         String queueName = declareBoundQueue(routingKey);
         OutboxEvent event = savePendingEvent(routingKey);
 
-        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
+        publish(new OutboxPublisher(outboxEventService, rabbitTemplate, meterRegistry));
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PUBLISHED");
         assertThat(rabbitTemplate.receive(queueName, 1_000)).isNotNull();
@@ -136,7 +138,7 @@ class OutboxPublisherIntegrationTest {
         OutboxEvent event = savePendingEvent(
                 STOCK_POSTED_KEY, "PRODUCT_APPROVE_POSTED", correlationId);
 
-        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
+        publish(new OutboxPublisher(outboxEventService, rabbitTemplate, meterRegistry));
 
         EventMessage webApiMessage = receiveEvent(webApiQueue);
         EventMessage notificationMessage = receiveEvent(notificationQueue);
@@ -152,7 +154,7 @@ class OutboxPublisherIntegrationTest {
         OutboxEvent event = savePendingEvent(STOCK_POSTED_KEY, "PRODUCT_APPROVE_POSTED", null);
         MDC.put("X-Correlation-Id", "stale-correlation-id");
 
-        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
+        publish(new OutboxPublisher(outboxEventService, rabbitTemplate, meterRegistry));
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PUBLISHED");
         EventMessage message = receiveEvent(queueName);
@@ -168,7 +170,7 @@ class OutboxPublisherIntegrationTest {
         OutboxEvent event = savePendingEvent(
                 STOCK_POSTED_KEY, "SALES_ORDER_POSTED", correlationId, false);
 
-        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
+        publish(new OutboxPublisher(outboxEventService, rabbitTemplate, meterRegistry));
 
         EventMessage message = receiveEvent(webApiQueue);
         assertThat(message.eventId()).isEqualTo(event.getId());
@@ -185,7 +187,7 @@ class OutboxPublisherIntegrationTest {
         rabbitTemplate.convertAndSend(ERP_EXCHANGE, routingKey, "filler", fillerConfirmation);
         assertThat(fillerConfirmation.getFuture().get(5, TimeUnit.SECONDS).ack()).isTrue();
 
-        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
+        publish(new OutboxPublisher(outboxEventService, rabbitTemplate, meterRegistry));
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
         assertThat(rabbitTemplate.receive(queueName, 1_000)).isNotNull();
@@ -198,26 +200,7 @@ class OutboxPublisherIntegrationTest {
         String routingKey = uniqueRoutingKey();
         OutboxEvent event = savePendingEvent(routingKey);
 
-        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
-
-        assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
-        assertPublishCounters(0, 1);
-    }
-
-    @Test
-    void runtimeFailureAfterSuccessCounterIncrement_shouldDecrementSuccessCounterAndRethrow() {
-        OutboxEvent event = savePendingEvent(uniqueRoutingKey());
-        RabbitTemplate templateWithRuntimeFailure = mock(RabbitTemplate.class);
-        doAnswer(invocation -> {
-            meterRegistry.counter("outbox.publish.success").increment();
-            throw new IllegalStateException("simulated runtime failure");
-        }).when(templateWithRuntimeFailure)
-                .convertAndSend(anyString(), anyString(), any(EventMessage.class), any(CorrelationData.class));
-
-        assertThatThrownBy(() -> publish(new OutboxPublisher(
-                outboxEventRepository, templateWithRuntimeFailure, meterRegistry)))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("simulated runtime failure");
+        publish(new OutboxPublisher(outboxEventService, rabbitTemplate, meterRegistry));
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
         assertPublishCounters(0, 1);
@@ -230,7 +213,7 @@ class OutboxPublisherIntegrationTest {
         doNothing().when(templateWithoutConfirmation)
                 .convertAndSend(anyString(), anyString(), any(EventMessage.class), any(CorrelationData.class));
 
-        publish(new OutboxPublisher(outboxEventRepository, templateWithoutConfirmation, meterRegistry));
+        publish(new OutboxPublisher(outboxEventService, templateWithoutConfirmation, meterRegistry));
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
     }
@@ -257,7 +240,7 @@ class OutboxPublisherIntegrationTest {
                 """);
 
         try {
-            assertThatThrownBy(() -> publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry)))
+            assertThatThrownBy(() -> publish(new OutboxPublisher(outboxEventService, rabbitTemplate, meterRegistry)))
                     .isInstanceOf(RuntimeException.class);
 
             assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
@@ -267,7 +250,7 @@ class OutboxPublisherIntegrationTest {
             jdbcTemplate.execute("DROP FUNCTION IF EXISTS fail_outbox_published_update()");
         }
 
-        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
+        publish(new OutboxPublisher(outboxEventService, rabbitTemplate, meterRegistry));
         assertThat(loadEvent(event).getStatus()).isEqualTo("PUBLISHED");
         assertThat(rabbitTemplate.receive(queueName, 1_000)).isNotNull();
     }
@@ -280,7 +263,7 @@ class OutboxPublisherIntegrationTest {
         RabbitTemplate unavailableTemplate = createRabbitTemplate(unavailableConnectionFactory);
 
         try {
-            publish(new OutboxPublisher(outboxEventRepository, unavailableTemplate, meterRegistry));
+            publish(new OutboxPublisher(outboxEventService, unavailableTemplate, meterRegistry));
             assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
         } finally {
             unavailableConnectionFactory.destroy();

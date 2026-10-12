@@ -147,10 +147,10 @@ class EventConsumerTest {
         assertCounters(1, 0, 0, 1);
     }
 
-    private void assertCounters(double total, double success, double duplicate, double error) {
+    private void assertCounters(double total, double success, double fail, double error) {
         assertThat(meterRegistry.get("event.consumption.total").counter().count()).isEqualTo(total);
         assertThat(meterRegistry.get("event.consumption.success").counter().count()).isEqualTo(success);
-        assertThat(meterRegistry.get("event.consumption.duplicate").counter().count()).isEqualTo(duplicate);
+        assertThat(meterRegistry.get("event.consumption.fail").counter().count()).isEqualTo(fail);
         assertThat(meterRegistry.get("event.consumption.error").counter().count()).isEqualTo(error);
     }
 

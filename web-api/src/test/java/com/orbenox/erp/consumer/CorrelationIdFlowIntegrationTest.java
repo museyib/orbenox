@@ -132,7 +132,7 @@ class CorrelationIdFlowIntegrationTest {
         correlationIdFilter = new CorrelationIdFilter();
         ReflectionTestUtils.setField(correlationIdFilter, "serviceName", "web-api");
         outboxEventService = new OutboxEventService(outboxEventRepository, jsonMapper);
-        outboxPublisher = new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry);
+        outboxPublisher = new OutboxPublisher(outboxEventService, rabbitTemplate, meterRegistry);
         eventConsumer = new EventConsumer(mock(DocumentPostingService.class), meterRegistry);
 
         consumerLogger = (Logger) LoggerFactory.getLogger(EventConsumer.class);
