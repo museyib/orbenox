@@ -1,7 +1,8 @@
 package com.orbenox.erp.outbox;
 
 import com.orbenox.erp.message.EventMessage;
-import lombok.RequiredArgsConstructor;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.MDC;
@@ -21,12 +22,23 @@ import java.util.concurrent.TimeoutException;
 import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.*;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class OutboxPublisher {
 
+    private final Counter outboxPublishSuccess;
+    private final Counter outboxPublishError;
+
     private final OutboxEventRepository outboxEventRepository;
     private final RabbitTemplate rabbitTemplate;
+
+    public OutboxPublisher(OutboxEventRepository outboxEventRepository,
+                           RabbitTemplate rabbitTemplate,
+                           MeterRegistry meterRegistry) {
+        this.outboxEventRepository = outboxEventRepository;
+        this.rabbitTemplate = rabbitTemplate;
+        this.outboxPublishSuccess = meterRegistry.counter("outbox.publish.success");
+        this.outboxPublishError = meterRegistry.counter("outbox.publish.error");
+    }
 
     @Scheduled(fixedDelay = 5000)
     @Transactional
@@ -59,6 +71,7 @@ public class OutboxPublisher {
 
                 if (!confirm.ack()) {
                     log.error("Event with id {} failed to publish", event.getId());
+                    outboxPublishError.increment();
                     continue;
                 }
 
@@ -66,10 +79,12 @@ public class OutboxPublisher {
                     var returned = correlationData.getReturned();
 
                     log.error("Event {} was returned {}", event.getId(), returned.getReplyText());
+                    outboxPublishError.increment();
                     continue;
                 }
 
                 outboxEventRepository.updateStatus(event.getId(), "PUBLISHED");
+                outboxPublishSuccess.increment();
 
                 log.info("Event with id {} published", event.getId());
 
@@ -79,6 +94,7 @@ public class OutboxPublisher {
                 break;
             } catch (AmqpException | ExecutionException | TimeoutException e) {
                 log.error("Error publishing event with id {}", event.getId(), e);
+                outboxPublishError.increment();
             } finally {
                 MDC.remove("X-Correlation-Id");
             }

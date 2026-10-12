@@ -5,7 +5,8 @@ import com.orbenox.erp.message.EventMessage;
 import com.orbenox.erp.messaging.command.StockMovementCommand;
 import com.orbenox.erp.messaging.event.StockUpdatedEvent;
 import com.orbenox.erp.outbox.OutboxEventService;
-import lombok.RequiredArgsConstructor;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -13,13 +14,25 @@ import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.json.JsonMapper;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class StockPostingService {
+    private final Counter eventConsumptionDuplicateCounter;
     private final StockService stockService;
     private final InboxEventRepository inboxEventRepository;
     private final OutboxEventService outboxEventService;
     private final JsonMapper jsonMapper;
+
+    public StockPostingService(StockService stockService,
+                               InboxEventRepository inboxEventRepository,
+                               OutboxEventService outboxEventService,
+                               JsonMapper jsonMapper,
+                               MeterRegistry registry) {
+        this.eventConsumptionDuplicateCounter = registry.counter("event.consumption.duplicateAttempt");
+        this.stockService = stockService;
+        this.inboxEventRepository = inboxEventRepository;
+        this.outboxEventService = outboxEventService;
+        this.jsonMapper = jsonMapper;
+    }
 
     @Transactional
     public void post(EventMessage eventMessage) {
@@ -45,6 +58,9 @@ public class StockPostingService {
                     eventMessage.correlationId()
             );
             log.info("Stock updated event created: {}", event);
+        } else {
+            log.warn("Event {} already processed", eventMessage.eventId());
+            eventConsumptionDuplicateCounter.increment();
         }
     }
 

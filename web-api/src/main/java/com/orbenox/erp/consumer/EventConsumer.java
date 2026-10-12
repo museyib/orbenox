@@ -41,6 +41,7 @@ public class EventConsumer {
         } catch (Exception e) {
             eventConsumptionErrorCounter.increment();
             log.error("Error processing event: {}", eventMessage, e);
+            throw e;
         } finally {
             MDC.remove("X-Correlation-Id");
         }

@@ -5,6 +5,7 @@ import com.orbenox.erp.message.EventMessage;
 import com.orbenox.erp.messaging.command.StockMovementCommand;
 import com.orbenox.erp.service.StockPostingService;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Message;
@@ -82,7 +83,7 @@ class RabbitMqDeadLetterRoutingTest {
         Queue deadLetterQueue = configuration.documentPostedDlq();
         CachingConnectionFactory connectionFactory = createConnectionFactory();
         StockPostingService stockService = mock(StockPostingService.class);
-        MeterRegistry meterRegistry = mock(MeterRegistry.class);
+        MeterRegistry meterRegistry = new SimpleMeterRegistry();
         StockMovementCommand command = new StockMovementCommand(
                 12L, "SO-12", List.of(
                 new StockMovementCommand.StockOperation(11L, 1L, 1L, BigDecimal.TEN, 1),

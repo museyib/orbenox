@@ -1,6 +1,8 @@
 package com.orbenox.erp.outbox;
 
 import com.orbenox.erp.message.EventMessage;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -56,6 +58,8 @@ class OutboxPublisherConcurrencyTest {
     @Autowired
     private PlatformTransactionManager transactionManager;
 
+    private final MeterRegistry meterRegistry = new SimpleMeterRegistry();
+
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
@@ -91,7 +95,7 @@ class OutboxPublisherConcurrencyTest {
                 any(EventMessage.class),
                 any(CorrelationData.class));
 
-        OutboxPublisher publisher = new OutboxPublisher(outboxEventRepository, rabbitTemplate);
+        OutboxPublisher publisher = new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry);
         ExecutorService executor = Executors.newFixedThreadPool(REPLICA_COUNT);
         try {
             List<? extends Future<?>> publishAttempts = java.util.stream.IntStream.range(0, REPLICA_COUNT)

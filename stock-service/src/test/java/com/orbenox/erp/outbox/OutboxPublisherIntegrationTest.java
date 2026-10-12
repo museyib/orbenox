@@ -1,6 +1,8 @@
 package com.orbenox.erp.outbox;
 
 import com.orbenox.erp.message.EventMessage;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,6 +86,7 @@ class OutboxPublisherIntegrationTest {
     private RabbitTemplate rabbitTemplate;
     private RabbitAdmin rabbitAdmin;
     private TransactionTemplate transactionTemplate;
+    private MeterRegistry meterRegistry;
 
     @DynamicPropertySource
     static void configureDatabase(DynamicPropertyRegistry registry) {
@@ -98,6 +101,7 @@ class OutboxPublisherIntegrationTest {
         connectionFactory = createConnectionFactory(rabbit.getHost(), rabbit.getMappedPort(5672));
         rabbitTemplate = createRabbitTemplate(connectionFactory);
         rabbitAdmin = new RabbitAdmin(connectionFactory);
+        meterRegistry = new SimpleMeterRegistry();
         rabbitAdmin.declareExchange(new TopicExchange(ERP_EXCHANGE, true, false));
         transactionTemplate = new TransactionTemplate(transactionManager);
         transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
@@ -116,7 +120,7 @@ class OutboxPublisherIntegrationTest {
         String queueName = declareBoundQueue(routingKey);
         OutboxEvent event = savePendingEvent(routingKey);
 
-        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate));
+        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PUBLISHED");
         assertThat(rabbitTemplate.receive(queueName, 1_000)).isNotNull();
@@ -130,7 +134,7 @@ class OutboxPublisherIntegrationTest {
         OutboxEvent event = savePendingEvent(
                 STOCK_POSTED_KEY, "PRODUCT_APPROVE_POSTED", correlationId);
 
-        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate));
+        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
 
         EventMessage webApiMessage = receiveEvent(webApiQueue);
         EventMessage notificationMessage = receiveEvent(notificationQueue);
@@ -146,7 +150,7 @@ class OutboxPublisherIntegrationTest {
         OutboxEvent event = savePendingEvent(STOCK_POSTED_KEY, "PRODUCT_APPROVE_POSTED", null);
         MDC.put("X-Correlation-Id", "stale-correlation-id");
 
-        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate));
+        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PUBLISHED");
         EventMessage message = receiveEvent(queueName);
@@ -162,7 +166,7 @@ class OutboxPublisherIntegrationTest {
         OutboxEvent event = savePendingEvent(
                 STOCK_POSTED_KEY, "SALES_ORDER_POSTED", correlationId, false);
 
-        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate));
+        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
 
         EventMessage message = receiveEvent(webApiQueue);
         assertThat(message.eventId()).isEqualTo(event.getId());
@@ -179,7 +183,7 @@ class OutboxPublisherIntegrationTest {
         rabbitTemplate.convertAndSend(ERP_EXCHANGE, routingKey, "filler", fillerConfirmation);
         assertThat(fillerConfirmation.getFuture().get(5, TimeUnit.SECONDS).ack()).isTrue();
 
-        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate));
+        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
         assertThat(rabbitTemplate.receive(queueName, 1_000)).isNotNull();
@@ -191,7 +195,7 @@ class OutboxPublisherIntegrationTest {
         String routingKey = uniqueRoutingKey();
         OutboxEvent event = savePendingEvent(routingKey);
 
-        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate));
+        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
     }
@@ -203,7 +207,7 @@ class OutboxPublisherIntegrationTest {
         doNothing().when(templateWithoutConfirmation)
                 .convertAndSend(anyString(), anyString(), any(EventMessage.class), any(CorrelationData.class));
 
-        publish(new OutboxPublisher(outboxEventRepository, templateWithoutConfirmation));
+        publish(new OutboxPublisher(outboxEventRepository, templateWithoutConfirmation, meterRegistry));
 
         assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
     }
@@ -230,7 +234,7 @@ class OutboxPublisherIntegrationTest {
                 """);
 
         try {
-            assertThatThrownBy(() -> publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate)))
+            assertThatThrownBy(() -> publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry)))
                     .isInstanceOf(RuntimeException.class);
 
             assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
@@ -240,7 +244,7 @@ class OutboxPublisherIntegrationTest {
             jdbcTemplate.execute("DROP FUNCTION IF EXISTS fail_outbox_published_update()");
         }
 
-        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate));
+        publish(new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry));
         assertThat(loadEvent(event).getStatus()).isEqualTo("PUBLISHED");
         assertThat(rabbitTemplate.receive(queueName, 1_000)).isNotNull();
     }
@@ -253,7 +257,7 @@ class OutboxPublisherIntegrationTest {
         RabbitTemplate unavailableTemplate = createRabbitTemplate(unavailableConnectionFactory);
 
         try {
-            publish(new OutboxPublisher(outboxEventRepository, unavailableTemplate));
+            publish(new OutboxPublisher(outboxEventRepository, unavailableTemplate, meterRegistry));
             assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
         } finally {
             unavailableConnectionFactory.destroy();

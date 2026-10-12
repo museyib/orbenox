@@ -6,8 +6,9 @@ import com.orbenox.erp.messaging.command.StockMovementCommand.StockOperation;
 import com.orbenox.erp.messaging.event.StockUpdatedEvent;
 import com.orbenox.erp.transaction.entity.Document;
 import com.orbenox.erp.transaction.service.DocumentResolver;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.json.JsonMapper;
@@ -18,13 +19,23 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 @Slf4j
 class DocumentPostingService {
+    private final Counter eventConsumptionDuplicateCounter;
     private final DocumentResolver documentResolver;
     private final InboxEventRepository inboxEventRepository;
     private final JsonMapper jsonMapper;
+
+    DocumentPostingService(DocumentResolver documentResolver,
+                           InboxEventRepository inboxEventRepository,
+                           JsonMapper jsonMapper,
+                           MeterRegistry registry) {
+        this.documentResolver = documentResolver;
+        this.inboxEventRepository = inboxEventRepository;
+        this.jsonMapper = jsonMapper;
+        this.eventConsumptionDuplicateCounter = Counter.builder("event.consumption.duplicateAttempt").register(registry);
+    }
 
 
     void handleStockUpdatedEvent(EventMessage eventMessage) {
@@ -49,7 +60,8 @@ class DocumentPostingService {
                 );
             }
         } else {
-            log.warn("Event {} already processed", event.documentId());
+            log.warn("Event {} already processed", eventMessage.eventId());
+            eventConsumptionDuplicateCounter.increment();
         }
 
     }

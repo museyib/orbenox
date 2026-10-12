@@ -13,6 +13,7 @@ import com.orbenox.erp.outbox.OutboxEventRepository;
 import com.orbenox.erp.outbox.OutboxEventService;
 import com.orbenox.erp.outbox.OutboxPublisher;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import jakarta.servlet.FilterChain;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -101,6 +102,7 @@ class CorrelationIdFlowIntegrationTest {
     private CachingConnectionFactory connectionFactory;
     private RabbitTemplate rabbitTemplate;
     private RabbitAdmin rabbitAdmin;
+    private MeterRegistry meterRegistry;
     private TransactionTemplate transactionTemplate;
     private CorrelationIdFilter correlationIdFilter;
     private OutboxEventService outboxEventService;
@@ -124,14 +126,14 @@ class CorrelationIdFlowIntegrationTest {
         rabbitTemplate.setMessageConverter(new JacksonJsonMessageConverter(jsonMapper));
         rabbitAdmin = new RabbitAdmin(connectionFactory);
         rabbitAdmin.declareExchange(new TopicExchange(ERP_EXCHANGE, true, false));
-
+        meterRegistry = new SimpleMeterRegistry();
         transactionTemplate = new TransactionTemplate(transactionManager);
         transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
         correlationIdFilter = new CorrelationIdFilter();
         ReflectionTestUtils.setField(correlationIdFilter, "serviceName", "web-api");
         outboxEventService = new OutboxEventService(outboxEventRepository, jsonMapper);
-        outboxPublisher = new OutboxPublisher(outboxEventRepository, rabbitTemplate);
-        eventConsumer = new EventConsumer(mock(DocumentPostingService.class), mock(MeterRegistry.class));
+        outboxPublisher = new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry);
+        eventConsumer = new EventConsumer(mock(DocumentPostingService.class), meterRegistry);
 
         consumerLogger = (Logger) LoggerFactory.getLogger(EventConsumer.class);
         logAppender = new ListAppender<>();

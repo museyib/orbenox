@@ -1,15 +1,14 @@
 package com.orbenox.erp.outbox;
 
 import com.orbenox.erp.message.EventMessage;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -21,7 +20,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,6 +58,8 @@ class OutboxPublisherConcurrencyTest {
     @Autowired
     private PlatformTransactionManager transactionManager;
 
+    private final MeterRegistry meterRegistry = new SimpleMeterRegistry();
+
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
@@ -95,7 +95,7 @@ class OutboxPublisherConcurrencyTest {
                 any(EventMessage.class),
                 any(CorrelationData.class));
 
-        OutboxPublisher publisher = new OutboxPublisher(outboxEventRepository, rabbitTemplate);
+        OutboxPublisher publisher = new OutboxPublisher(outboxEventRepository, rabbitTemplate, meterRegistry);
         ExecutorService executor = Executors.newFixedThreadPool(REPLICA_COUNT);
         try {
             List<? extends Future<?>> publishAttempts = java.util.stream.IntStream.range(0, REPLICA_COUNT)

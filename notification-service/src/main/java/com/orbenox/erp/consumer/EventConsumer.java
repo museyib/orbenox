@@ -19,6 +19,7 @@ public class EventConsumer {
     private final Counter eventConsumptionTotalCounter;
     private final Counter eventConsumptionSuccessCounter;
     private final Counter eventConsumptionErrorCounter;
+    private final Counter eventConsumptionDuplicateCounter;
     private final InboxEventRepository inboxEventRepository;
 
     public EventConsumer(InboxEventRepository inboxEventRepository,
@@ -27,6 +28,7 @@ public class EventConsumer {
         this.eventConsumptionTotalCounter = registry.counter("event.consumption.total");
         this.eventConsumptionSuccessCounter = registry.counter("event.consumption.success");
         this.eventConsumptionErrorCounter = registry.counter("event.consumption.error");
+        this.eventConsumptionDuplicateCounter = registry.counter("event.consumption.duplicateAttempt");
     }
 
     @RabbitListener(queues = NOTIFICATION_QUEUE)
@@ -42,12 +44,12 @@ public class EventConsumer {
             log.info("Message received: {}", eventMessage);
             int affected = inboxEventRepository.createInboxEvent("notification-service", eventMessage.eventId());
             if (affected > 0) {
-                eventConsumptionSuccessCounter.increment();
                 log.info("Event {} processed", eventMessage.eventId());
             } else {
-                eventConsumptionErrorCounter.increment();
                 log.warn("Event {} already processed", eventMessage.eventId());
+                eventConsumptionDuplicateCounter.increment();
             }
+            eventConsumptionSuccessCounter.increment();
         } catch (JacksonException e) {
             eventConsumptionErrorCounter.increment();
             log.error("Error processing message: {}", eventMessage, e);

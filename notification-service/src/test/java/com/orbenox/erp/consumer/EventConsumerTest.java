@@ -1,17 +1,16 @@
 package com.orbenox.erp.consumer;
 
 import com.orbenox.erp.message.EventMessage;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
-import tools.jackson.core.exc.StreamReadException;
-import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -20,11 +19,14 @@ class EventConsumerTest {
     @Mock
     private InboxEventRepository inboxEventRepository;
 
-    @Mock
-    private JsonMapper jsonMapper;
-
-    @InjectMocks
     private EventConsumer eventConsumer;
+    private MeterRegistry meterRegistry;
+
+    @BeforeEach
+    void setUp() {
+        meterRegistry = new SimpleMeterRegistry();
+        eventConsumer = new EventConsumer(inboxEventRepository, meterRegistry);
+    }
 
     @Test
     void processEvent_whenNewMessageArrives_shouldRecordNotificationEvent() {
@@ -39,6 +41,7 @@ class EventConsumerTest {
 
         verify(inboxEventRepository).createInboxEvent("notification-service", 201L);
         assertThat(MDC.get("X-Correlation-Id")).isNull();
+        assertCounters(1, 1, 0, 0);
     }
 
     @Test
@@ -50,5 +53,13 @@ class EventConsumerTest {
         eventConsumer.processEvent(message);
 
         verify(inboxEventRepository).createInboxEvent("notification-service", 202L);
+        assertCounters(1, 1, 1, 0);
+    }
+
+    private void assertCounters(double total, double success, double duplicate, double error) {
+        assertThat(meterRegistry.get("event.consumption.total").counter().count()).isEqualTo(total);
+        assertThat(meterRegistry.get("event.consumption.success").counter().count()).isEqualTo(success);
+        assertThat(meterRegistry.get("event.consumption.duplicateAttempt").counter().count()).isEqualTo(duplicate);
+        assertThat(meterRegistry.get("event.consumption.error").counter().count()).isEqualTo(error);
     }
 }

@@ -4,9 +4,11 @@ import com.orbenox.erp.exception.BusinessRuleException;
 import com.orbenox.erp.message.EventMessage;
 import com.orbenox.erp.messaging.command.StockMovementCommand;
 import com.orbenox.erp.service.StockPostingService;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
@@ -25,8 +27,14 @@ class EventConsumerTest {
     @Mock
     private StockPostingService stockPostingService;
 
-    @InjectMocks
     private EventConsumer eventConsumer;
+    private MeterRegistry meterRegistry;
+
+    @BeforeEach
+    void setUp() {
+        meterRegistry = new SimpleMeterRegistry();
+        eventConsumer = new EventConsumer(stockPostingService, meterRegistry);
+    }
 
     @Test
     void processEvent_whenStockUpdateSucceeds_shouldNotPublishFailureEvent() {
@@ -51,6 +59,7 @@ class EventConsumerTest {
         verify(stockPostingService).post(eventMessage);
         verify(stockPostingService, never()).publishFailureEvent(any(), anyString());
         assertThat(MDC.get("X-Correlation-Id")).isNull();
+        assertCounters(1, 1, 0, 0);
     }
 
     @Test
@@ -94,6 +103,7 @@ class EventConsumerTest {
         eventConsumer.processEvent(eventMessage);
 
         verify(stockPostingService).publishFailureEvent(eventMessage, "Insufficient stock");
+        assertCounters(1, 0, 1, 0);
     }
 
     @Test
@@ -115,6 +125,33 @@ class EventConsumerTest {
         assertThrows(IllegalStateException.class, () -> eventConsumer.processEvent(eventMessage));
 
         verify(stockPostingService).publishFailureEvent(eventMessage, "Insufficient stock");
+        assertCounters(1, 0, 0, 1);
+    }
+
+    @Test
+    void processEvent_whenTechnicalFailureOccurs_shouldIncrementErrorCounterAndPropagate() {
+        EventMessage eventMessage = new EventMessage(
+                2L,
+                "STOCK_POSTED",
+                "PRODUCT_APPROVE",
+                "12",
+                "",
+                new JsonMapper().writeValueAsString(command()),
+                "correlation-stock-technical-failure"
+        );
+        doThrow(new IllegalStateException("database unavailable"))
+                .when(stockPostingService).post(eventMessage);
+
+        assertThrows(IllegalStateException.class, () -> eventConsumer.processEvent(eventMessage));
+
+        assertCounters(1, 0, 0, 1);
+    }
+
+    private void assertCounters(double total, double success, double duplicate, double error) {
+        assertThat(meterRegistry.get("event.consumption.total").counter().count()).isEqualTo(total);
+        assertThat(meterRegistry.get("event.consumption.success").counter().count()).isEqualTo(success);
+        assertThat(meterRegistry.get("event.consumption.duplicate").counter().count()).isEqualTo(duplicate);
+        assertThat(meterRegistry.get("event.consumption.error").counter().count()).isEqualTo(error);
     }
 
     private StockMovementCommand command() {
