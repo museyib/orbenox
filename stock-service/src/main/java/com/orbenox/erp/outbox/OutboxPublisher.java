@@ -40,7 +40,7 @@ public class OutboxPublisher {
 
     @Transactional
     @Scheduled(fixedDelay = 5000)
-    @SchedulerLock(name = "outbox_publisher_lock", lockAtMostFor = "30s", lockAtLeastFor = "2s")
+    @SchedulerLock(name = "outbox_publisher_lock", lockAtMostFor = "60s", lockAtLeastFor = "2s")
     public void publishEvents() {
         List<OutboxEvent> pending = outboxEventService.getPendingEvents();
 
@@ -81,10 +81,10 @@ public class OutboxPublisher {
                     continue;
                 }
 
+                outboxPublishSuccess.increment();
                 outboxEventService.updateStatus(event.getId(), "PUBLISHED");
 
                 log.info("Event with id {} published", event.getId());
-                outboxPublishSuccess.increment();
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

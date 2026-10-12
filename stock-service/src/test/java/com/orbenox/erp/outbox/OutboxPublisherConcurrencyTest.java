@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
@@ -22,12 +23,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.DOCUMENT_CREATED_KEY;
 import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.ERP_EXCHANGE;
@@ -59,7 +57,12 @@ class OutboxPublisherConcurrencyTest {
     private RabbitTemplate rabbitTemplate;
 
     @Autowired
+    @Qualifier("publisherOne")
     private OutboxPublisher publisher;
+
+    @Autowired
+    @Qualifier("publisherTwo")
+    private OutboxPublisher competingPublisher;
 
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {
@@ -151,6 +154,70 @@ class OutboxPublisherConcurrencyTest {
         assertThat(publishedEvent.getPublishedAt()).isNotNull();
     }
 
+    @Test
+    void publishEvents_whenCompetingPublisherStartsDuringSlowBatch_shouldPublishEachEventOnce() throws Exception {
+        outboxEventRepository.deleteAll();
+        List<OutboxEvent> pendingEvents = IntStream.range(0, 5)
+                .mapToObj(index -> {
+                    OutboxEvent event = pendingEvent();
+                    event.setAggregateId("SO-" + index);
+                    return event;
+                })
+                .toList();
+        pendingEvents = outboxEventRepository.saveAllAndFlush(pendingEvents);
+        List<Long> expectedEventIds = pendingEvents.stream().map(OutboxEvent::getId).toList();
+
+        CountDownLatch firstPublishStarted = new CountDownLatch(1);
+        CountDownLatch releaseFirstPublish = new CountDownLatch(1);
+        AtomicInteger sendCount = new AtomicInteger();
+        ConcurrentHashMap<Long, AtomicInteger> sendsByEventId = new ConcurrentHashMap<>();
+
+        doAnswer(invocation -> {
+            EventMessage eventMessage = invocation.getArgument(2);
+            sendsByEventId.computeIfAbsent(eventMessage.eventId(), ignored -> new AtomicInteger()).incrementAndGet();
+            if (sendCount.incrementAndGet() == 1) {
+                firstPublishStarted.countDown();
+                if (!releaseFirstPublish.await(10, TimeUnit.SECONDS)) {
+                    throw new IllegalStateException("Timed out waiting to release the first publish");
+                }
+            }
+            CorrelationData correlationData = invocation.getArgument(3);
+            correlationData.getFuture().complete(new CorrelationData.Confirm(true, null));
+            return null;
+        }).when(rabbitTemplate).convertAndSend(
+                any(String.class),
+                any(String.class),
+                any(EventMessage.class),
+                any(CorrelationData.class));
+
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            Future<?> firstPublisherAttempt = executor.submit(publisher::publishEvents);
+            assertThat(firstPublishStarted.await(10, TimeUnit.SECONDS))
+                    .as("the first publisher should reach RabbitMQ and hold its batch transaction")
+                    .isTrue();
+
+            Future<?> competingPublisherAttempt = executor.submit(competingPublisher::publishEvents);
+            competingPublisherAttempt.get(5, TimeUnit.SECONDS);
+            assertThat(sendCount.get())
+                    .as("the competing publisher must not send any event from the locked batch")
+                    .isEqualTo(1);
+
+            releaseFirstPublish.countDown();
+            firstPublisherAttempt.get(10, TimeUnit.SECONDS);
+        } finally {
+            releaseFirstPublish.countDown();
+            executor.shutdownNow();
+        }
+
+        assertThat(sendCount).hasValue(5);
+        assertThat(sendsByEventId.keySet()).containsExactlyInAnyOrderElementsOf(expectedEventIds);
+        assertThat(sendsByEventId.values()).allSatisfy(count -> assertThat(count).hasValue(1));
+        assertThat(outboxEventRepository.findAllById(expectedEventIds))
+                .allSatisfy(event -> assertThat(event.getStatus()).isEqualTo("PUBLISHED"));
+    }
+
+
     private OutboxEvent pendingEvent() {
         OutboxEvent event = new OutboxEvent();
         event.setCreatedAt(LocalDateTime.now());
@@ -173,7 +240,12 @@ class OutboxPublisherConcurrencyTest {
         }
 
         @Bean
-        OutboxPublisher outboxPublisher(OutboxEventService outboxEventService, RabbitTemplate rabbitTemplate) {
+        OutboxPublisher publisherOne(OutboxEventService outboxEventService, RabbitTemplate rabbitTemplate) {
+            return new OutboxPublisher(outboxEventService, rabbitTemplate, new SimpleMeterRegistry());
+        }
+
+        @Bean
+        OutboxPublisher publisherTwo(OutboxEventService outboxEventService, RabbitTemplate rabbitTemplate) {
             return new OutboxPublisher(outboxEventService, rabbitTemplate, new SimpleMeterRegistry());
         }
     }
