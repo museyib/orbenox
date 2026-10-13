@@ -15,6 +15,7 @@ import tools.jackson.databind.json.JsonMapper;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,6 +52,7 @@ class DocumentPostingServiceTest {
         documentPostingService.handleStockUpdatedEvent(eventMessage);
 
         verify(inboxEventRepository).createInboxEvent("web-api", 302L);
+        verifyNoInteractions(documentResolver);
         assertThat(meterRegistry.get("event.consumption.duplicateAttempt").counter().count()).isEqualTo(1);
     }
 }

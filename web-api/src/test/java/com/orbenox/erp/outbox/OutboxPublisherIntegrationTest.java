@@ -38,7 +38,10 @@ import java.util.concurrent.TimeUnit;
 
 import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.DOCUMENT_CREATED_KEY;
 import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.DOCUMENT_POSTED_KEY;
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.DLX_EXCHANGE;
 import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.ERP_EXCHANGE;
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.STOCK_POSTED_DLQ_KEY;
+import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.STOCK_POSTED_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -100,6 +103,7 @@ class OutboxPublisherIntegrationTest {
         rabbitTemplate = createRabbitTemplate(connectionFactory);
         rabbitAdmin = new RabbitAdmin(connectionFactory);
         rabbitAdmin.declareExchange(new TopicExchange(ERP_EXCHANGE, true, false));
+        rabbitAdmin.declareExchange(new DirectExchange(DLX_EXCHANGE, true, false));
         transactionTemplate = new TransactionTemplate(transactionManager);
         meterRegistry = new SimpleMeterRegistry();
         outboxEventService = new OutboxEventService(outboxEventRepository, new JsonMapper());
@@ -255,6 +259,45 @@ class OutboxPublisherIntegrationTest {
         } finally {
             unavailableConnectionFactory.destroy();
         }
+    }
+
+    @Test
+    void rejectedMessage_shouldRemainInDeadLetterQueueUntilExplicitlyReplayed() {
+        String queueName = "outbox-dead-letter-source-" + UUID.randomUUID();
+        String deadLetterQueueName = "outbox-dead-letter-" + UUID.randomUUID();
+        rabbitAdmin.declareQueue(QueueBuilder.durable(queueName)
+                .withArgument("x-dead-letter-exchange", DLX_EXCHANGE)
+                .withArgument("x-dead-letter-routing-key", STOCK_POSTED_DLQ_KEY)
+                .build());
+        rabbitAdmin.declareQueue(QueueBuilder.durable(deadLetterQueueName).build());
+        rabbitAdmin.declareBinding(BindingBuilder.bind(QueueBuilder.durable(queueName).build())
+                .to(new TopicExchange(ERP_EXCHANGE))
+                .with(STOCK_POSTED_KEY));
+        rabbitAdmin.declareBinding(BindingBuilder.bind(QueueBuilder.durable(deadLetterQueueName).build())
+                .to(new DirectExchange(DLX_EXCHANGE))
+                .with(STOCK_POSTED_DLQ_KEY));
+        Message original = new Message(
+                "{\"eventId\":9003,\"diagnostic\":\"preserve for investigation\"}".getBytes(),
+                new MessageProperties());
+        rabbitTemplate.send(ERP_EXCHANGE, STOCK_POSTED_KEY, original);
+
+        rabbitTemplate.execute(channel -> {
+            var delivery = channel.basicGet(queueName, false);
+            assertThat(delivery).isNotNull();
+            channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, false);
+            return null;
+        });
+
+        Message deadLettered = rabbitTemplate.receive(deadLetterQueueName, 1_000);
+        assertThat(deadLettered).isNotNull();
+        assertThat(deadLettered.getBody()).isEqualTo(original.getBody());
+        assertThat(deadLettered.getMessageProperties().getHeaders()).containsKey("x-death");
+
+        rabbitTemplate.send(ERP_EXCHANGE, STOCK_POSTED_KEY, deadLettered);
+
+        Message replayed = rabbitTemplate.receive(queueName, 1_000);
+        assertThat(replayed).isNotNull();
+        assertThat(replayed.getBody()).isEqualTo(original.getBody());
     }
 
     private void publish(OutboxPublisher publisher) {
