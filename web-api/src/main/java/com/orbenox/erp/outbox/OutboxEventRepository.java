@@ -16,4 +16,11 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Long> 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value = "-2")})
     List<OutboxEvent> findAllByStatusOrderByCreatedAt(String status, Limit limit);
+
+    @Query(value = """
+            SELECT TIMESTAMPDIFF(SECOND, MIN(e.createdAt), CURRENT_TIMESTAMP) FROM OutboxEvent e WHERE e.status = 'PENDING'
+            """)
+    double findOldestPendingAgeSeconds();
+
+    double countByStatus(String status);
 }

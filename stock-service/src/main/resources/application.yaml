@@ -63,6 +63,7 @@ management:
           - metrics
           - actuator
           - health
+          - prometheus
 
 # Logging file path
 logging:
