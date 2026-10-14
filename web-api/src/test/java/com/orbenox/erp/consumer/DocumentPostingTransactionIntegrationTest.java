@@ -30,6 +30,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -120,6 +125,21 @@ class DocumentPostingTransactionIntegrationTest {
                     BigDecimal.class,
                     fixture.productLineId())).isEqualByComparingTo(BigDecimal.ZERO);
             assertThat(inboxEventCount(message.eventId())).isZero();
+
+            jdbcTemplate.execute("DROP TRIGGER IF EXISTS " + triggerName + " ON product_line");
+            jdbcTemplate.execute("DROP FUNCTION IF EXISTS " + functionName + "()");
+            transactionTemplate.executeWithoutResult(status -> consumer.handleStockUpdatedEvent(message));
+
+            entityManager.clear();
+            assertThat(jdbcTemplate.queryForObject(
+                    "SELECT document_status FROM document WHERE id = ?",
+                    String.class,
+                    fixture.documentId())).isEqualTo("POSTED");
+            assertThat(jdbcTemplate.queryForObject(
+                    "SELECT posted_quantity FROM product_line WHERE id = ?",
+                    BigDecimal.class,
+                    fixture.productLineId())).isEqualByComparingTo(new BigDecimal("2"));
+            assertThat(inboxEventCount(message.eventId())).isEqualTo(1);
         } catch (Throwable failure) {
             testFailure = failure;
             throw failure;
@@ -177,6 +197,58 @@ class DocumentPostingTransactionIntegrationTest {
         } finally {
             deleteDocumentFixture(fixture);
         }
+    }
+
+    @Test
+    void concurrentConsumers_shouldApplyBusinessEffectOnlyOnce() throws Exception {
+        DocumentFixture fixture = createDocumentFixture();
+        try {
+            DocumentPostingService consumer = createConsumer(fixture.documentId());
+            EventMessage message = stockUpdatedMessage(
+                    9003L,
+                    fixture.documentId(),
+                    fixture.productLineId(),
+                    new BigDecimal("2"));
+            CountDownLatch consumersReady = new CountDownLatch(2);
+            CountDownLatch startConsumers = new CountDownLatch(1);
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+            try {
+                Future<?> firstConsumer = executor.submit(() -> consumeAfterStart(
+                        consumersReady, startConsumers, consumer, message));
+                Future<?> secondConsumer = executor.submit(() -> consumeAfterStart(
+                        consumersReady, startConsumers, consumer, message));
+
+                assertThat(consumersReady.await(10, TimeUnit.SECONDS)).isTrue();
+                startConsumers.countDown();
+                firstConsumer.get(10, TimeUnit.SECONDS);
+                secondConsumer.get(10, TimeUnit.SECONDS);
+            } finally {
+                startConsumers.countDown();
+                executor.shutdownNow();
+            }
+
+            entityManager.clear();
+            assertThat(jdbcTemplate.queryForObject(
+                    "SELECT posted_quantity FROM product_line WHERE id = ?",
+                    BigDecimal.class,
+                    fixture.productLineId())).isEqualByComparingTo(new BigDecimal("2"));
+            assertThat(inboxEventCount(message.eventId())).isEqualTo(1);
+        } finally {
+            deleteDocumentFixture(fixture);
+        }
+    }
+
+    private Void consumeAfterStart(
+            CountDownLatch consumersReady,
+            CountDownLatch startConsumers,
+            DocumentPostingService consumer,
+            EventMessage message) throws InterruptedException {
+        consumersReady.countDown();
+        if (!startConsumers.await(10, TimeUnit.SECONDS)) {
+            throw new IllegalStateException("Timed out waiting to start concurrent consumers");
+        }
+        transactionTemplate.executeWithoutResult(status -> consumer.handleStockUpdatedEvent(message));
+        return null;
     }
 
     private DocumentPostingService createConsumer(long documentId) {

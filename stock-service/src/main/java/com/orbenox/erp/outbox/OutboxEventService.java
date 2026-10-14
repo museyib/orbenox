@@ -7,7 +7,6 @@ import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.json.JsonMapper;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.orbenox.erp.config.RabbitMqInfrastructureConfiguration.STOCK_POSTED_KEY;

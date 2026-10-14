@@ -247,8 +247,10 @@ class OutboxPublisherIntegrationTest {
     }
 
     @Test
-    void rabbitUnavailable_shouldRetainEventForRetry() {
-        OutboxEvent event = savePendingEvent(uniqueRoutingKey());
+    void rabbitUnavailableThenRestored_shouldEventuallyPublishPendingEvent() {
+        String routingKey = uniqueRoutingKey();
+        String queueName = declareBoundQueue(routingKey);
+        OutboxEvent event = savePendingEvent(routingKey);
         CachingConnectionFactory unavailableConnectionFactory = createConnectionFactory("127.0.0.1", 1);
         unavailableConnectionFactory.setConnectionTimeout(500);
         RabbitTemplate unavailableTemplate = createRabbitTemplate(unavailableConnectionFactory);
@@ -258,6 +260,53 @@ class OutboxPublisherIntegrationTest {
             assertThat(loadEvent(event).getStatus()).isEqualTo("PENDING");
         } finally {
             unavailableConnectionFactory.destroy();
+        }
+
+        publish(new OutboxPublisher(outboxEventService, rabbitTemplate, meterRegistry));
+
+        assertThat(loadEvent(event).getStatus()).isEqualTo("PUBLISHED");
+        EventMessage publishedMessage = receiveEvent(queueName);
+        assertThat(publishedMessage.eventId()).isEqualTo(event.getId());
+    }
+
+    @Test
+    void pendingEvent_shouldResumeWhenPublisherInstanceRestarts() {
+        String routingKey = uniqueRoutingKey();
+        String queueName = declareBoundQueue(routingKey);
+        OutboxEvent event = savePendingEvent(routingKey);
+
+        OutboxPublisher restartedPublisher = new OutboxPublisher(outboxEventService, rabbitTemplate, meterRegistry);
+        publish(restartedPublisher);
+
+        assertThat(loadEvent(event).getStatus()).isEqualTo("PUBLISHED");
+        assertThat(receiveEvent(queueName).eventId()).isEqualTo(event.getId());
+    }
+
+    @Test
+    void consumerChannelClosesBeforeAck_shouldRedeliverMessage() throws Exception {
+        String routingKey = uniqueRoutingKey();
+        String queueName = declareBoundQueue(routingKey);
+        rabbitTemplate.convertAndSend(ERP_EXCHANGE, routingKey, "resilience-message");
+
+        com.rabbitmq.client.ConnectionFactory rawConnectionFactory = new com.rabbitmq.client.ConnectionFactory();
+        rawConnectionFactory.setHost(rabbit.getHost());
+        rawConnectionFactory.setPort(rabbit.getMappedPort(5672));
+        rawConnectionFactory.setUsername(USERNAME);
+        rawConnectionFactory.setPassword(PASSWORD);
+
+        try (com.rabbitmq.client.Connection connection = rawConnectionFactory.newConnection();
+             com.rabbitmq.client.Channel channel = connection.createChannel()) {
+            var firstDelivery = channel.basicGet(queueName, false);
+            assertThat(firstDelivery).isNotNull();
+            assertThat(firstDelivery.getEnvelope().isRedeliver()).isFalse();
+        }
+
+        try (com.rabbitmq.client.Connection connection = rawConnectionFactory.newConnection();
+             com.rabbitmq.client.Channel channel = connection.createChannel()) {
+            var redeliveredMessage = channel.basicGet(queueName, false);
+            assertThat(redeliveredMessage).isNotNull();
+            assertThat(redeliveredMessage.getEnvelope().isRedeliver()).isTrue();
+            channel.basicAck(redeliveredMessage.getEnvelope().getDeliveryTag(), false);
         }
     }
 

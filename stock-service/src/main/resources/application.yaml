@@ -37,8 +37,8 @@ spring:
         retry:
           enabled: true
           initial-interval: 5s
-          max-retries: 3
-          max-interval: 10s
+          max-retries: 5
+          max-interval: 15s
           multiplier: 2
     publisher-confirm-type: correlated
     publisher-returns: true
@@ -56,6 +56,20 @@ server:
   port: 8082
 
 management:
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+      group:
+        liveness:
+          include:
+            - livenessState
+        readiness:
+          include:
+            - readinessState
+            - db
+            - rabbit
   endpoints:
     web:
       exposure:

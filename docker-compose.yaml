@@ -110,6 +110,8 @@ services:
     build:
       context: .
       dockerfile: stock-service/Dockerfile
+    deploy:
+      replicas: 3
     environment:
       STOCK_DB_URL: jdbc:postgresql://stock-db:5432/stock
       STOCK_DB_USERNAME: postgres
