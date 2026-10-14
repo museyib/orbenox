@@ -55,7 +55,7 @@ docker compose up --build
 The stack exposes the following local endpoints:
 
 - Eureka: `http://localhost:8761`
-- API Gateway: `http://localhost:${API_GATEWAY_PORT}` (default from `.env.example`: `http://localhost:8080`)
+- API Gateway: `http://localhost:8080` by default (`API_GATEWAY_PORT` in `.env` can change this)
 - Main API: `http://localhost:8081`
 - Stock Service: `http://localhost:8082`
 - Frontend: `http://localhost:5173`
@@ -64,7 +64,7 @@ The stack exposes the following local endpoints:
 - PostgreSQL (stock DB): `localhost:5436`
 - Redis: `localhost:6379`
 
-When a service is started directly without Docker, the gateway defaults to `http://localhost:8083` from its `application.yaml`.
+When started directly without Docker, the gateway defaults to `http://localhost:8083` from its `application.yaml`.
 
 ## Running services individually
 
@@ -149,7 +149,7 @@ Copy `.env.example` to a local `.env` file and adjust values as needed before st
 
 - The project expects PostgreSQL, Redis, and RabbitMQ to be available locally for direct service startup.
 - `web-api` and `stock-service` are configured for Spring Boot development values that match the Docker Compose setup.
-- The frontend is served by Vite on port `5173` and usually talks to the API through the gateway route at `http://localhost:8083`.
+- The frontend is served by Vite on port `5173`. Its API helper (`web-client/src/api.js`) currently sends requests to the hard-coded base URL `http://localhost:8080`; this matches the Docker Compose gateway's default port. When running the gateway directly, its default is `http://localhost:8083`, so the frontend will not reach it at that port unless the gateway is configured to use `8080` or the frontend API base URL is changed.
 
 ## Git hooks
 

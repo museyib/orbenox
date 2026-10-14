@@ -78,22 +78,27 @@ class DocumentPostingTransactionIntegrationTest {
     }
 
     @Test
-    void consumerFailureBeforeCommit_shouldRollbackInboxAndBusinessChangesTogether() {
-        DocumentFixture fixture = createDocumentFixture();
-        jdbcTemplate.execute("""
-                CREATE FUNCTION fail_posted_quantity_update() RETURNS trigger AS $$
-                BEGIN
-                    RAISE EXCEPTION 'simulated consumer business update failure';
-                END;
-                $$ LANGUAGE plpgsql
-                """);
-        jdbcTemplate.execute("""
-                CREATE TRIGGER fail_posted_quantity_update_trigger
-                BEFORE UPDATE OF posted_quantity ON product_line
-                FOR EACH ROW EXECUTE FUNCTION fail_posted_quantity_update()
-                """);
-
+    void consumerFailureBeforeCommit_shouldRollbackInboxAndBusinessChangesTogether() throws Throwable {
+        String objectSuffix = UUID.randomUUID().toString().replace("-", "");
+        String functionName = "fail_posted_quantity_update_" + objectSuffix;
+        String triggerName = "fail_posted_quantity_update_trigger_" + objectSuffix;
+        DocumentFixture fixture = null;
+        Throwable testFailure = null;
         try {
+            fixture = createDocumentFixture();
+            jdbcTemplate.execute("""
+                    CREATE FUNCTION %s() RETURNS trigger AS $$
+                    BEGIN
+                        RAISE EXCEPTION 'simulated consumer business update failure';
+                    END;
+                    $$ LANGUAGE plpgsql
+                    """.formatted(functionName));
+            jdbcTemplate.execute("""
+                    CREATE TRIGGER %s
+                    BEFORE UPDATE OF posted_quantity ON product_line
+                    FOR EACH ROW EXECUTE FUNCTION %s()
+                    """.formatted(triggerName, functionName));
+
             DocumentPostingService consumer = createConsumer(fixture.documentId());
             EventMessage message = stockUpdatedMessage(
                     9001L,
@@ -115,10 +120,36 @@ class DocumentPostingTransactionIntegrationTest {
                     BigDecimal.class,
                     fixture.productLineId())).isEqualByComparingTo(BigDecimal.ZERO);
             assertThat(inboxEventCount(message.eventId())).isZero();
+        } catch (Throwable failure) {
+            testFailure = failure;
+            throw failure;
         } finally {
-            jdbcTemplate.execute("DROP TRIGGER IF EXISTS fail_posted_quantity_update_trigger ON product_line");
-            jdbcTemplate.execute("DROP FUNCTION IF EXISTS fail_posted_quantity_update()");
-            deleteDocumentFixture(fixture);
+            Throwable cleanupFailure = null;
+            cleanupFailure = attemptCleanup(
+                    cleanupFailure,
+                    () -> jdbcTemplate.execute(
+                            "DROP TRIGGER IF EXISTS " + triggerName + " ON product_line"));
+            cleanupFailure = attemptCleanup(
+                    cleanupFailure,
+                    () -> jdbcTemplate.execute("DROP FUNCTION IF EXISTS " + functionName + "()"));
+            if (fixture != null) {
+                DocumentFixture createdFixture = fixture;
+                cleanupFailure = attemptCleanup(
+                        cleanupFailure,
+                        () -> jdbcTemplate.update(
+                                "DELETE FROM product_line WHERE id = ?", createdFixture.productLineId()));
+                cleanupFailure = attemptCleanup(
+                        cleanupFailure,
+                        () -> jdbcTemplate.update(
+                                "DELETE FROM document WHERE id = ?", createdFixture.documentId()));
+            }
+            if (cleanupFailure != null) {
+                if (testFailure != null) {
+                    testFailure.addSuppressed(cleanupFailure);
+                } else {
+                    throw cleanupFailure;
+                }
+            }
         }
     }
 
@@ -181,21 +212,39 @@ class DocumentPostingTransactionIntegrationTest {
     }
 
     private DocumentFixture createDocumentFixture() {
-        long documentId = jdbcTemplate.queryForObject("""
-                INSERT INTO document(document_no, document_date, type_id, document_status, created_by)
-                VALUES (?, CURRENT_DATE,
-                        (SELECT id FROM transaction_type WHERE code = 'SALES_ORDER'),
-                        'IN_PROGRESS', 'test')
-                RETURNING id
-                """, Long.class, "CONSUMER-TEST-" + UUID.randomUUID());
-        long productLineId = jdbcTemplate.queryForObject("""
-                INSERT INTO product_line(
-                    document_id, product_id, unit_id, quantity, posted_quantity, unit_price, discount)
-                VALUES (?, (SELECT id FROM product WHERE code = 'P001'),
-                        (SELECT id FROM unit WHERE code = 'PCS'), 10, 0, 1, 0)
-                RETURNING id
-                """, Long.class, documentId);
-        return new DocumentFixture(documentId, productLineId);
+        Long documentId = null;
+        try {
+            documentId = jdbcTemplate.queryForObject("""
+                    INSERT INTO document(document_no, document_date, type_id, document_status, created_by)
+                    VALUES (?, CURRENT_DATE,
+                            (SELECT id FROM transaction_type WHERE code = 'SALES_ORDER'),
+                            'IN_PROGRESS', 'test')
+                    RETURNING id
+                    """, Long.class, "CONSUMER-TEST-" + UUID.randomUUID());
+            long productLineId = jdbcTemplate.queryForObject("""
+                    INSERT INTO product_line(
+                        document_id, product_id, unit_id, quantity, posted_quantity, unit_price, discount)
+                    VALUES (?, (SELECT id FROM product WHERE code = 'P001'),
+                            (SELECT id FROM unit WHERE code = 'PCS'), 10, 0, 1, 0)
+                    RETURNING id
+                    """, Long.class, documentId);
+            return new DocumentFixture(documentId, productLineId);
+        } catch (RuntimeException | Error setupFailure) {
+            if (documentId != null) {
+                long createdDocumentId = documentId;
+                Throwable cleanupFailure = attemptCleanup(
+                        null,
+                        () -> jdbcTemplate.update(
+                                "DELETE FROM product_line WHERE document_id = ?", createdDocumentId));
+                cleanupFailure = attemptCleanup(
+                        cleanupFailure,
+                        () -> jdbcTemplate.update("DELETE FROM document WHERE id = ?", createdDocumentId));
+                if (cleanupFailure != null) {
+                    setupFailure.addSuppressed(cleanupFailure);
+                }
+            }
+            throw setupFailure;
+        }
     }
 
     private int inboxEventCount(long eventId) {
@@ -208,6 +257,19 @@ class DocumentPostingTransactionIntegrationTest {
     private void deleteDocumentFixture(DocumentFixture fixture) {
         jdbcTemplate.update("DELETE FROM product_line WHERE id = ?", fixture.productLineId());
         jdbcTemplate.update("DELETE FROM document WHERE id = ?", fixture.documentId());
+    }
+
+    private Throwable attemptCleanup(Throwable priorFailure, Runnable cleanup) {
+        try {
+            cleanup.run();
+            return priorFailure;
+        } catch (Throwable cleanupFailure) {
+            if (priorFailure == null) {
+                return cleanupFailure;
+            }
+            priorFailure.addSuppressed(cleanupFailure);
+            return priorFailure;
+        }
     }
 
     private record DocumentFixture(long documentId, long productLineId) {

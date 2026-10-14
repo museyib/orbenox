@@ -288,16 +288,31 @@ class OutboxPublisherIntegrationTest {
             return null;
         });
 
-        Message deadLettered = rabbitTemplate.receive(deadLetterQueueName, 1_000);
-        assertThat(deadLettered).isNotNull();
-        assertThat(deadLettered.getBody()).isEqualTo(original.getBody());
-        assertThat(deadLettered.getMessageProperties().getHeaders()).containsKey("x-death");
-
-        rabbitTemplate.send(ERP_EXCHANGE, STOCK_POSTED_KEY, deadLettered);
+        assertThat(rabbitTemplate.receive(queueName, 100)).isNull();
+        operatorReplayDeadLetter(deadLetterQueueName, original.getBody());
 
         Message replayed = rabbitTemplate.receive(queueName, 1_000);
         assertThat(replayed).isNotNull();
         assertThat(replayed.getBody()).isEqualTo(original.getBody());
+        assertThat(jsonMapper.readValue(replayed.getBody(), DlqTestEvent.class).eventId()).isEqualTo(9003);
+    }
+
+    private void operatorReplayDeadLetter(String deadLetterQueueName, byte[] expectedBody) {
+        rabbitTemplate.execute(channel -> {
+            var deadLetter = channel.basicGet(deadLetterQueueName, false);
+            assertThat(deadLetter).isNotNull();
+            assertThat(deadLetter.getBody()).isEqualTo(expectedBody);
+            assertThat(deadLetter.getProps().getHeaders()).containsKey("x-death");
+            assertThat(jsonMapper.readValue(deadLetter.getBody(), DlqTestEvent.class).eventId()).isEqualTo(9003);
+
+            channel.basicPublish(
+                    ERP_EXCHANGE,
+                    STOCK_POSTED_KEY,
+                    deadLetter.getProps(),
+                    deadLetter.getBody());
+            channel.basicAck(deadLetter.getEnvelope().getDeliveryTag(), false);
+            return null;
+        });
     }
 
     private void publish(OutboxPublisher publisher) {
@@ -377,5 +392,8 @@ class OutboxPublisherIntegrationTest {
         template.setMandatory(true);
         template.setMessageConverter(new JacksonJsonMessageConverter(jsonMapper));
         return template;
+    }
+
+    private record DlqTestEvent(long eventId, String diagnostic) {
     }
 }
